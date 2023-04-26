@@ -21,15 +21,24 @@ const userSchema = new Schema({
             return `https://ui-avatars.com/api/?name=${this.name}&background=random&color=fff&rounded=true&size=50`
         }
     },
-    points:{
-        type:Number,
-        default:0
+    points: {
+        type: Number,
+        default: 0
     },
     role: {
         type: String,
         default: "user",
         enum: ["user", "admin"]
     },
+    status:{
+        type: String,
+
+    },
+    numOfPlayedGames:{
+        type:Number,
+        default:0,
+        required: true
+    }
 }, { timestamps: true });
 
 const User = model('User', userSchema);
