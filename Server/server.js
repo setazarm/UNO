@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
+import userRouter from './routes/user.js'
 
 import roomRouter from './routes/gameRoom.js'
 
@@ -17,6 +18,7 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", exposedHeaders: ["token"] }));
 
+app.use("/users", userRouter)
 mongoose
     .connect(
         process.env.URI,

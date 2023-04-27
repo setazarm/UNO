@@ -1,46 +1,48 @@
-import { Schema, model } from "mongoose"
+import { Schema, model } from "mongoose";
 
-const userSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password: {
-        type: String,
-        required: true
-    },
+const userSchema = new Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
 
-    Avatar: {
-        type: String,
-        default: function () {
-            return `https://ui-avatars.com/api/?name=${this.name}&background=random&color=fff&rounded=true&size=50`
-        }
+        Avatar: {
+            type: String,
+            default: function () {
+                return `https://ui-avatars.com/api/?name=${this.name}&background=random&color=fff&rounded=true&size=50`;
+            },
+        },
+        points: {
+            type: Number,
+            default: 0,
+        },
+        role: {
+            type: String,
+            default: "user",
+            enum: ["user", "admin"],
+        },
+        status: {
+            type: String,
+        },
+        numOfPlayedGames: {
+            type: Number,
+            default: 0,
+            required: true,
+        },
     },
-    points: {
-        type: Number,
-        default: 0
-    },
-    role: {
-        type: String,
-        default: "user",
-        enum: ["user", "admin"]
-    },
-    status:{
-        type: String,
+    { timestamps: true, versionKey: false }
+);
 
-    },
-    numOfPlayedGames:{
-        type:Number,
-        default:0,
-        required: true
-    }
-}, { timestamps: true });
+const User = model("User", userSchema);
 
-const User = model('User', userSchema);
-
-export default User
+export default User;
