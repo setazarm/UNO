@@ -6,7 +6,7 @@ const gameRoomSchema = new Schema({
     required: true
   },
   players: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User'
   }],
   gameStarted: {
@@ -17,10 +17,10 @@ const gameRoomSchema = new Schema({
     type: Boolean,
     default: false
   },
-  isFull:{
-    type:Boolean,
-    required:true,
-    default:false,
+  isFull: {
+    type: Boolean,
+    required: true,
+    default: false,
   }
 }, {
   timestamps: true
