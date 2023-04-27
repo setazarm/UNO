@@ -1,7 +1,10 @@
-export const isAdmin=(req,res,next)=>{
-    if(req.user && req.user.role==="admin"){
-        next()
-    }else{
-        res.json({success:false,message:"unauthorized access"})
+export const checkUser=(req, res, next) =>{
+    const userIdToCheck = req.params.id;
+    const loggedInUserId = req.user.id;
+  
+    if (userIdToCheck === loggedInUserId) {
+      next();
+    } else {
+      res.status(401).json({error: "Invalid credentials"});
     }
-}
+  }
