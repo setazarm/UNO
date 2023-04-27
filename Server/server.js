@@ -5,7 +5,6 @@ import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
 import userRouter from "./routes/user.js";
-
 import roomRouter from "./routes/gameRoom.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
@@ -21,6 +20,7 @@ app.use(cors({ origin: "http://localhost:5173", exposedHeaders: ["token"] }));
 app.use(errorHandler);
 
 app.use("/users", userRouter);
+app.use("/rooms", roomRouter);
 mongoose
     .connect(
         process.env.URI,

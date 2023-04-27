@@ -1,17 +1,18 @@
 import jwt from "jsonwebtoken"
 import User from "../models/userSchema.js"
-export const auth= async(req,res,next)=>{
-    try{
-        
-        const token=req.headers.token
-       
-       const payload= jwt.verify(token,process.env.SIGNATURE) 
-        const user=await User.findById(payload._id)
-        req.user=user 
+export const auth = async (req, res, next) => {
+    try {
+
+        const token = req.headers.token
+
+        const payload = jwt.verify(token, process.env.SIGNATURE)
+        const user = await User.findById(payload.id)
+        req.user = user
+        console.log(req.user)
         next()
-    
-    }catch(err){
-        res.json({success:false,error:err.message})
+
+    } catch (error) {
+        next(error)
     }
-   
+
 }
