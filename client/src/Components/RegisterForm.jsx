@@ -32,17 +32,13 @@ const RegisterForm = () => {
         <>
             <form onSubmit={submitHandler} className="flex flex-col">
                 <label htmlFor="name">Name: </label>
-                <input type="text" name="name" className="border-solid border-2 border black" />
+                <input type="text" name="name" className="border-solid border-2 black" />
 
                 <label htmlFor="email">Email: </label>
-                <input type="email" name="email" className="border-solid border-2 border black" />
+                <input type="email" name="email" className="border-solid border-2 black" />
 
                 <label htmlFor="password">Password: </label>
-                <input
-                    type="password"
-                    name="password"
-                    className="border-solid border-2 border black"
-                />
+                <input type="password" name="password" className="border-solid border-2 black" />
 
                 {error && <p>{error}</p>}
                 <button>Submit</button>
