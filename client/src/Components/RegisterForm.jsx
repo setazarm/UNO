@@ -29,19 +29,37 @@ const RegisterForm = () => {
             });
     };
     return (
-        <form onSubmit={submitHandler}>
-            <label htmlFor="name">Name: </label>
-            <input type="text" name="name" />
+        <>
+            <form onSubmit={submitHandler} className="flex flex-col">
+                <label htmlFor="name">Name: </label>
+                <input type="text" name="name" className="border-solid border-2 border black" />
 
-            <label htmlFor="email">Email: </label>
-            <input type="email" name="email" />
+                <label htmlFor="email">Email: </label>
+                <input type="email" name="email" className="border-solid border-2 border black" />
 
-            <label htmlFor="password">Password: </label>
-            <input type="password" name="password" />
+                <label htmlFor="password">Password: </label>
+                <input
+                    type="password"
+                    name="password"
+                    className="border-solid border-2 border black"
+                />
 
-            {error && <p>{error}</p>}
-            <button>Submit</button>
-        </form>
+                {error && <p>{error}</p>}
+                <button>Submit</button>
+            </form>
+            <div>
+                <p>
+                    Already have an account?
+                    <button
+                        onClick={() => {
+                            navigate("/");
+                        }}
+                    >
+                        Login
+                    </button>
+                </p>
+            </div>
+        </>
     );
 };
 export default RegisterForm;
