@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 const LoginForm = () => {
@@ -21,6 +21,12 @@ const LoginForm = () => {
                 console.log(err);
             });
     };
+
+    useEffect(() => {
+        if (localStorage.getItem("token")) {
+            navigate("/profile");
+        }
+    },[])
     return (
         <div>
             <h1>Login Form</h1>
@@ -45,6 +51,18 @@ const LoginForm = () => {
                 />
                 <button type="submit">Login</button>
             </form>
+            <div>
+                <p>
+                    Do not have an account?
+                    <button
+                        onClick={() => {
+                            navigate("/register");
+                        }}
+                    >
+                        Register
+                    </button>
+                </p>
+            </div>
         </div>
     );
 };
