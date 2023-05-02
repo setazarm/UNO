@@ -1,4 +1,3 @@
-import { socket } from "./socket.js";
 import {Routes, Route} from "react-router-dom";
 function App() {
     return (
