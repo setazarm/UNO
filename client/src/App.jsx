@@ -1,17 +1,12 @@
 import { socket } from "./socket.js";
-
+import {Routes, Route} from "react-router-dom";
 function App() {
     return (
         <>
-            <h1
-                className="
-      text-4xl
-      text-center
-      text-pink-800
-      "
-            >
-                React App
-            </h1>
+            <Routes>
+                <Route path=""  />
+                <Route path="" />
+            </Routes>
         </>
     );
 }
