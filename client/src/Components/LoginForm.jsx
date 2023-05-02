@@ -26,7 +26,7 @@ const LoginForm = () => {
         if (localStorage.getItem("token")) {
             navigate("/profile");
         }
-    },[])
+    }, []);
     return (
         <div>
             <h1>Login Form</h1>
@@ -37,8 +37,9 @@ const LoginForm = () => {
                     id="email"
                     name="email"
                     placeholder="Enter your email"
-                    value={email}
-                    onChange={setEmail}
+                    onChange={(e) => {
+                        setEmail(e.target.value);
+                    }}
                 />
                 <label htmlFor="password">Password</label>
                 <input
@@ -46,8 +47,9 @@ const LoginForm = () => {
                     id="password"
                     name="password"
                     placeholder="Enter your password"
-                    value={password}
-                    onChange={setPassword}
+                    onChange={(e) => {
+                        setPassword(e.target.value);
+                    }}
                 />
                 <button type="submit">Login</button>
             </form>
