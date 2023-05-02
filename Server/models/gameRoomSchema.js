@@ -1,21 +1,17 @@
 import { Schema, model } from "mongoose"
 
 const gameRoomSchema = new Schema({
-  name: {
+  roomName: {
     type: String,
-    required: true
+    required: true,
+    unique: true,
   },
   players: [{
     type: Schema.Types.ObjectId,
     ref: 'User'
   }],
-  gameStarted: {
-    type: Boolean,
-    default: false
-  },
-  gameEnded: {
-    type: Boolean,
-    default: false
+  password: {
+    type: String,
   },
   isFull: {
     type: Boolean,
@@ -28,4 +24,4 @@ const gameRoomSchema = new Schema({
 
 const GameRoom = model('GameRoom', gameRoomSchema);
 
-export default gameRoomSchema
+export default GameRoom;

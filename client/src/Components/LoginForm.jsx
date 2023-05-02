@@ -15,7 +15,7 @@ const LoginForm = () => {
             .post("http://localhost:8000/users/login", data)
             .then((res) => {
                 localStorage.setItem("token", res.headers.token);
-                navigate("/profile");
+                navigate("/lobby");
             })
             .catch((err) => {
                 console.log(err);
