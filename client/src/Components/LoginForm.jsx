@@ -16,6 +16,7 @@ const LoginForm = () => {
             .then((res) => {
                 localStorage.setItem("token", res.headers.token);
                 localStorage.setItem("user", JSON.stringify(res.data.data))
+
                 navigate("/lobby");
             })
             .catch((err) => {
