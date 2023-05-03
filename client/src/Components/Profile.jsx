@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Profile = () => {
+const Profile = ({
+    isLoading,
+    setIsloading
+}) => {
     const [user, setUser] = useState({});
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
@@ -89,9 +92,12 @@ const Profile = () => {
             </button>
             <button
                 onClick={() => {
+                    setIsloading(prev=>!prev)
                     localStorage.removeItem("token");
-                    localStorage.removeItem("user");
+                 
+                   
                     navigate("/");
+                    
                 }}
             >
                 Logout

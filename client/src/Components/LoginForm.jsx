@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-const LoginForm = () => {
+const LoginForm = ({
+   
+    setIsloading
+}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
@@ -16,8 +19,8 @@ const LoginForm = () => {
             .then((res) => {
                 localStorage.setItem("token", res.headers.token);
                 localStorage.setItem("user", JSON.stringify(res.data.data))
-
-                navigate("/lobby");
+                setIsloading(true)
+                navigate("/profile");
             })
             .catch((err) => {
                 console.log(err);
