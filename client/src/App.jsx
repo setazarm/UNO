@@ -16,12 +16,12 @@ function App() {
                 <Route path="/" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterForm />} />
                 <Route path="/lobby" element={<Lobby />} />
-                <Route path="/createRoom" element={<CreateRoom/>} />
-                <Route path="/game" element={<GameRoom/>} />
-                <Route path="/imprint" element={<Imprint/>} />
+                <Route path="/createRoom" element={<CreateRoom />} />
+                <Route path="/game/:id" element={<GameRoom />} />
+                <Route path="/imprint" element={<Imprint />} />
                 <Route path="/profile" element={<Profile />} />
             </Routes>
-            <Footer/>
+            <Footer />
         </div>
     );
 }

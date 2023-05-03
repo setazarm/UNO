@@ -15,7 +15,6 @@ const io = new Server(server, {
     cors: { origin: "http://localhost:5173" },
 });
 
-
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", exposedHeaders: ["token"] }));
 app.use(errorHandler);
@@ -34,11 +33,35 @@ mongoose
 
 io.on("connection", (socket) => {
     console.log(`${socket.id} connected`);
-    socket.on("createRoom", async (room) => {
-      const newRoom= await GameRoom.create(room)
-        socket.join(newRoom._id)
-        
-    })
+
+    socket.on("createRoom", async ({ roomName, password, player }) => {
+        const newRoom = await GameRoom.create({ roomName, password, players: [player._id] });
+        console.log(newRoom);
+        socket.join(newRoom._id);
+        socket.emit("room_created", newRoom._id);
+        socket.emit("room_data", newRoom);
+    });
+
+    socket.on("join_room", async (roomID, playerID) => {
+        socket.join(roomID);
+        const room = await GameRoom.findByIdAndUpdate(
+            roomID,
+            {
+                $push: { players: playerID },
+            },
+            { new: true }
+        );
+        socket.emit("room_data", room);
+    });
+
+    socket.on("test_event", (msg, room) => {
+        console.log(msg, room);
+        socket.to(room).emit("reply", msg);
+    });
+
+    // io.of("/").adapter.on("join-room", (room, id) => {
+    //     console.log(`socket ${id} has joined room ${room}`);
+    // });
 });
 
 server.listen(8000, () => console.log(`The server is listening on port ${process.env.PORT}`));

@@ -1,19 +1,31 @@
-import {socket} from  "../socket"
-import { useNavigate } from "react-router-dom"
+import { useEffect } from "react";
+import { socket } from "../socket";
+import { useNavigate } from "react-router-dom";
 const CreateRoom = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const createRoom = (e) => {
-        e.preventDefault()
-        socket.emit('createRoom', {roomName: e.target.room.value, password: e.target.password.value})
-        navigate('/game')
-        }
-  return (
-    <form onSubmit={createRoom}>
-        <input type="text" name="room" placeholder="Room name"/>
-        <input type="password" name="password" placeholder="password"/>
-        <button>Create a Room</button>
-    </form>
-  )
-}
+        e.preventDefault();
+        socket.connect(); // For when we connect clicking join
+        socket.emit("createRoom", {
+            roomName: e.target.room.value,
+            password: e.target.password.value,
+            player: JSON.parse(localStorage.getItem("user")),
+        });
+    };
 
-export default CreateRoom
+    useEffect(() => {
+        socket.on("room_created", (roomID) => {
+            navigate(`/game/${roomID}`);
+        });
+    }, []);
+
+    return (
+        <form onSubmit={createRoom}>
+            <input type="text" name="room" placeholder="Room name" />
+            <input type="password" name="password" placeholder="password" />
+            <button>Create a Room</button>
+        </form>
+    );
+};
+
+export default CreateRoom;
