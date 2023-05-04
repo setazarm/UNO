@@ -1,14 +1,21 @@
 import { NavLink } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+
 const NavBar = ({
     isLoading,
     setIsloading
 }) => {
-    // Still need to conditionally show different thing
-    // If user is not logged in show only logo, register, rules
-    // If user is logged in hide register and show the rest
     
-  
+    useEffect(()=> {
+        const token = localStorage.getItem("token");
+        if (token) {
+            setIsloading(true);
+        } else {
+            setIsloading(false);
+        }
+    },[])
+
+
   
 
     return (
