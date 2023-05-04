@@ -54,14 +54,14 @@ io.on("connection", (socket) => {
         socket.emit("room_data", room);
     });
 
-    socket.on("test_event", (msg, room) => {
-        console.log(msg, room);
-        socket.to(room).emit("reply", msg);
+    
+    socket.on("initGameState", (GameState, room) => {
+        console.log(GameState, room);
+        //socket.to(room).emit("initialData", GameState);
+       io.in(room).emit("initialData", GameState);
     });
 
-    // io.of("/").adapter.on("join-room", (room, id) => {
-    //     console.log(`socket ${id} has joined room ${room}`);
-    // });
+    
 });
 
 server.listen(8000, () => console.log(`The server is listening on port ${process.env.PORT}`));
