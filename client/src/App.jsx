@@ -12,7 +12,7 @@ import { useState } from "react";
 function App() {
     const [isLoading, setIsloading] = useState(false);
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col h-screen ">
             <NavBar isLoading={isLoading} setIsloading={setIsloading} />
             <Routes>
                 <Route
