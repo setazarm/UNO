@@ -47,13 +47,22 @@ io.on("connection", (socket) => {
         let room;
         const foundRoom = await GameRoom.findById(roomID);
         if (!foundRoom.players.includes(playerID)) {
+
             room = await GameRoom.findByIdAndUpdate(
                 roomID,
                 {
                     $push: { players: playerID },
                 },
                 { new: true }
+             
             );
+            if(room.players.length === 4){
+                room.isFull = true;
+                await room.save();
+            }else{
+                room.isFull = false;
+                await room.save();
+            }
         } else {
             room = foundRoom;
         }

@@ -1,10 +1,11 @@
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { socket } from "../socket.js";
 import { useEffect, useState } from "react";
 import card from "../utilis/card.js";
 import shuffleArray from "../utilis/shuffleCard.js";
 
 const GameRoom = () => {
+    const navigate = useNavigate();
     const location = useParams();
     const [roomData, setRoomData] = useState(null);
     const [player1Cards, setPlayer1Cards] = useState([]);
@@ -32,11 +33,15 @@ const GameRoom = () => {
         socket.on("reply", receiveMessage);
         socket.on("room_data", (room) => {
             setRoomData(room);
+            if(room.isFull){
+                navigate("/lobby");
+            }
             const player = room.players.indexOf(getUserFromLocalStorage()._id) + 1;
             console.log(room);
             setPlayerOrder(player);
             //startGame();
         });
+       
         return () => {
             const user = JSON.parse(localStorage.getItem("user"));
             socket.emit("leave_room", location.id, user._id); // Logic trigger for removing player from DB
@@ -44,6 +49,9 @@ const GameRoom = () => {
             socket.disconnect();
         };
     }, []);
+
+   
+    
     console.log(roomData, playerOrder);
     const drawCard = (numOfcards, pile) => {
         const cards = [];
