@@ -12,6 +12,7 @@ const GameRoom = () => {
     const [drawpile, setDrawpile] = useState([]);
     const [discardpile, setDiscardpile] = useState([]);
     const [playerOrder, setPlayerOrder] = useState(null);
+    const [isGameStarted, setIsGameStarted] = useState(false);
     const deck = shuffleArray(card);
 
     //const [currentCard, setCurrentCard] = useState(null);
@@ -34,6 +35,7 @@ const GameRoom = () => {
             const player = room.players.indexOf(getUserFromLocalStorage()._id) + 1;
             console.log(room);
             setPlayerOrder(player);
+            //startGame();
         });
         return () => {
             socket.emit("leave_room"); // Logic trigger for removing player from DB
@@ -67,7 +69,9 @@ const GameRoom = () => {
             { player1Cards, player2Cards, drawpile: pile, discardpile: cards },
             location.id
         );
+        setIsGameStarted(true);
     };
+    
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -80,6 +84,7 @@ const GameRoom = () => {
             setDrawpile(data.drawpile);
             setDiscardpile(data.discardpile);
         });
+        startGame();
     }, []);
     //console.log(drawpile)
     //  console.log(drawpile.length)
@@ -89,6 +94,7 @@ const GameRoom = () => {
     // console.log(player1Cards)
     // console.log(player2Cards)
     // console.log(drawpile)
+    console.log("player order",playerOrder)
     return (
         <div>
             <div>
@@ -103,6 +109,52 @@ const GameRoom = () => {
                 Start
             </button>
             <button onClick={() => startGame()}>Start the Game</button>
+            <div>
+                {isGameStarted ? (
+                    <>
+                        <div
+                            onClick={() => {}}
+                            className="bg-yellow-400 rounded-lg py-2 px-4 cursor-pointer hover:bg-yellow-500 active:bg-yellow-600"
+                        >
+                            Drawpile
+                        </div>
+                        <div
+                            className={`rounded-lg py-2 px-4 cursor-pointer ${
+                                discardpile[0]?.color === "Y"
+                                    ? "bg-yellow-400"
+                                    : discardpile[0]?.color === "B"
+                                    ? "bg-blue-400"
+                                    : discardpile[0]?.color === "G"
+                                    ? "bg-green-400"
+                                    : discardpile[0]?.color === "R"
+                                    ? "bg-red-400"
+                                    : ""
+                            }`}
+                        >
+                            {discardpile[0]?.number} {discardpile[0]?.color}
+                        </div>
+
+                        <div>
+                            cards
+                            {playerOrder === 1 ? (<div>
+                                {player1Cards.map((card) => {
+                                    // eslint-disable-next-line react/jsx-key
+                                    return  <div className={`rounded-lg py-2 px-4 cursor-pointer ${card.color === "Y" ? "bg-yellow-400" : card.color === "B" ? "bg-blue-400" : card.color === "G" ? "bg-green-400" : card.color === "R" ? "bg-red-400" : ""}`}>{card.number} {card.color}</div>
+
+                                })}
+                            </div>):
+                            (<div>
+                                {player2Cards.map((card) => {
+                                    // eslint-disable-next-line react/jsx-key
+                                    return  <div className={`rounded-lg py-2 px-4 cursor-pointer ${card.color === "Y" ? "bg-yellow-400" : card.color === "B" ? "bg-blue-400" : card.color === "G" ? "bg-green-400" : card.color === "R" ? "bg-red-400" : ""}`}>{card.number} {card.color}</div>
+
+                                }
+                                )}
+                            </div>)}
+                        </div>
+                    </>
+                ) : null}
+            </div>
         </div>
     );
 };
