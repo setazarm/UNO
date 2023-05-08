@@ -36,7 +36,8 @@ const GameRoom = () => {
             setPlayerOrder(player);
         });
         return () => {
-            socket.emit("leave_room"); // Logic trigger for removing player from DB
+            const user = JSON.parse(localStorage.getItem("user"));
+            socket.emit("leave_room", location.id, user._id); // Logic trigger for removing player from DB
             socket.off("reply", receiveMessage);
             socket.disconnect();
         };

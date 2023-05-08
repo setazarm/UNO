@@ -60,6 +60,16 @@ io.on("connection", (socket) => {
         socket.emit("room_data", room);
     });
 
+    socket.on("leave_room", async (roomID, playerID) => {
+        await GameRoom.findByIdAndUpdate(
+            roomID,
+            {
+                $pull: { players: playerID },
+            },
+            { new: true }
+        );
+    });
+
     socket.on("initGameState", (GameState, room) => {
         console.log(GameState, room);
         //socket.to(room).emit("initialData", GameState);
