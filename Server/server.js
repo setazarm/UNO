@@ -44,24 +44,27 @@ io.on("connection", (socket) => {
 
     socket.on("join_room", async (roomID, playerID) => {
         socket.join(roomID);
-        const room = await GameRoom.findByIdAndUpdate(
-            roomID,
-            {
-                $push: { players: playerID },
-            },
-            { new: true }
-        );
+        let room;
+        const foundRoom = await GameRoom.findById(roomID);
+        if (!foundRoom.players.includes(playerID)) {
+            room = await GameRoom.findByIdAndUpdate(
+                roomID,
+                {
+                    $push: { players: playerID },
+                },
+                { new: true }
+            );
+        } else {
+            room = foundRoom;
+        }
         socket.emit("room_data", room);
     });
 
-    
     socket.on("initGameState", (GameState, room) => {
         console.log(GameState, room);
         //socket.to(room).emit("initialData", GameState);
-       io.in(room).emit("initialData", GameState);
+        io.in(room).emit("initialData", GameState);
     });
-
-    
 });
 
 server.listen(8000, () => console.log(`The server is listening on port ${process.env.PORT}`));

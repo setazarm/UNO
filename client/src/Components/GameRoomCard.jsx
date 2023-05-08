@@ -5,9 +5,8 @@ const GameRoomCard = ({ room, setShow }) => {
     const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
     const joinRoom = () => {
-      socket.connect()
+        socket.connect();
         // room.password ? setShow(true) : null
-        socket.emit("join_room", room._id, user._id);
         navigate(`/game/${room._id}`);
     };
     return (
