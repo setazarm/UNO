@@ -32,8 +32,6 @@ mongoose
     .catch((err) => console.log("Database is not connected! ", err.message));
 
 io.on("connection", (socket) => {
-
-
     socket.on("createRoom", async ({ roomName, password, player }) => {
         const newRoom = await GameRoom.create({ roomName, password, players: [player._id] });
         socket.join(newRoom._id);
@@ -46,15 +44,13 @@ io.on("connection", (socket) => {
         let room;
         const foundRoom = await GameRoom.findById(roomID);
         if (!foundRoom.players.includes(playerID)) {
-
             room = await GameRoom.findByIdAndUpdate(
                 roomID,
                 {
                     $push: { players: playerID },
                 },
                 { new: true }
-
-            ).populate("players")
+            ).populate("players");
             if (room.players.length === 4) {
                 room.isFull = true;
                 await room.save();
@@ -79,7 +75,6 @@ io.on("connection", (socket) => {
     });
 
     socket.on("initGameState", (GameState, room) => {
-
         io.in(room).emit("initialData", GameState);
     });
 });

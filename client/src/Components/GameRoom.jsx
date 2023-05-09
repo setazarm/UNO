@@ -31,32 +31,26 @@ const GameRoom = () => {
     };
 
     const startGame = () => {
-        let pCard;
-
-        pCard = deck.slice(0, 7);
-
-        setPlayerCards(pCard);
-
         let { cards, pile } = drawCard(1, deck.slice(roomData?.players.length * 7));
-
         socket.emit(
             "initGameState",
             { ...playerCards, drawpile: pile, discardpile: cards },
             location.id
         );
-        setIsGameStarted(true);
     };
 
     useEffect(() => {
         const user = getUserFromLocalStorage();
-
         socket.emit("join_room", location.id, user._id);
-        socket.on("initialData", (data) => {
-            setDrawpile(data.drawpile);
-            setDiscardpile(data.discardpile);
-        });
-        startGame();
     }, []);
+
+    socket.on("initialData", (data) => {
+        setDrawpile(data.drawpile);
+        setDiscardpile(data.discardpile);
+        const pCard = deck.slice(0, 7);
+        setPlayerCards(pCard);
+        setIsGameStarted(true);
+    });
 
     useEffect(() => {
         socket.on("room_data", (room) => {
@@ -68,31 +62,30 @@ const GameRoom = () => {
 
         return () => {
             const user = getUserFromLocalStorage();
-            socket.emit("leave_room", location.id, user._id); // Logic trigger for removing player from DB
-
+            socket.emit("leave_room", location.id, user._id);
             socket.disconnect();
         };
     }, []);
 
     useEffect(() => {
         setPlayer({ ...player, cards: playerCards });
-    }, [playerCards]);
+    }, [playerCards, isGameStarted]);
+
     console.log("drawpile", drawpile);
     console.log("discardpile", discardpile);
     console.log("roomData", roomData);
+    console.log("cards:", player.cards);
+
     return (
         <div>
             <div>
                 <ul>
                     {roomData &&
-                        roomData.players.map((player) => {
+                        roomData.players.map((player, i) => {
                             return <li key={player._id}>{player.name}</li>;
                         })}
                 </ul>
             </div>
-            <button onClick={() => socket.emit("initGameState", "GameState", location.id)}>
-                Start
-            </button>
             <button onClick={() => startGame()}>Start the Game</button>
             <div>
                 {isGameStarted ? (
