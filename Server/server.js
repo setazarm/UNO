@@ -32,11 +32,10 @@ mongoose
     .catch((err) => console.log("Database is not connected! ", err.message));
 
 io.on("connection", (socket) => {
-    console.log(`${socket.id} connected`);
+
 
     socket.on("createRoom", async ({ roomName, password, player }) => {
         const newRoom = await GameRoom.create({ roomName, password, players: [player._id] });
-        console.log(newRoom);
         socket.join(newRoom._id);
         socket.emit("room_created", newRoom._id);
         socket.emit("room_data", newRoom);
@@ -54,12 +53,12 @@ io.on("connection", (socket) => {
                     $push: { players: playerID },
                 },
                 { new: true }
-             
-            );
-            if(room.players.length === 4){
+
+            ).populate("players")
+            if (room.players.length === 4) {
                 room.isFull = true;
                 await room.save();
-            }else{
+            } else {
                 room.isFull = false;
                 await room.save();
             }
@@ -80,8 +79,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("initGameState", (GameState, room) => {
-        console.log(GameState, room);
-        //socket.to(room).emit("initialData", GameState);
+
         io.in(room).emit("initialData", GameState);
     });
 });
