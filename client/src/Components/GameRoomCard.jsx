@@ -6,6 +6,7 @@ const GameRoomCard = ({ room, setShow, setPassword, passwordCorrect }) => {
     const user = JSON.parse(localStorage.getItem("user"));
     const navigate = useNavigate();
     const joinRoom = () => {
+
         if (!room.password) {
             socket.connect();
             navigate(`/game/${room._id}`);
@@ -13,6 +14,8 @@ const GameRoomCard = ({ room, setShow, setPassword, passwordCorrect }) => {
             setShow(true);
             setPassword(room.password);
         }
+
+        
     };
 
     useEffect(() => {
