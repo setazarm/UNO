@@ -9,6 +9,8 @@ import Footer from "./Components/Footer.jsx";
 import Imprint from "./Components/Imprint.jsx";
 import Profile from "./Components/Profile";
 import { useState } from "react";
+import Container from "./context/Container.jsx";
+import Game from "./Components/Game.jsx";
 function App() {
     const [isLoading, setIsloading] = useState(false);
     return (
@@ -20,9 +22,29 @@ function App() {
                     element={<LoginForm isLoading={isLoading} setIsloading={setIsloading} />}
                 />
                 <Route path="/register" element={<RegisterForm />} />
-                <Route path="/lobby" element={<Lobby />} />
-                <Route path="/createRoom" element={<CreateRoom />} />
-                <Route path="/game/:id" element={<GameRoom />} />
+                {/* <Route
+                    path="/lobby"
+                    element={
+                        <Container>
+                            <Lobby />
+                        </Container>
+                    }
+                />
+                <Route
+                    path="/createroom"
+                    element={
+                        <Container>
+                            <CreateRoom />
+                        </Container>
+                    }
+                />
+                <Route path="/game/:id" element={<GameRoom />} /> */}
+                <Route path="/game" element={<Game />}>
+                    <Route path="lobby" element={<Lobby />} />
+                    <Route path="createroom" element={<CreateRoom />} />
+                    <Route path=":id" element={<GameRoom />} />
+                </Route>
+
                 <Route path="/imprint" element={<Imprint />} />
                 <Route
                     path="/profile"

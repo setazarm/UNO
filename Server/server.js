@@ -32,7 +32,7 @@ mongoose
     .catch((err) => console.log("Database is not connected! ", err.message));
 
 io.on("connection", (socket) => {
-    socket.on("createRoom", async ({ roomName, password, player }) => {
+    socket.on("create_room", async ({ roomName, password, player }) => {
         const newRoom = await GameRoom.create({ roomName, password, players: [player._id] });
         socket.join(newRoom._id);
         socket.emit("room_created", newRoom._id);
@@ -42,8 +42,8 @@ io.on("connection", (socket) => {
     socket.on("join_room", async (roomID, playerID) => {
         socket.join(roomID);
         let room;
-        const foundRoom = await GameRoom.findById(roomID);
-        if (!foundRoom.players.includes(playerID)) {
+        const foundRoom = await GameRoom.findById(roomID).populate("players");
+        if (foundRoom && !foundRoom.players.find((item) => item._id.toString() === playerID)) {
             room = await GameRoom.findByIdAndUpdate(
                 roomID,
                 {
@@ -65,16 +65,23 @@ io.on("connection", (socket) => {
     });
 
     socket.on("leave_room", async (roomID, playerID) => {
-        await GameRoom.findByIdAndUpdate(
-            roomID,
-            {
-                $pull: { players: playerID },
-            },
-            { new: true }
-        );
+        const room = await GameRoom.findById(roomID);
+        if (room.players.length === 1) {
+            await GameRoom.findByIdAndRemove(roomID);
+            socket.emit("delete_room");
+        } else {
+            await GameRoom.findByIdAndUpdate(
+                roomID,
+                {
+                    $pull: { players: playerID },
+                },
+                { new: true }
+            );
+        }
     });
 
     socket.on("initGameState", (GameState, room) => {
+        console.log(GameState, room);
         io.in(room).emit("initialData", GameState);
     });
 });

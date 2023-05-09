@@ -1,22 +1,15 @@
 import { NavLink } from "react-router-dom";
 import { useEffect } from "react";
 
-const NavBar = ({
-    isLoading,
-    setIsloading
-}) => {
-    
-    useEffect(()=> {
+const NavBar = ({ isLoading, setIsloading }) => {
+    useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
             setIsloading(true);
         } else {
             setIsloading(false);
         }
-    },[])
-
-
-  
+    }, []);
 
     return (
         <nav>
@@ -35,7 +28,7 @@ const NavBar = ({
                 {isLoading && (
                     <>
                         <li>
-                            <NavLink to="/lobby">Lobby</NavLink>
+                            <NavLink to="/game/lobby">Lobby</NavLink>
                         </li>
                         <li>
                             <NavLink to="/profile">Profile</NavLink>
