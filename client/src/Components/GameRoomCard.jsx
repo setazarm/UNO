@@ -7,6 +7,7 @@ const GameRoomCard = ({ room, setShow }) => {
     const joinRoom = () => {
         socket.connect();
         // room.password ? setShow(true) : null
+        
         navigate(`/game/${room._id}`);
     };
     const disabled = room.players.length >= 4;
