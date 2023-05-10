@@ -1,7 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { socket } from "../socket";
 import { useNavigate } from "react-router-dom";
+import { MyContext } from "../context/context";
+
 const CreateRoom = () => {
+    const { user } = useContext(MyContext);
+
     // const navigate = useNavigate();
     // const createRoom = (e) => {
     //     e.preventDefault();
@@ -32,7 +36,7 @@ const CreateRoom = () => {
         socket.emit("create_room", {
             roomName: e.target.room.value,
             password: e.target.password.value,
-            player: JSON.parse(localStorage.getItem("user")),
+            userId:user._id,
         });
     };
 

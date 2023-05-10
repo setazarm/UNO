@@ -28,7 +28,7 @@ const NavBar = ({ isLoading, setIsloading }) => {
                 {isLoading && (
                     <>
                         <li>
-                            <NavLink to="/game/lobby">Lobby</NavLink>
+                            <NavLink to="/lobby">Lobby</NavLink>
                         </li>
                         <li>
                             <NavLink to="/profile">Profile</NavLink>

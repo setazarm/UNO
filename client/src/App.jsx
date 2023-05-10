@@ -39,11 +39,11 @@ function App() {
                     }
                 />
                 <Route path="/game/:id" element={<GameRoom />} /> */}
-                <Route path="/game" element={<Game />}>
-                    <Route path="lobby" element={<Lobby />} />
-                    <Route path="createroom" element={<CreateRoom />} />
-                    <Route path=":id" element={<GameRoom />} />
-                </Route>
+               
+                    <Route path="/lobby" element={<Lobby />} />
+                    <Route path="/createroom" element={<CreateRoom />} />
+                    <Route path="/game/:id" element={<GameRoom />} />
+               
 
                 <Route path="/imprint" element={<Imprint />} />
                 <Route

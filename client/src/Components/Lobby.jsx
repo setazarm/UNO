@@ -91,7 +91,7 @@ const Lobby = () => {
                 </div>
                 <button
                     onClick={() => {
-                        navigate("/game/createroom");
+                        navigate("/createroom");
                     }}
                     className="border-2 border-black rounded p-1"
                 >
