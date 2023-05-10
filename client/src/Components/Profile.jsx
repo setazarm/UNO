@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import {AiFillCloseSquare} from 'react-icons/ai'
+import { AiFillCloseSquare } from "react-icons/ai";
 
-const Profile = ({ isLoading, setIsloading }) => {
+const Profile = ({ setIsloading }) => {
     const [user, setUser] = useState({});
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
@@ -73,7 +73,7 @@ const Profile = ({ isLoading, setIsloading }) => {
             });
     };
     return (
-        <div className="bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 h-screen flex flex-col  p-6" >
+        <div className="bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 h-screen flex flex-col  p-6">
             <h1 className="text-4xl font-bold mb-4">Profile</h1>
             <p>Name: {user.name}</p>
             <p>Email: {user.email}</p>
@@ -82,8 +82,8 @@ const Profile = ({ isLoading, setIsloading }) => {
             <p>Status: {user.status}</p>
             <p> Number of played games {user.numOfPlayedGames} </p>
             <div className="position: absolute right-2 flex gap-2 mx-2">
-            <button
-                className="
+                <button
+                    className="
                 bg-gradient-to-br from-green-300 via-green-500 to-green-700
                 text-white
                 font-bold
@@ -94,14 +94,14 @@ const Profile = ({ isLoading, setIsloading }) => {
                 border-radius-2
 
                 "
-                onClick={() => {
-                    setIsEditing(true);
-                }}
-            >
-                Edit Profile
-            </button>
-            <button
-             className="bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700
+                    onClick={() => {
+                        setIsEditing(true);
+                    }}
+                >
+                    Edit Profile
+                </button>
+                <button
+                    className="bg-gradient-to-br from-blue-300 via-blue-500 to-blue-700
              text-white
              font-bold
              py-2
@@ -109,17 +109,17 @@ const Profile = ({ isLoading, setIsloading }) => {
              rounded
              my-3
              border-radius-2"
-                onClick={() => {
-                    setIsloading((prev) => !prev);
-                    localStorage.removeItem("token");
+                    onClick={() => {
+                        setIsloading((prev) => !prev);
+                        localStorage.removeItem("token");
 
-                    navigate("/");
-                }}
-            >
-                Logout
-            </button>
-            <button
-            className="bg-gradient-to-br from-red-300 via-red-500 to-red-700
+                        navigate("/");
+                    }}
+                >
+                    Logout
+                </button>
+                <button
+                    className="bg-gradient-to-br from-red-300 via-red-500 to-red-700
             text-white
             font-bold
             py-2
@@ -127,81 +127,84 @@ const Profile = ({ isLoading, setIsloading }) => {
             rounded
             my-3
             border-radius-2"
-                onClick={() => {
-                    deleteUser();
-                }}
-            >
-                Delete Profile
-            </button>
+                    onClick={() => {
+                        deleteUser();
+                    }}
+                >
+                    Delete Profile
+                </button>
             </div>
 
             {isEditing && (
-                <form onSubmit={editHandler} className="bg-white shadow-md  rounded px-8 pt-6 pb-8 mb-2">
-                <div className=" flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditing(false);
-                    }}
-                    className="text-gray-500 hover:text-gray-700 focus:outline-none focus:underline"
-                  >
-                    <AiFillCloseSquare size={30}/>
-                  </button>
-                </div>
-                <div className="mb-4">
-                  <label className=" text-gray-700 font-bold mb-2" htmlFor="name">
-                    Name
-                  </label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Enter your name"
-                    onChange={(e) => {
-                      setUpdatedUser({ ...updatedUser, name: e.target.value });
-                    }}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className=" text-gray-700 font-bold mb-2" htmlFor="email">
-                    Email
-                  </label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email"
-                    onChange={(e) => {
-                      setUpdatedUser({ ...updatedUser, email: e.target.value });
-                    }}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className=" text-gray-700 font-bold mb-2" htmlFor="status">
-                    Status
-                  </label>
-                  <input
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    id="status"
-                    name="status"
-                    type="text"
-                    placeholder="Enter your new status"
-                    onChange={(e) => {
-                      setUpdatedUser({ ...updatedUser, status: e.target.value });
-                    }}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    type="submit"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </form>
+                <form
+                    onSubmit={editHandler}
+                    className="bg-white shadow-md  rounded px-8 pt-6 pb-8 mb-2"
+                >
+                    <div className=" flex justify-end">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setIsEditing(false);
+                            }}
+                            className="text-gray-500 hover:text-gray-700 focus:outline-none focus:underline"
+                        >
+                            <AiFillCloseSquare size={30} />
+                        </button>
+                    </div>
+                    <div className="mb-4">
+                        <label className=" text-gray-700 font-bold mb-2" htmlFor="name">
+                            Name
+                        </label>
+                        <input
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="name"
+                            name="name"
+                            type="text"
+                            placeholder="Enter your name"
+                            onChange={(e) => {
+                                setUpdatedUser({ ...updatedUser, name: e.target.value });
+                            }}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className=" text-gray-700 font-bold mb-2" htmlFor="email">
+                            Email
+                        </label>
+                        <input
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            onChange={(e) => {
+                                setUpdatedUser({ ...updatedUser, email: e.target.value });
+                            }}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className=" text-gray-700 font-bold mb-2" htmlFor="status">
+                            Status
+                        </label>
+                        <input
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="status"
+                            name="status"
+                            type="text"
+                            placeholder="Enter your new status"
+                            onChange={(e) => {
+                                setUpdatedUser({ ...updatedUser, status: e.target.value });
+                            }}
+                        />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                            type="submit"
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
             )}
         </div>
     );

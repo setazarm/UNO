@@ -1,11 +1,8 @@
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { MyContext } from "../context/context.js";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import GameRoomCard from "./GameRoomCard.jsx";
 import RoomPasswordModal from "./RoomPasswordModal.jsx";
-import { socket } from "../socket.js";
-import Container from "../context/Container.jsx";
 
 const Lobby = () => {
     const { rooms } = useContext(MyContext);

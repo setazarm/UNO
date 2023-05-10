@@ -41,7 +41,7 @@ export const getUser = async (req, res, next) => {
     }
 };
 
-export const getAllUsers = async (req, res, next) => {
+export const getAllUsers = async (_, res, next) => {
     try {
         const users = await User.find();
         res.json({ success: true, data: users });

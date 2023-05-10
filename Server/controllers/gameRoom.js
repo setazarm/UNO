@@ -1,6 +1,6 @@
 import GameRoom from "../models/gameRoomSchema.js";
 
-export const getAllRooms = async (req, res, next) => {
+export const getAllRooms = async (_, res, next) => {
     try {
         const rooms = await GameRoom.find().populate("players");
         res.json({ success: true, data: rooms });

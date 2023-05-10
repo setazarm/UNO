@@ -4,13 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { MyContext } from "../context/context.js";
 
 const GameRoomCard = ({ room, setShow, setPassword, passwordCorrect }) => {
-   
     const navigate = useNavigate();
-    const {user}=useContext(MyContext)
+    const { user } = useContext(MyContext);
     const joinRoom = () => {
         if (!room.password) {
             socket.connect();
-            socket.emit("join_room",{userId:user._id,roomId:room._id})
+            socket.emit("join_room", { userId: user._id, roomId: room._id });
             navigate(`/game/${room._id}`);
         } else {
             setShow(true);
