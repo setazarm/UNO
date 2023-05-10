@@ -68,6 +68,7 @@ mongoose
           //starting game
           socket.on("start_game",({userId,roomId,gameData})=>{
                console.log("starting game",roomId)
+               console.log('gamedata', gameData);
               io.in(roomId.toString()).emit("game_started",gameData)
           })
       
