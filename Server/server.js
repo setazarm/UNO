@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
                 },
                 { new: true }
             ).populate("players");
-            if (room.players.length === 4) {
+            if (room.players.length > 4) {
                 room.isFull = true;
                 await room.save();
             } else {

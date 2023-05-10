@@ -140,6 +140,7 @@ import axios from "axios";
 
 const GameRoom = () => {
     const location = useParams();
+    const [leftRoom, setLeftRoom] = useState(false);
 
     const {
         roomData,
@@ -169,26 +170,33 @@ const GameRoom = () => {
             { ...playerCards, drawpile: pile, discardpile: cards },
             location.id
         );
+       
+      
     };
 
     useEffect(() => {
-        // socket.emit("join_room", location.id, player._id);
+        socket.emit("join_room", location.id, player._id);
+    
         axios.get("http://localhost:8000/rooms").then((res) => {
-            setRoomData(res.data.data.find((item) => item._id.toString() === location.id));
+          setRoomData(res.data.data.find((item) => item._id.toString() === location.id));
         });
+    
         return () => {
+          if (!leftRoom) {
             socket.emit("leave_room", location.id, player._id);
+            setLeftRoom(true);
+          }
         };
-    }, []);
+      }, []);
 
     return (
         <div>
             <div>
                 <ul>
                     {roomData &&
-                        roomData.players.map((player) => {
+                        roomData.players.map((player, i) => {
                             console.log(player._id);
-                            return <li key={player._id}>{player.name}</li>;
+                            return <li key={player._id + i}>{player.name}</li>;
                         })}
                 </ul>
             </div>

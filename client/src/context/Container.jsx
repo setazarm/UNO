@@ -65,7 +65,7 @@ const Container = ({ children }) => {
         axios.get("http://localhost:8000/rooms").then((res) => {
             setRooms(res.data.data);
         });
-    }, []);
+    }, [rooms]);
 
     useEffect(() => {
         setPlayer({ ...player, cards: playerCards });
