@@ -34,6 +34,15 @@ export default function Container({ children }) {
             setPlayerCards(pCard);
             console.log("here");
         };
+        const updateGame = (gamedata) => {
+            console.log("game updated");
+            setGame(gamedata);
+            console.log(gamedata);
+            setDrawpile(gamedata.drawpile);
+            setDiscardpile(gamedata.discardpile);
+        }
+
+
         const afterLeave = (rooms, userId) => {
             setUser((user) => {
                 if (user._id.toString() === userId) {
@@ -55,6 +64,8 @@ export default function Container({ children }) {
         socket.on("game_started", getGameData);
 
         socket.on("after_leave_room_created", afterLeave);
+
+        socket.on("game_updated", updateGame)
 
         /*   socket.on("user_left",allRooms) */
         return () => {

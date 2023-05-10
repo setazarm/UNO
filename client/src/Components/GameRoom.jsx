@@ -50,6 +50,31 @@ const GameRoom = () => {
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
 
+   
+    
+
+    const cardHandler = (card) => {
+        if(card.color === discardpile[discardpile.length-1].color || card.number === discardpile[discardpile.length-1].number){
+            console.log("valid card");
+            console.log("discarpile before",discardpile)
+            //  setDiscardpile(pre=>[...pre,card]) it is not working
+             console.log(discardpile)
+             setPlayerCards(pre=>pre.filter(item=>item !== card))
+             socket.emit("update_game",{ userId: user._id, roomId: room._id, gameData: { ...playerCards, drawpile: drawpile, discardpile: [...discardpile,card] } })
+    }
+    else{
+        console.log("invalid card");
+    }
+};
+
+
+
+
+      
+      
+      
+
+ 
     return (
         <div>
             {room && (
@@ -65,7 +90,7 @@ const GameRoom = () => {
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
                         return (
-                            <div
+                            <div  onClick={()=>cardHandler(card)}
                                 className={`rounded-lg py-2 px-4 cursor-pointer ${
                                     card.color === "Y"
                                         ? "bg-yellow-400"

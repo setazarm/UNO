@@ -81,7 +81,11 @@ io.on("connection", (socket) => {
             io.in(roomId.toString()).emit("game_started", gameData);
         });
     });
-
+    socket.on("update_game", ({ userId, roomId, gameData }) => {
+        console.log("update game", roomId);
+        console.log("gamedata", gameData);
+        io.in(roomId.toString()).emit("game_updated", gameData);
+    });
     //leave room
     socket.on("leave_room", async ({ userId, roomId }) => {
         console.log("leave", roomId, userId);
