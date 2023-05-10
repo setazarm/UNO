@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { MyContext } from "../context/context";
 
 const RegisterForm = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
-
+    const {setUser}=useContext(MyContext)
     const submitHandler = (e) => {
         const user = {
             name: e.target.name.value,
@@ -19,6 +21,7 @@ const RegisterForm = () => {
             })
             .then((res) => {
                 if (res.data.success) {
+                    setUser(res.data.data)
                     navigate("/");
                 } else {
                     setError(res.data.error);

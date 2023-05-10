@@ -1,21 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { socket } from "../socket.js";
 import { useNavigate } from "react-router-dom";
+import { MyContext } from "../context/context.js";
 
 const GameRoomCard = ({ room, setShow, setPassword, passwordCorrect }) => {
-    const user = JSON.parse(localStorage.getItem("user"));
+   
     const navigate = useNavigate();
+    const {user}=useContext(MyContext)
     const joinRoom = () => {
-
         if (!room.password) {
             socket.connect();
+            socket.emit("join_room",{userId:user._id,roomId:room._id})
             navigate(`/game/${room._id}`);
         } else {
             setShow(true);
             setPassword(room.password);
         }
-
-        
     };
 
     useEffect(() => {

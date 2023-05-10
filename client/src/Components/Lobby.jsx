@@ -1,22 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { MyContext } from "../context/context.js";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import GameRoomCard from "./GameRoomCard.jsx";
 import RoomPasswordModal from "./RoomPasswordModal.jsx";
+import { socket } from "../socket.js";
+import Container from "../context/Container.jsx";
 
 const Lobby = () => {
+    const { rooms } = useContext(MyContext);
     const navigate = useNavigate();
     const [passwordCorrect, setPasswordCorrect] = useState(false);
     const [password, setPassword] = useState("");
     const [show, setShow] = useState(false);
-    const [rooms, setRooms] = useState([]);
-    // const [socketConnect, setSocketConnect] = useState(false);
-    useEffect(() => {
-        axios.get("http://localhost:8000/rooms").then((res) => {
-            console.log(res.data.data);
-            setRooms(res.data.data);
-        });
-    }, []);
 
     return (
         <div>
@@ -36,7 +32,7 @@ const Lobby = () => {
                 </div>
                 <button
                     onClick={() => {
-                        navigate("/createRoom");
+                        navigate("/createroom");
                     }}
                     className="border-2 border-black rounded p-1"
                 >

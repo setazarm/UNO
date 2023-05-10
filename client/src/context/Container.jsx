@@ -1,0 +1,102 @@
+import { useEffect, useState } from "react";
+import { MyContext } from "./context.js";
+import { socket } from "../socket.js";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import shuffleArray from "../utilis/shuffleCard.js";
+import card from "../utilis/card.js";
+export default function Container({ children }) {
+    const [user, setUser] = useState(null);
+    const [room, setRoom] = useState(null);
+    const [rooms, setRooms] = useState([]);
+    const [players, setPlayers] = useState([]);
+    const [game, setGame] = useState([]);
+    const [drawpile, setDrawpile] = useState([]);
+    const [discardpile, setDiscardpile] = useState([]);
+    const [playerCards, setPlayerCards] = useState([]);
+    const navigate = useNavigate();
+    const deck = shuffleArray(card);
+
+    console.log(socket.id);
+    useEffect(() => {
+        const allRooms = (rooms) => {
+            console.log("working");
+            setRooms(rooms);
+        };
+
+        const getGameData = (gamedata) => {
+            console.log("game started");
+            console.log(gamedata);
+            setGame(gamedata);
+            setDrawpile(gamedata.drawpile);
+            setDiscardpile(gamedata.discardpile);
+            const pCard = deck.slice(0, 7);
+            setPlayerCards(pCard);
+            console.log("here");
+        };
+        const afterLeave = (rooms, userId) => {
+            setUser((user) => {
+                if (user._id.toString() === userId) {
+                    setRooms(rooms);
+
+                    navigate("/lobby");
+                    setPlayerCards([]);
+                    setDrawpile([]);
+                    setDiscardpile([]);
+                    return user;
+                } else {
+                    setRooms(rooms);
+                    return user;
+                }
+            });
+        };
+        socket.on("room_created", allRooms);
+
+        socket.on("game_started", getGameData);
+
+        socket.on("after_leave_room_created", afterLeave);
+
+        /*   socket.on("user_left",allRooms) */
+        return () => {
+            socket.off("room_created", allRooms);
+            socket.off("game_started", getGameData);
+            socket.off("after_leave_room_created", afterLeave);
+        };
+    }, []);
+    useEffect(() => {
+        if (localStorage.getItem("user")) {
+            setUser(JSON.parse(localStorage.getItem("user")));
+        }
+        axios.get("http://localhost:8000/rooms").then((res) => {
+            if (res.data.success) {
+                setRooms(res.data.data);
+            }
+        });
+    }, []);
+
+    return (
+        <MyContext.Provider
+            value={{
+                user,
+                setUser,
+                room,
+                rooms,
+                setRoom,
+                setRooms,
+                players,
+                setPlayers,
+                game,
+                setGame,
+                drawpile,
+                setDrawpile,
+                discardpile,
+                setDiscardpile,
+                playerCards,
+                setPlayerCards,
+                deck,
+            }}
+        >
+            {children}
+        </MyContext.Provider>
+    );
+}

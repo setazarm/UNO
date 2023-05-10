@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import uno from '../assets/Dizajn_bez_naslova__7_-removebg-preview.png'
+import { MyContext } from "../context/context";
+import { socket } from '../socket.js'
 const LoginForm = ({
    
     setIsloading
@@ -9,6 +11,7 @@ const LoginForm = ({
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const {setUser, user}=useContext(MyContext)
     const handleSubmit = (e) => {
         e.preventDefault();
         const data = {
@@ -18,21 +21,19 @@ const LoginForm = ({
         axios
             .post("http://localhost:8000/users/login", data)
             .then((res) => {
+                setUser({...res.data.data,socketId:socket.id})
+                socket.emit("user_connected",{userId:res.data.data._id,socketId:socket.id})
                 localStorage.setItem("token", res.headers.token);
-                localStorage.setItem("user", JSON.stringify(res.data.data))
+                localStorage.setItem("user", JSON.stringify({...res.data.data,socketId:socket.id}))
                 setIsloading(true)
-                navigate("/profile");
+                navigate("/lobby");
             })
             .catch((err) => {
                 console.log(err);
             });
     };
 
-    useEffect(() => {
-        if (localStorage.getItem("token")) {
-            navigate("/profile");
-        }
-    }, []);
+ 
     return (
         <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 h-full flex flex-col justify-center items-center p-6">
             <h1
