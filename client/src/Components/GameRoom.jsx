@@ -1,40 +1,113 @@
+import { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
-import { useEffect, useState } from "react";
-
 const GameRoom = () => {
-    const location = useParams();
-    const [roomData, setRoomData] = useState(null);
+    const { id } = useParams();
+    const {
+        user,
+        setUser,
+        room,
+        rooms,
+        setRoom,
+        setRooms,
+        players,
+        setPlayers,
+        game,
+        setGame,
+        drawpile,
+        setDrawpile,
+        discardpile,
+        setDiscardpile,
+        playerCards,
+        setPlayerCards,
+        deck,
+    } = useContext(MyContext);
 
-    const receiveMessage = (msg) => {
-        console.log(msg);
+    const drawCard = (numOfcards, pile) => {
+        const cards = [];
+        for (let i = 0; i < numOfcards; i++) {
+            const card = pile.shift();
+            cards.push(card);
+        }
+
+        return { cards, pile };
     };
 
-    useEffect(() => {
-        socket.on("reply", receiveMessage);
-        socket.on("room_data", (room) => {
-            setRoomData(room);
+    const startGame = () => {
+        let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
+        socket.emit("start_game", {
+            userId: user._id,
+            roomId: room._id,
+            gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
-        return () => {
-            socket.emit("leave_room"); // Logic trigger for removing player from DB
-            socket.off("reply", receiveMessage);
-            socket.disconnect();
-        };
-    }, []);
+    };
+
+    const leaveRoom = () => {
+        socket.emit("leave_room", { userId: user._id, roomId: room });
+    };
+    useEffect(() => {
+        setRoom(rooms.find((item) => item._id === id));
+    }, [rooms, id]);
 
     return (
         <div>
-            <div>
-                <ul>
-                    {roomData &&
-                        roomData.players.map((player) => {
-                            return <li>{player}</li>;
+            {room && (
+                <div>
+                    <h3>players</h3>
+                    <ul>
+                        {room.players.map((player) => {
+                            return <li key={player._id}>{player.name}</li>;
                         })}
-                </ul>
-            </div>
-            <button onClick={() => socket.emit("test_event", "Testing...", location.id)}>
-                Send message
-            </button>
+                    </ul>
+                    <button onClick={startGame}>start game</button>
+
+                    <h3>player cards</h3>
+                    {playerCards?.map((card, i) => {
+                        return (
+                            <div
+                                className={`rounded-lg py-2 px-4 cursor-pointer ${
+                                    card.color === "Y"
+                                        ? "bg-yellow-400"
+                                        : card.color === "B"
+                                        ? "bg-blue-400"
+                                        : card.color === "G"
+                                        ? "bg-green-400"
+                                        : card.color === "R"
+                                        ? "bg-red-400"
+                                        : ""
+                                }`}
+                                key={card.number + i}
+                            >
+                                {card.number} {card.color}
+                            </div>
+                        );
+                    })}
+
+                    <h3>discardpile</h3>
+                    {discardpile?.map((card, i) => {
+                        return (
+                            <div
+                                className={`rounded-lg py-2 px-4 cursor-pointer ${
+                                    card.color === "Y"
+                                        ? "bg-yellow-400"
+                                        : card.color === "B"
+                                        ? "bg-blue-400"
+                                        : card.color === "G"
+                                        ? "bg-green-400"
+                                        : card.color === "R"
+                                        ? "bg-red-400"
+                                        : ""
+                                }`}
+                                key={card.number + i}
+                            >
+                                {card.number} {card.color}
+                            </div>
+                        );
+                    })}
+                    <button onClick={leaveRoom}>leave room</button>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { MyContext } from "../context/context";
 
 const RegisterForm = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
-
+    const {setUser}=useContext(MyContext)
     const submitHandler = (e) => {
         const user = {
             name: e.target.name.value,
@@ -19,6 +21,7 @@ const RegisterForm = () => {
             })
             .then((res) => {
                 if (res.data.success) {
+                    setUser(res.data.data)
                     navigate("/");
                 } else {
                     setError(res.data.error);
@@ -29,24 +32,56 @@ const RegisterForm = () => {
             });
     };
     return (
-        <>
-            <form onSubmit={submitHandler} className="flex flex-col">
+        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 h-full flex flex-col justify-center items-center p-6">
+            <form
+                onSubmit={submitHandler}
+                className="flex flex-col  p-6 outline-double outline-2 rounded "
+            >
+                <h2 className="text-center">Register</h2>
                 <label htmlFor="name">Name: </label>
-                <input type="text" name="name" className="border-solid border-2 black" />
+                <input
+                    className="outline-double outline-2 outline-gray-500 my-2 px-1"
+                    type="text"
+                    name="name"
+                />
 
                 <label htmlFor="email">Email: </label>
-                <input type="email" name="email" className="border-solid border-2 black" />
+                <input
+                    className="outline-double outline-2 outline-gray-500 my-2 px-1"
+                    type="email"
+                    name="email"
+                />
 
                 <label htmlFor="password">Password: </label>
-                <input type="password" name="password" className="border-solid border-2 black" />
+                <input
+                    className="outline-double outline-2 outline-gray-500 my-2 px-1"
+                    type="password"
+                    name="password"
+                />
 
                 {error && <p>{error}</p>}
-                <button>Submit</button>
+                <button
+                    className="
+                 text-gray-100
+                 bg-blue-500
+                 p-2
+                 my-2
+                 rounded-sm
+                 hover:bg-blue-700
+                 "
+                >
+                    Submit
+                </button>
             </form>
-            <div>
+            <div className=" my-2">
                 <p>
                     Already have an account?
                     <button
+                     className="
+                     text-white
+                     hover:text-blue-700
+                     mx-2
+                     "
                         onClick={() => {
                             navigate("/");
                         }}
@@ -55,7 +90,7 @@ const RegisterForm = () => {
                     </button>
                 </p>
             </div>
-        </>
+        </div>
     );
 };
 export default RegisterForm;

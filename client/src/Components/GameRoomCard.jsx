@@ -1,22 +1,43 @@
+import { useEffect, useContext } from "react";
 import { socket } from "../socket.js";
 import { useNavigate } from "react-router-dom";
+import { MyContext } from "../context/context.js";
 
-const GameRoomCard = ({ room, setShow }) => {
-    const user = JSON.parse(localStorage.getItem("user"));
+const GameRoomCard = ({ room, setShow, setPassword, passwordCorrect }) => {
+   
     const navigate = useNavigate();
+    const {user}=useContext(MyContext)
     const joinRoom = () => {
-      socket.connect()
-        // room.password ? setShow(true) : null
-        socket.emit("join_room", room._id, user._id);
-        navigate(`/game/${room._id}`);
+        if (!room.password) {
+            socket.connect();
+            socket.emit("join_room",{userId:user._id,roomId:room._id})
+            navigate(`/game/${room._id}`);
+        } else {
+            setShow(true);
+            setPassword(room.password);
+        }
     };
+
+    useEffect(() => {
+        if (passwordCorrect) {
+            socket.connect();
+            navigate(`/game/${room._id}`);
+        }
+    }, [passwordCorrect]);
+
+    const disabled = room.players.length >= 4;
+
     return (
         <div className="border-gray-700 rounded-sm border-2 mb-1 w-32">
             <h2>{room.roomName}</h2>
             <h3>{room.players.length} / 4 Players</h3>
             <h3>Password needed: {room.password ? "Yes" : "No"}</h3>
-            <button className="border-2 border-black rounded-md p-1" onClick={joinRoom}>
-                Join
+            <button
+                disabled={disabled}
+                className={"border-2 border-black rounded-md p-1"}
+                onClick={joinRoom}
+            >
+                {disabled ? "Full" : "Join"}
             </button>
         </div>
     );

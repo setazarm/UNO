@@ -9,10 +9,12 @@ import Footer from "./Components/Footer.jsx";
 import Imprint from "./Components/Imprint.jsx";
 import Profile from "./Components/Profile";
 import { useState } from "react";
+
+
 function App() {
     const [isLoading, setIsloading] = useState(false);
     return (
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col h-screen ">
             <NavBar isLoading={isLoading} setIsloading={setIsloading} />
             <Routes>
                 <Route
@@ -20,9 +22,11 @@ function App() {
                     element={<LoginForm isLoading={isLoading} setIsloading={setIsloading} />}
                 />
                 <Route path="/register" element={<RegisterForm />} />
+
                 <Route path="/lobby" element={<Lobby />} />
-                <Route path="/createRoom" element={<CreateRoom />} />
+                <Route path="/createroom" element={<CreateRoom />} />
                 <Route path="/game/:id" element={<GameRoom />} />
+
                 <Route path="/imprint" element={<Imprint />} />
                 <Route
                     path="/profile"

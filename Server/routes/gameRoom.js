@@ -1,8 +1,22 @@
 import Router from 'express'
-import {getAllRooms} from '../controllers/gameRoom.js'
+import {createRoom, deleteRoom, getAllRooms, getSingleRoom} from '../controllers/gameRoom.js'
 
 const router = Router()
 
-router.get('/', getAllRooms)
+//get all rooms
+router.get("/",getAllRooms)
+
+
+
+//create room
+router.post("/",createRoom)
+
+
+//get single room by id
+router.get("/:id",getSingleRoom)
+
+
+//delete room
+router.delete("/:id",deleteRoom)
 
 export default router
