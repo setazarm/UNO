@@ -43,6 +43,7 @@ export const getUser = async (req, res, next) => {
 
 export const verify = async (req, res, next) => {
     try {
+        console.log('here',req.user);
         res.json({ success: true, data: req.user });
     } catch (err) {
         next(new httpErrors.NotFound("No record found !"));

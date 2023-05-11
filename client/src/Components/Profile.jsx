@@ -10,14 +10,7 @@ const Profile = ({ setIsloading }) => {
     const [updatedUser, setUpdatedUser] = useState({});
     const { user, setUser } = useContext(MyContext);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
 
-        if (!token) {
-            navigate("/");
-            return;
-        }
-    }, []);
 
     const deleteUser = () => {
         const token = localStorage.getItem("token");
@@ -56,15 +49,17 @@ const Profile = ({ setIsloading }) => {
                 console.log(err);
             });
     };
+    console.log(user);
     return (
+
         <div className="bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 h-screen flex flex-col  p-6">
             <h1 className="text-4xl font-bold mb-4">Profile</h1>
-            <p>Name: {user.name}</p>
-            <p>Email: {user.email}</p>
-            <p>Points: {user.points}</p>
-            <img src={user.Avatar} alt={user.name} style={{ width: "150px", height: "150px" }} />
-            <p>Status: {user.status}</p>
-            <p> Number of played games {user.numOfPlayedGames} </p>
+            <p>Name: {user?.name}</p>
+            <p>Email: {user?.email}</p>
+            <p>Points: {user?.points}</p>
+            <img src={user?.Avatar} alt={user?.name} style={{ width: "150px", height: "150px" }} />
+            <p>Status: {user?.status}</p>
+            <p> Number of played games {user?.numOfPlayedGames} </p>
             <div className="position: absolute right-2 flex gap-2 mx-2">
                 <button
                     className="

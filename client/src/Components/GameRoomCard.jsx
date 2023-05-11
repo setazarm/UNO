@@ -38,6 +38,9 @@ const GameRoomCard = ({ room, setShow, setPassword, passwordCorrect }) => {
             >
                 {disabled ? "Full" : "Join"}
             </button>
+            {
+                room.isStared ? <p>Game started</p> : null
+            }
         </div>
     );
 };

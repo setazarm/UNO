@@ -75,7 +75,11 @@ export default function Container({ children }) {
         };
     }, []);
     useEffect(() => {
+
         if (localStorage.getItem("token")) {
+           
+            const token = localStorage.getItem("token");
+            console.log('token', token);
             axios
                 .get(`http://localhost:8000/users/verify`, {
                     headers: {
@@ -83,6 +87,7 @@ export default function Container({ children }) {
                     },
                 })
                 .then((res) => {
+                 
                     setUser(res.data.data);
                 })
                 .catch(() => {
