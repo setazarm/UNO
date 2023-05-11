@@ -72,7 +72,7 @@ const GameRoom = () => {
 
       
       
-      
+      console.log("discardpile",discardpile)
 
  
     return (
@@ -110,26 +110,24 @@ const GameRoom = () => {
                     })}
 
                     <h3>discardpile</h3>
-                    {discardpile?.map((card, i) => {
-                        return (
+                    {discardpile.length> 0 ? (
                             <div
                                 className={`rounded-lg py-2 px-4 cursor-pointer ${
-                                    card.color === "Y"
+                                    discardpile[discardpile.length-1].color === "Y"
                                         ? "bg-yellow-400"
-                                        : card.color === "B"
+                                        : discardpile[discardpile.length-1].color === "B"
                                         ? "bg-blue-400"
-                                        : card.color === "G"
+                                        : discardpile[discardpile.length-1].color === "G"
                                         ? "bg-green-400"
-                                        : card.color === "R"
+                                        : discardpile[discardpile.length-1].color === "R"
                                         ? "bg-red-400"
                                         : ""
                                 }`}
-                                key={card.number + i}
+                              
                             >
-                                {card.number} {card.color}
-                            </div>
-                        );
-                    })}
+                                {discardpile[discardpile.length-1].number} {discardpile[discardpile.length-1].color}
+                            </div>):null}
+                        
                     <button onClick={leaveRoom}>leave room</button>
                 </div>
             )}
