@@ -22,6 +22,8 @@ const GameRoom = () => {
         playerCards,
         setPlayerCards,
         deck,
+        turn,
+        setTurn,
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -46,35 +48,37 @@ const GameRoom = () => {
     const leaveRoom = () => {
         socket.emit("leave_room", { userId: user._id, roomId: room });
     };
+
     useEffect(() => {
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
 
-   
-    
-
     const cardHandler = (card) => {
-        if(card.color === discardpile[discardpile.length-1].color || card.number === discardpile[discardpile.length-1].number){
-            console.log("valid card");
-            console.log("discarpile before",discardpile)
-            //  setDiscardpile(pre=>[...pre,card]) it is not working
-             console.log(discardpile)
-             setPlayerCards(pre=>pre.filter(item=>item !== card))
-             socket.emit("update_game",{ userId: user._id, roomId: room._id, gameData: { ...playerCards, drawpile: drawpile, discardpile: [...discardpile,card] } })
-    }
-    else{
-        console.log("invalid card");
-    }
-};
+        if (room.players[turn]._id.toString() !== user._id.toString()) {
+            alert("Not your turn");
+        } else {
+            if (
+                card.color === discardpile[discardpile.length - 1].color ||
+                card.number === discardpile[discardpile.length - 1].number
+            ) {
+                setPlayerCards((pre) => pre.filter((item) => item !== card));
 
+                socket.emit("update_game", {
+                    userId: user._id,
+                    roomId: room._id,
+                    gameData: {
+                        ...playerCards,
+                        drawpile: drawpile,
+                        discardpile: [...discardpile, card],
+                        turn: turn === room.players.length - 1 ? 0 : turn + 1,
+                    },
+                });
+            } else {
+                alert("invalid card");
+            }
+        }
+    };
 
-
-
-      
-      
-      console.log("discardpile",discardpile)
-
- 
     return (
         <div>
             {room && (
@@ -90,7 +94,8 @@ const GameRoom = () => {
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
                         return (
-                            <div  onClick={()=>cardHandler(card)}
+                            <div
+                                onClick={() => cardHandler(card)}
                                 className={`rounded-lg py-2 px-4 cursor-pointer ${
                                     card.color === "Y"
                                         ? "bg-yellow-400"
@@ -110,24 +115,25 @@ const GameRoom = () => {
                     })}
 
                     <h3>discardpile</h3>
-                    {discardpile.length> 0 ? (
-                            <div
-                                className={`rounded-lg py-2 px-4 cursor-pointer ${
-                                    discardpile[discardpile.length-1].color === "Y"
-                                        ? "bg-yellow-400"
-                                        : discardpile[discardpile.length-1].color === "B"
-                                        ? "bg-blue-400"
-                                        : discardpile[discardpile.length-1].color === "G"
-                                        ? "bg-green-400"
-                                        : discardpile[discardpile.length-1].color === "R"
-                                        ? "bg-red-400"
-                                        : ""
-                                }`}
-                              
-                            >
-                                {discardpile[discardpile.length-1].number} {discardpile[discardpile.length-1].color}
-                            </div>):null}
-                        
+                    {discardpile.length > 0 ? (
+                        <div
+                            className={`rounded-lg py-2 px-4 cursor-pointer ${
+                                discardpile[discardpile.length - 1].color === "Y"
+                                    ? "bg-yellow-400"
+                                    : discardpile[discardpile.length - 1].color === "B"
+                                    ? "bg-blue-400"
+                                    : discardpile[discardpile.length - 1].color === "G"
+                                    ? "bg-green-400"
+                                    : discardpile[discardpile.length - 1].color === "R"
+                                    ? "bg-red-400"
+                                    : ""
+                            }`}
+                        >
+                            {discardpile[discardpile.length - 1].number}{" "}
+                            {discardpile[discardpile.length - 1].color}
+                        </div>
+                    ) : null}
+
                     <button onClick={leaveRoom}>leave room</button>
                 </div>
             )}
