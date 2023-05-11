@@ -14,6 +14,7 @@ export default function Container({ children }) {
     const [drawpile, setDrawpile] = useState([]);
     const [discardpile, setDiscardpile] = useState([]);
     const [playerCards, setPlayerCards] = useState([]);
+    const [turn, setTurn] = useState(0);
     const navigate = useNavigate();
     const deck = shuffleArray(card);
 
@@ -25,8 +26,7 @@ export default function Container({ children }) {
         };
 
         const getGameData = (gamedata) => {
-            console.log("game started");
-            console.log(gamedata);
+            setTurn(0);
             setGame(gamedata);
             setDrawpile(gamedata.drawpile);
             setDiscardpile(gamedata.discardpile);
@@ -40,8 +40,8 @@ export default function Container({ children }) {
             console.log(gamedata);
             setDrawpile(gamedata.drawpile);
             setDiscardpile(gamedata.discardpile);
-        }
-
+            setTurn(gamedata.turn);
+        };
 
         const afterLeave = (rooms, userId) => {
             setUser((user) => {
@@ -65,7 +65,7 @@ export default function Container({ children }) {
 
         socket.on("after_leave_room_created", afterLeave);
 
-        socket.on("game_updated", updateGame)
+        socket.on("game_updated", updateGame);
 
         /*   socket.on("user_left",allRooms) */
         return () => {
@@ -105,6 +105,8 @@ export default function Container({ children }) {
                 playerCards,
                 setPlayerCards,
                 deck,
+                turn,
+                setTurn,
             }}
         >
             {children}
