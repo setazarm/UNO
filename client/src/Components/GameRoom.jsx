@@ -89,7 +89,9 @@ const GameRoom = () => {
                             return <li key={player._id}>{player.name}</li>;
                         })}
                     </ul>
-                    <button onClick={startGame}>start game</button>
+                    {room.userId.toString() === user._id.toString() ? (
+                        <button onClick={startGame}>start game</button>
+                    ) : null}
 
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
