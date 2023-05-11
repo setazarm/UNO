@@ -84,9 +84,15 @@ io.on("connection", (socket) => {
         }
 
         //starting game
-        socket.on("start_game", ({ userId, roomId, gameData }) => {
+        socket.on("start_game", async({ userId, roomId, gameData }) => {
             console.log("starting game", roomId);
             console.log("gamedata", gameData);
+         
+             await GameRoom.findByIdAndUpdate(
+                roomId,
+                { isStarted: true },
+                { new: true }
+            )
             io.in(roomId.toString()).emit("game_started", gameData);
         });
     });
@@ -142,3 +148,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(8000, () => console.log(`The server is listening on port ${process.env.PORT}`));
+
+

@@ -29,21 +29,21 @@ const GameRoomCard = ({ room }) => {
     }, [passwordCorrect]);
 
     const disabled = room.players.length >= 4;
-
+     console.log('room', room.isStarted);
     return (
         <div className="border-gray-700 rounded-sm border-2 mb-1 w-32">
             <h2>{room.roomName}</h2>
             <h3>{room.players.length} / 4 Players</h3>
             <h3>Password needed: {room.password ? "Yes" : "No"}</h3>
             <button
-                disabled={disabled}
+                disabled={disabled ||room.isStarted }
                 className={"border-2 border-black rounded-md p-1"}
                 onClick={joinRoom}
             >
                 {disabled ? "Full" : "Join"}
             </button>
             {
-                room.isStared ? <p>Game started</p> : null
+                room.isStarted ? <p>Game started</p> : <p>Game not started</p>
             }
         </div>
     );

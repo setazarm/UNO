@@ -78,7 +78,7 @@ const GameRoom = () => {
             }
         }
     };
-
+     console.log(room);
     return (
         <div>
             {room && (
@@ -91,7 +91,12 @@ const GameRoom = () => {
                     </ul>
                     {room.userId.toString() === user._id.toString() ? (
                         <button onClick={startGame}>start game</button>
-                    ) : null}
+                    ) : (
+                        !room.players.includes(room.userId.toString()) &&
+                        room.players[0]._id === user._id && (
+                            <button onClick={startGame}>Start Game with First Player</button>
+                        )
+                    )}
 
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
