@@ -1,38 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AiFillCloseSquare } from "react-icons/ai";
+import { MyContext } from "../context/context.js";
 
 const Profile = ({ setIsloading }) => {
-    const [user, setUser] = useState({});
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
     const [updatedUser, setUpdatedUser] = useState({});
+    const { user, setUser } = useContext(MyContext);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        const user = JSON.parse(localStorage.getItem("user"));
 
-        if (!user) {
-            localStorage.removeItem("token");
+        if (!token) {
             navigate("/");
             return;
         }
-
-        axios
-            .get(`http://localhost:8000/users/${user._id}`, {
-                headers: {
-                    token: token,
-                },
-            })
-            .then((res) => {
-                setUser(res.data.data);
-            })
-            .catch(() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
-                navigate("/");
-            });
     }, []);
 
     const deleteUser = () => {
