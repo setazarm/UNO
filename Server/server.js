@@ -43,6 +43,7 @@ mongoose
 
 io.on("connection", (socket) => {
     console.log(`a user connected ${socket.id}`);
+
     socket.on("user_connected", async ({ socketId, userId }) => {
         console.log(userId, socketId);
         const user = await User.findByIdAndUpdate(userId, {
@@ -64,11 +65,19 @@ io.on("connection", (socket) => {
     //join room
     socket.on("join_room", async ({ userId, roomId }) => {
         const room = await GameRoom.findById(roomId);
-        console.log(room);
+        const user = await User.findById(userId);
+        if (user) {
+            user.room = roomId;
+            if (!user.socketId) {
+                user.socketId = socket.id;
+            }
+            await user.save();
+        }
         if (room && !room.players.includes(userId)) {
             socket.join(room._id.toString());
             room.players.push(userId);
             await room.save();
+
             // send all updated rooms data
             const rooms = await GameRoom.find().populate("players");
             io.emit("room_created", rooms);
@@ -100,7 +109,7 @@ io.on("connection", (socket) => {
         // Remove room from User DB entry
         const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } });
         socket.leave(roomId);
-        if(room.players.length === 0){
+        if (room.players.length === 0) {
             await GameRoom.findByIdAndDelete(roomId);
         }
 
@@ -112,18 +121,23 @@ io.on("connection", (socket) => {
     // _____________________________________________________________________
     socket.on("disconnect", async () => {
         console.log(`user disconnected ${socket.id}`);
-        /* 
-          const user = await UserCollection.findOne({socketId:socket.id})
-          if(user){
-              const room = await GameRoom.findByIdAndUpdate(user.room, {$pull:{players:user._id}},{new:true})
-              user.socketId=null;
-              user.room=null;
-              await user.save()
-          } */
+
+        const user = await User.findOne({ socketId: socket.id });
+        console.log(user);
+        if (user) {
+            const room = await GameRoom.findByIdAndUpdate(
+                user.room,
+                { $pull: { players: user._id } },
+                { new: true }
+            );
+            user.socketId = null;
+            user.room = null;
+            await user.save();
+        }
 
         // send all updated rooms data
-        /*  const rooms = await GameRoom.find().populate("players")
-       io.emit("room_created", rooms) */
+        const rooms = await GameRoom.find().populate("players");
+        io.emit("room_created", rooms);
     });
 });
 
