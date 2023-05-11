@@ -6,6 +6,7 @@ import {
     getAllUsers,
     updateUser,
     deleteUser,
+    verify,
 } from "../controllers/user.js";
 import { validateLogin, validateRegister } from "../middlewares/validation.js";
 import { auth } from "../middlewares/auth.js";
@@ -14,6 +15,7 @@ const router = Router();
 
 router.post("/", validateRegister, register);
 router.post("/login", validateLogin, login);
+router.get("/verify", auth, verify);
 router.get("/:id", auth, getUser);
 router.get("/", getAllUsers);
 router.patch("/:id", auth, isAdmin, updateUser);

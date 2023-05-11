@@ -75,8 +75,20 @@ export default function Container({ children }) {
         };
     }, []);
     useEffect(() => {
-        if (localStorage.getItem("user")) {
-            setUser(JSON.parse(localStorage.getItem("user")));
+        if (localStorage.getItem("token")) {
+            axios
+                .get(`http://localhost:8000/users/verify`, {
+                    headers: {
+                        token: token,
+                    },
+                })
+                .then((res) => {
+                    setUser(res.data.data);
+                })
+                .catch(() => {
+                    localStorage.removeItem("token");
+                    navigate("/");
+                });
         }
         axios.get("http://localhost:8000/rooms").then((res) => {
             if (res.data.success) {
