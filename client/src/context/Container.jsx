@@ -18,6 +18,11 @@ export default function Container({ children }) {
     const navigate = useNavigate();
     const deck = shuffleArray(card);
 
+    // Room password checking
+    const [passwordCorrect, setPasswordCorrect] = useState(false);
+    const [password, setPassword] = useState("");
+    const [show, setShow] = useState(false);
+
     console.log(socket.id);
     useEffect(() => {
         const allRooms = (rooms) => {
@@ -75,7 +80,8 @@ export default function Container({ children }) {
         };
     }, []);
     useEffect(() => {
-        if (localStorage.getItem("token")) {
+        const token = localStorage.getItem("token");
+        if (token) {
             axios
                 .get(`http://localhost:8000/users/verify`, {
                     headers: {
@@ -119,6 +125,12 @@ export default function Container({ children }) {
                 deck,
                 turn,
                 setTurn,
+                passwordCorrect,
+                setPasswordCorrect,
+                password,
+                setPassword,
+                show,
+                setShow,
             }}
         >
             {children}

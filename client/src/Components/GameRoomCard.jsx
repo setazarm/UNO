@@ -3,9 +3,10 @@ import { socket } from "../socket.js";
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../context/context.js";
 
-const GameRoomCard = ({ room, setShow, setPassword, passwordCorrect }) => {
+const GameRoomCard = ({ room }) => {
     const navigate = useNavigate();
     const { user } = useContext(MyContext);
+    const { setPassword, setShow, passwordCorrect, setPasswordCorrect } = useContext(MyContext);
     const joinRoom = () => {
         if (!room.password) {
             socket.connect();
@@ -20,6 +21,9 @@ const GameRoomCard = ({ room, setShow, setPassword, passwordCorrect }) => {
     useEffect(() => {
         if (passwordCorrect) {
             socket.connect();
+            setPassword("");
+            setShow(false);
+            setPasswordCorrect(false);
             navigate(`/game/${room._id}`);
         }
     }, [passwordCorrect]);
