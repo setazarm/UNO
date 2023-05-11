@@ -52,7 +52,6 @@ export default function Container({ children }) {
             setUser((user) => {
                 if (user._id.toString() === userId) {
                     setRooms(rooms);
-
                     navigate("/lobby");
                     setPlayerCards([]);
                     setDrawpile([]);
@@ -77,13 +76,12 @@ export default function Container({ children }) {
             socket.off("room_created", allRooms);
             socket.off("game_started", getGameData);
             socket.off("after_leave_room_created", afterLeave);
+            socket.off("game_updated", updateGame);
         };
     }, []);
     useEffect(() => {
-
         const token = localStorage.getItem("token");
         if (token) {
-
             axios
                 .get(`http://localhost:8000/users/verify`, {
                     headers: {
@@ -91,7 +89,6 @@ export default function Container({ children }) {
                     },
                 })
                 .then((res) => {
-                 
                     setUser(res.data.data);
                 })
                 .catch(() => {
