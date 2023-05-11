@@ -50,6 +50,31 @@ const GameRoom = () => {
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
 
+   
+    
+
+    const cardHandler = (card) => {
+        if(card.color === discardpile[discardpile.length-1].color || card.number === discardpile[discardpile.length-1].number){
+            console.log("valid card");
+            console.log("discarpile before",discardpile)
+            //  setDiscardpile(pre=>[...pre,card]) it is not working
+             console.log(discardpile)
+             setPlayerCards(pre=>pre.filter(item=>item !== card))
+             socket.emit("update_game",{ userId: user._id, roomId: room._id, gameData: { ...playerCards, drawpile: drawpile, discardpile: [...discardpile,card] } })
+    }
+    else{
+        console.log("invalid card");
+    }
+};
+
+
+
+
+      
+      
+      console.log("discardpile",discardpile)
+
+ 
     return (
         <div>
             {room && (
@@ -65,7 +90,7 @@ const GameRoom = () => {
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
                         return (
-                            <div
+                            <div  onClick={()=>cardHandler(card)}
                                 className={`rounded-lg py-2 px-4 cursor-pointer ${
                                     card.color === "Y"
                                         ? "bg-yellow-400"
@@ -85,26 +110,24 @@ const GameRoom = () => {
                     })}
 
                     <h3>discardpile</h3>
-                    {discardpile?.map((card, i) => {
-                        return (
+                    {discardpile.length> 0 ? (
                             <div
                                 className={`rounded-lg py-2 px-4 cursor-pointer ${
-                                    card.color === "Y"
+                                    discardpile[discardpile.length-1].color === "Y"
                                         ? "bg-yellow-400"
-                                        : card.color === "B"
+                                        : discardpile[discardpile.length-1].color === "B"
                                         ? "bg-blue-400"
-                                        : card.color === "G"
+                                        : discardpile[discardpile.length-1].color === "G"
                                         ? "bg-green-400"
-                                        : card.color === "R"
+                                        : discardpile[discardpile.length-1].color === "R"
                                         ? "bg-red-400"
                                         : ""
                                 }`}
-                                key={card.number + i}
+                              
                             >
-                                {card.number} {card.color}
-                            </div>
-                        );
-                    })}
+                                {discardpile[discardpile.length-1].number} {discardpile[discardpile.length-1].color}
+                            </div>):null}
+                        
                     <button onClick={leaveRoom}>leave room</button>
                 </div>
             )}
