@@ -12,6 +12,15 @@ const Profile = ({ setIsloading }) => {
 
 
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/");
+            return;
+        }
+    }, []);
+
+
     const deleteUser = () => {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));

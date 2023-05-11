@@ -1,4 +1,8 @@
-const RoomPasswordModal = ({ show, setShow, setPasswordCorrect, password }) => {
+import { useContext } from "react";
+import { MyContext } from "../context/context.js";
+
+const RoomPasswordModal = () => {
+    const { show, setShow, setPasswordCorrect, password } = useContext(MyContext);
     if (!show) {
         return null;
     }
