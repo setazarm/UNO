@@ -7,24 +7,13 @@ import RoomPasswordModal from "./RoomPasswordModal.jsx";
 const Lobby = () => {
     const { rooms } = useContext(MyContext);
     const navigate = useNavigate();
-    const [passwordCorrect, setPasswordCorrect] = useState(false);
-    const [password, setPassword] = useState("");
-    const [show, setShow] = useState(false);
 
     return (
         <div>
             <>
                 <div className="flex gap-4">
                     {rooms.map((room) => {
-                        return (
-                            <GameRoomCard
-                                room={room}
-                                key={room._id}
-                                setShow={setShow}
-                                setPassword={setPassword}
-                                passwordCorrect={passwordCorrect}
-                            />
-                        );
+                        return <GameRoomCard key={room._id} room={room} />;
                     })}
                 </div>
                 <button
@@ -37,12 +26,7 @@ const Lobby = () => {
                 </button>
             </>
 
-            <RoomPasswordModal
-                show={show}
-                password={password}
-                setPasswordCorrect={setPasswordCorrect}
-                setShow={setShow}
-            />
+            <RoomPasswordModal />
         </div>
     );
 };
