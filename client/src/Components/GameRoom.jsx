@@ -2,6 +2,8 @@ import { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
+import deckCard from "../assets/unoCards";
+import Card from "./Card";
 const GameRoom = () => {
     const { id } = useParams();
     const {
@@ -104,8 +106,8 @@ const GameRoom = () => {
             }
         }
     };
-    
-    return (
+
+   return (
         <div>
             {room && (
                 <div>
@@ -123,58 +125,45 @@ const GameRoom = () => {
                             <button onClick={startGame}>Start Game with First Player</button>
                         )
                     )}
-
+                   <div className="flex">
+    <div>
+        <h3>Discard Pile</h3>
+        {discardpile.length > 0 ? (
+            <div>
+                <Card
+                    color={discardpile[discardpile.length - 1].color}
+                    number={discardpile[discardpile.length - 1].number}
+                />
+            </div>
+        ) : null}
+    </div>
+    <div>
+        <h3>Draw Pile</h3>
+        {drawpile.length > 0 ? (
+            <img className="w-[200px]" src={deckCard} onClick={drawpileHandler}/>
+        ) : null}
+    </div>
+</div>
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
                         return (
                             <div
                                 onClick={() => cardHandler(card)}
-                                className={`rounded-lg py-2 px-4 cursor-pointer ${
-                                    card.color === "Y"
-                                        ? "bg-yellow-400"
-                                        : card.color === "B"
-                                        ? "bg-blue-400"
-                                        : card.color === "G"
-                                        ? "bg-green-400"
-                                        : card.color === "R"
-                                        ? "bg-red-400"
-                                        : ""
-                                }`}
+                                className="inline-block"
                                 key={card.number + i}
                             >
-                                {card.number} {card.color}
+                                <Card color={card.color} number={card.number} />
                             </div>
                         );
                     })}
 
-                    <h3>discardpile</h3>
-                    {discardpile.length > 0 ? (
-                        <div
-                            className={`rounded-lg py-2 px-4 cursor-pointer ${
-                                discardpile[discardpile.length - 1].color === "Y"
-                                    ? "bg-yellow-400"
-                                    : discardpile[discardpile.length - 1].color === "B"
-                                    ? "bg-blue-400"
-                                    : discardpile[discardpile.length - 1].color === "G"
-                                    ? "bg-green-400"
-                                    : discardpile[discardpile.length - 1].color === "R"
-                                    ? "bg-red-400"
-                                    : ""
-                            }`}
-                        >
-                            {discardpile[discardpile.length - 1].number}{" "}
-                            {discardpile[discardpile.length - 1].color}
-                        </div>
-                    ) : null}
-                 <button onClick={drawpileHandler}>Drawpile</button><br/>
- 
                     
-       
-                    <button onClick={leaveRoom}>leave room</button>
+
+                    <button className="block" onClick={leaveRoom}>leave room</button>
                 </div>
             )}
         </div>
     );
-};
+}
 
 export default GameRoom;
