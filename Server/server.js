@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import cors from "cors";
 import { Server } from "socket.io";
 import http from "http";
-
 import userRouter from "./routes/user.js";
 import roomRouter from "./routes/gameRoom.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
