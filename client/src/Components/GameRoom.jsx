@@ -1,10 +1,11 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect,useState } from "react";
 import { useParams } from "react-router-dom";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
 import deckCard from "../assets/unoCards";
 import Card from "./Card";
 const GameRoom = () => {
+    // const [isUno, setIsUno] = useState(false);
     const { id } = useParams();
     const {
         user,
@@ -40,12 +41,13 @@ const GameRoom = () => {
 
     const startGame = () => {
         
-      
+         
+       
         let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
         socket.emit("start_game", {
             userId: user._id,
             roomId: room._id,
-            
+             
             gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
        
@@ -56,6 +58,7 @@ const GameRoom = () => {
     };
 
     useEffect(() => {
+        
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
 

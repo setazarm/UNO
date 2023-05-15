@@ -90,6 +90,8 @@ io.on("connection", (socket) => {
 
             await GameRoom.findByIdAndUpdate(roomId, { isStarted: true }, { new: true });
             io.in(roomId.toString()).emit("game_started", gameData);
+            const rooms = await GameRoom.find().populate("players");
+            io.emit("room_created", rooms);
         });
     });
     socket.on("update_game", ({ userId, roomId, gameData }) => {
