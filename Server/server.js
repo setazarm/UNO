@@ -56,10 +56,11 @@ io.on("connection", (socket) => {
     socket.on("create_room", async ({ roomName, userId }) => {
         console.log("create_room");
 
-        await GameRoom.create({ roomName, userId });
+        const createdRoom = await GameRoom.create({ roomName, userId });
+        console.log(createdRoom);
         // send all room
         const rooms = await GameRoom.find().populate("players");
-        io.emit("room_created", rooms);
+        io.emit("update_rooms", rooms);
     });
 
     //join room
@@ -80,19 +81,15 @@ io.on("connection", (socket) => {
 
             // send all updated rooms data
             const rooms = await GameRoom.find().populate("players");
-            io.emit("room_created", rooms);
+            io.emit("update_rooms", rooms);
         }
 
         //starting game
-        socket.on("start_game", async({ userId, roomId, gameData }) => {
+        socket.on("start_game", async ({ userId, roomId, gameData }) => {
             console.log("starting game", roomId);
             console.log("gamedata", gameData);
-         
-             await GameRoom.findByIdAndUpdate(
-                roomId,
-                { isStarted: true },
-                { new: true }
-            )
+
+            await GameRoom.findByIdAndUpdate(roomId, { isStarted: true }, { new: true });
             io.in(roomId.toString()).emit("game_started", gameData);
         });
     });
@@ -143,10 +140,8 @@ io.on("connection", (socket) => {
 
         // send all updated rooms data
         const rooms = await GameRoom.find().populate("players");
-        io.emit("room_created", rooms);
+        io.emit("update_rooms", rooms);
     });
 });
 
 server.listen(8000, () => console.log(`The server is listening on port ${process.env.PORT}`));
-
-
