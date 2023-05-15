@@ -63,7 +63,7 @@ export default function Container({ children }) {
                 }
             });
         };
-        socket.on("room_created", allRooms);
+        socket.on("update_rooms", allRooms);
 
         socket.on("game_started", getGameData);
 
@@ -73,7 +73,7 @@ export default function Container({ children }) {
 
         /*   socket.on("user_left",allRooms) */
         return () => {
-            socket.off("room_created", allRooms);
+            socket.off("update_rooms", allRooms);
             socket.off("game_started", getGameData);
             socket.off("after_leave_room_created", afterLeave);
             socket.off("game_updated", updateGame);
