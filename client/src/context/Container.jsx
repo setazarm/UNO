@@ -15,6 +15,7 @@ export default function Container({ children }) {
     const [discardpile, setDiscardpile] = useState([]);
     const [playerCards, setPlayerCards] = useState([]);
     const [turn, setTurn] = useState(0);
+    const [isUno, setIsUno] = useState(false);
     const navigate = useNavigate();
     const deck = shuffleArray(card);
 
@@ -46,6 +47,7 @@ export default function Container({ children }) {
             setDrawpile(gamedata.drawpile);
             setDiscardpile(gamedata.discardpile);
             setTurn(gamedata.turn);
+            setIsUno(gamedata.isUno);
         };
 
         const afterLeave = (rooms, userId) => {
@@ -131,6 +133,8 @@ export default function Container({ children }) {
                 setPassword,
                 show,
                 setShow,
+                isUno,
+                setIsUno,
             }}
         >
             {children}
