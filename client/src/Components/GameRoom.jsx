@@ -37,12 +37,16 @@ const GameRoom = () => {
     };
 
     const startGame = () => {
+        
+      
         let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
         socket.emit("start_game", {
             userId: user._id,
             roomId: room._id,
+            
             gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
+       
     };
 
     const leaveRoom = () => {
@@ -52,6 +56,27 @@ const GameRoom = () => {
     useEffect(() => {
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
+
+    const drawpileHandler = () => {
+        if (room.players[turn]._id.toString() !== user._id.toString()) {
+            alert("Not your turn");
+        } else {
+            console.log("drawpile before",drawpile)
+            let { cards, pile } = drawCard(1, drawpile);
+            setPlayerCards((pre) => [...pre, ...cards]);
+            console.log("drawpile after",drawpile)
+            socket.emit("update_game", {
+                userId: user._id,
+                roomId: room._id,
+                gameData: {
+                    ...playerCards,
+                    drawpile: pile,
+                    discardpile: discardpile,
+                    turn: turn === room.players.length - 1 ? 0 : turn + 1,
+                },
+            });
+        }
+    }
 
     const cardHandler = (card) => {
         if (room.players[turn]._id.toString() !== user._id.toString()) {
@@ -74,11 +99,12 @@ const GameRoom = () => {
                     },
                 });
             } else {
-                alert("invalid card");
+                alert("invalid card")
+            
             }
         }
     };
-     console.log(room);
+    
     return (
         <div>
             {room && (
@@ -140,7 +166,10 @@ const GameRoom = () => {
                             {discardpile[discardpile.length - 1].color}
                         </div>
                     ) : null}
-
+                 <button onClick={drawpileHandler}>Drawpile</button><br/>
+ 
+                    
+       
                     <button onClick={leaveRoom}>leave room</button>
                 </div>
             )}
