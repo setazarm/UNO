@@ -1,11 +1,11 @@
-import { useContext, useEffect,useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
 import deckCard from "../assets/unoCards";
 import Card from "./Card";
 const GameRoom = () => {
-    // const [isUno, setIsUno] = useState(false);
+  
     const { id } = useParams();
     const {
         user,
@@ -27,6 +27,8 @@ const GameRoom = () => {
         deck,
         turn,
         setTurn,
+        isUno,
+        setIsUno,
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -40,17 +42,13 @@ const GameRoom = () => {
     };
 
     const startGame = () => {
-        
-         
-       
         let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
         socket.emit("start_game", {
             userId: user._id,
             roomId: room._id,
-             
+
             gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
-       
     };
 
     const leaveRoom = () => {
@@ -58,7 +56,6 @@ const GameRoom = () => {
     };
 
     useEffect(() => {
-        
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
 
@@ -66,10 +63,10 @@ const GameRoom = () => {
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
-            console.log("drawpile before",drawpile)
+          
             let { cards, pile } = drawCard(1, drawpile);
             setPlayerCards((pre) => [...pre, ...cards]);
-            console.log("drawpile after",drawpile)
+           
             socket.emit("update_game", {
                 userId: user._id,
                 roomId: room._id,
@@ -78,12 +75,14 @@ const GameRoom = () => {
                     drawpile: pile,
                     discardpile: discardpile,
                     turn: turn === room.players.length - 1 ? 0 : turn + 1,
+                    isUno: false,
                 },
             });
         }
-    }
+    };
 
     const cardHandler = (card) => {
+        
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
@@ -101,16 +100,25 @@ const GameRoom = () => {
                         drawpile: drawpile,
                         discardpile: [...discardpile, card],
                         turn: turn === room.players.length - 1 ? 0 : turn + 1,
+                        isUno: false,
                     },
                 });
             } else {
-                alert("invalid card")
-            
+                alert("invalid card");
             }
         }
     };
+    useEffect(()=>{
+        if(playerCards.length === 5 && !isUno){
+            alert('you have to say UNO')
+            setPlayerCards((pre)=>[...pre, ...drawpile.splice(0,2)])
+            
+            
+        }
 
-   return (
+    },[playerCards])
+    console.log("uno", isUno)
+    return (
         <div>
             {room && (
                 <div>
@@ -128,25 +136,29 @@ const GameRoom = () => {
                             <button onClick={startGame}>Start Game with First Player</button>
                         )
                     )}
-                   <div className="flex">
-    <div>
-        <h3>Discard Pile</h3>
-        {discardpile.length > 0 ? (
-            <div>
-                <Card
-                    color={discardpile[discardpile.length - 1].color}
-                    number={discardpile[discardpile.length - 1].number}
-                />
-            </div>
-        ) : null}
-    </div>
-    <div>
-        <h3>Draw Pile</h3>
-        {drawpile.length > 0 ? (
-            <img className="w-[200px]" src={deckCard} onClick={drawpileHandler}/>
-        ) : null}
-    </div>
-</div>
+                    <div className="flex">
+                        <div>
+                            <h3>Discard Pile</h3>
+                            {discardpile.length > 0 ? (
+                                <div>
+                                    <Card
+                                        color={discardpile[discardpile.length - 1].color}
+                                        number={discardpile[discardpile.length - 1].number}
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
+                        <div>
+                            <h3>Draw Pile</h3>
+                            {drawpile.length > 0 ? (
+                                <img
+                                    className="w-[200px]"
+                                    src={deckCard}
+                                    onClick={drawpileHandler}
+                                />
+                            ) : null}
+                        </div>
+                    </div>
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
                         return (
@@ -160,13 +172,15 @@ const GameRoom = () => {
                         );
                     })}
 
-                    
+                    <button disabled={playerCards.length!==6} onClick={() => setIsUno(true)}>UNO</button>
 
-                    <button className="block" onClick={leaveRoom}>leave room</button>
+                    <button className="block" onClick={leaveRoom}>
+                        leave room
+                    </button>
                 </div>
             )}
         </div>
     );
-}
+};
 
 export default GameRoom;
