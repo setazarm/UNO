@@ -20,8 +20,6 @@ const Card = ({ color, number }) => {
             : number === "D4"
             ? "Wild_Draw"
             : `${fullColor}_${number}`;
-    const cardToDisplay = unoCards.filter((card) => card.includes(cardImage));
-    // console.log(cardToDisplay);
 
     return (
         <div className>

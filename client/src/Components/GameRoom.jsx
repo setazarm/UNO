@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
 import deckCard from "../assets/unoCards";
+import calculateNextTurn from "../utilis/calculateNextTurn";
 import Card from "./Card";
 const GameRoom = () => {
   
@@ -63,10 +64,11 @@ const GameRoom = () => {
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
+
           
             let { cards, pile } = drawCard(1, drawpile);
             setPlayerCards((pre) => [...pre, ...cards]);
-           
+
             socket.emit("update_game", {
                 userId: user._id,
                 roomId: room._id,
@@ -86,11 +88,27 @@ const GameRoom = () => {
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
+            let skipTurn = false;
+            let reverseTurn = false;
+
             if (
                 card.color === discardpile[discardpile.length - 1].color ||
                 card.number === discardpile[discardpile.length - 1].number
             ) {
                 setPlayerCards((pre) => pre.filter((item) => item !== card));
+
+                if (card.number === "skip") {
+                    
+                    skipTurn = true;
+                   
+                }
+                if (card.number === "_") {
+                    reverseTurn = true;
+                   
+                }
+                console.log(card.number);
+                console.log(reverseTurn);
+                console.log(skipTurn);
 
                 socket.emit("update_game", {
                     userId: user._id,
@@ -99,8 +117,12 @@ const GameRoom = () => {
                         ...playerCards,
                         drawpile: drawpile,
                         discardpile: [...discardpile, card],
-                        turn: turn === room.players.length - 1 ? 0 : turn + 1,
+
+                        turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
+
+                       
                         isUno: false,
+
                     },
                 });
             } else {
@@ -116,8 +138,9 @@ const GameRoom = () => {
             
         }
 
+
     },[playerCards])
-    console.log("uno", isUno)
+  
     return (
         <div>
             {room && (
@@ -172,7 +195,9 @@ const GameRoom = () => {
                         );
                     })}
 
+
                     <button disabled={playerCards.length!==6} onClick={() => setIsUno(true)}>UNO</button>
+
 
                     <button className="block" onClick={leaveRoom}>
                         leave room
