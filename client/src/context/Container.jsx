@@ -16,6 +16,8 @@ export default function Container({ children }) {
     const [playerCards, setPlayerCards] = useState([]);
     const [turn, setTurn] = useState(0);
     const [isUno, setIsUno] = useState(false);
+    const [winner,setWinner]=useState(null)
+    const [isStarted,setIsStarted]=useState(false)
     const navigate = useNavigate();
     const deck = shuffleArray(card);
 
@@ -31,6 +33,10 @@ export default function Container({ children }) {
             setRooms(rooms);
         };
 
+      
+        
+
+
         const getGameData = (gamedata) => {
             setTurn(0);
             setGame(gamedata);
@@ -44,10 +50,12 @@ export default function Container({ children }) {
             console.log("game updated");
             setGame(gamedata);
             console.log(gamedata);
+            
             setDrawpile(gamedata.drawpile);
             setDiscardpile(gamedata.discardpile);
             setTurn(gamedata.turn);
             setIsUno(gamedata.isUno);
+            setWinner(gamedata.winner)
         };
 
         const afterLeave = (rooms, userId) => {
@@ -65,6 +73,17 @@ export default function Container({ children }) {
                 }
             });
         };
+        const alarmWinner=(winner)=>{
+            alert(`winner is ${winner}`)
+            // if(winner===user._id){
+            //    socket.emit("leaveWinner",{
+            //     userId:user._id,
+            //     roomId:room._id
+            //    })
+            //    navigate("/lobby")
+            // }
+        }
+
         socket.on("update_rooms", allRooms);
 
         socket.on("game_started", getGameData);
@@ -72,6 +91,12 @@ export default function Container({ children }) {
         socket.on("after_leave_room_created", afterLeave);
 
         socket.on("game_updated", updateGame);
+        socket.on("winner",alarmWinner)
+        // socket.on("leaveWinner",
+        // ()=>{
+        //     navigate("/lobby")
+        // }
+        // )
 
         /*   socket.on("user_left",allRooms) */
         return () => {
@@ -104,6 +129,20 @@ export default function Container({ children }) {
             }
         });
     }, []);
+    // const checkWinner = (players) => {
+    //     if(isStarted){
+    //     players.forEach((player) => {
+    //         if (player.cards.length === 4) {
+    //             setWinner(player.name);
+    //             alert(`winner is ${player.name}`);
+    //         }
+    //     });
+    // }
+    // };
+    // useEffect(() => {
+    //     checkWinner(room.players);
+    // }, [room.players]);
+    
 
     return (
         <MyContext.Provider
@@ -135,6 +174,8 @@ export default function Container({ children }) {
                 setShow,
                 isUno,
                 setIsUno,
+                winner,
+                setWinner
             }}
         >
             {children}

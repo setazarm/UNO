@@ -6,7 +6,7 @@ import deckCard from "../assets/unoCards";
 import calculateNextTurn from "../utilis/calculateNextTurn";
 import Card from "./Card";
 const GameRoom = () => {
-  
+
     const { id } = useParams();
     const {
         user,
@@ -30,6 +30,10 @@ const GameRoom = () => {
         setTurn,
         isUno,
         setIsUno,
+        winner,
+        setWinner,
+        setIsStarted,
+        isStarted
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -47,9 +51,11 @@ const GameRoom = () => {
         socket.emit("start_game", {
             userId: user._id,
             roomId: room._id,
+            
 
             gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
+        setIsStarted(true)
     };
 
     const leaveRoom = () => {
@@ -58,6 +64,7 @@ const GameRoom = () => {
 
     useEffect(() => {
         setRoom(rooms.find((item) => item._id === id));
+        
     }, [rooms, id]);
 
     const drawpileHandler = () => {
@@ -73,17 +80,22 @@ const GameRoom = () => {
                 userId: user._id,
                 roomId: room._id,
                 gameData: {
+                    
                     ...playerCards,
                     drawpile: pile,
                     discardpile: discardpile,
                     turn: turn === room.players.length - 1 ? 0 : turn + 1,
                     isUno: false,
+
+                   
+                   
                 },
             });
         }
     };
 
     const cardHandler = (card) => {
+        
         
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
@@ -109,6 +121,15 @@ const GameRoom = () => {
                 console.log(card.number);
                 console.log(reverseTurn);
                 console.log(skipTurn);
+                if(playerCards.length===4){
+                    alert(`winner is ${user.name}`)
+                    setWinner(user.name)
+                    socket.emit("winner", {
+                        roomId: room._id,
+                        winner: user._id,
+                    } )
+                   
+                }
 
                 socket.emit("update_game", {
                     userId: user._id,
@@ -119,9 +140,10 @@ const GameRoom = () => {
                         discardpile: [...discardpile, card],
 
                         turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
-
+                         
                        
                         isUno: false,
+                        
 
                     },
                 });
@@ -137,10 +159,38 @@ const GameRoom = () => {
             
             
         }
+       
 
 
     },[playerCards])
-  
+   
+    // useEffect(()=>{
+    //     if(isStarted && playerCards.length===4){
+    //          setWinner(user.name)
+    //         alert(`winner is ${user.name}`)
+
+    //     }
+    // },[playerCards])
+    
+    // const checkWinner = (players) => {
+    //     if(isStarted){
+    //     players.forEach((player) => {
+    //         if (player.cards.length === 4) {
+    //             setWinner(player.name);
+    //             alert(`winner is ${player.name}`);
+    //         }
+    //     });
+    // }
+    // };
+    // useEffect(() => {
+    //     if(isStarted){
+
+    //     checkWinner(room.players);
+    //     }
+    // }, []);
+    
+    // console.log("room here",room.players)
+    console.log("game dataaaa",game)
     return (
         <div>
             {room && (

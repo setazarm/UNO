@@ -99,6 +99,22 @@ io.on("connection", (socket) => {
         console.log("gamedata", gameData);
         io.in(roomId.toString()).emit("game_updated", gameData);
     });
+
+    socket.on("winner", ({winner,roomId}) => {
+        io.in(roomId.toString()).emit("winner", winner);
+
+    })
+    // socket.on("leaveWinner",async ({userId, roomId})=>{
+    //   socket.leave(roomId.toString());
+    //   const room= await GameRoom.findByIdAndUpdate(roomId,{$pull :{players: userId}},{new:true});
+    //   io.in(roomId.toString()).emit("leaveWinner",room) 
+    
+    // });  
+       
+
+    
+
+        
     //leave room
     socket.on("leave_room", async ({ userId, roomId }) => {
         console.log("leave", roomId, userId);
