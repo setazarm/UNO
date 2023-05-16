@@ -6,8 +6,12 @@ import deckCard from "../assets/unoCards";
 import calculateNextTurn from "../utilis/calculateNextTurn";
 import Card from "./Card";
 import setBgColor from "../utilis/setBgColor";
+import Modal from "./Modal";
 const GameRoom = () => {
     const { id } = useParams();
+    const [showPopup, setShowPopup] = useState(false);
+    const [reverseTurn, setReverseTurn] = useState(false)
+    const [skipTurn, setSkipTurn] = useState(false)
     const {
         user,
         setUser,
@@ -30,6 +34,7 @@ const GameRoom = () => {
         setTurn,
         isUno,
         setIsUno,
+        color
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -43,11 +48,11 @@ const GameRoom = () => {
     };
 
     const startGame = () => {
+        setShowPopup(false);
         let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
         socket.emit("start_game", {
             userId: user._id,
             roomId: room._id,
-
             gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
     };
@@ -85,25 +90,26 @@ const GameRoom = () => {
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
-            let skipTurn = false;
-            let reverseTurn = false;
+       
 
             if (
                 card.color === discardpile[discardpile.length - 1].color ||
-                card.number === discardpile[discardpile.length - 1].number
+                card.number === discardpile[discardpile.length - 1].number || 
+                card.number === "" 
             ) {
                 setPlayerCards((pre) => pre.filter((item) => item !== card));
 
                 if (card.number === "skip") {
-                    skipTurn = true;
+                    setSkipTurn(true)
                 }
                 if (card.number === "_") {
-                    reverseTurn = true;
+                    setReverseTurn(true)
                 }
-                console.log(card.number);
-                console.log(reverseTurn);
-                console.log(skipTurn);
-
+                if(card.number === ""){
+                   setShowPopup(true)
+                
+                }
+                console.log(showPopup, 'popup');
                 socket.emit("update_game", {
                     userId: user._id,
                     roomId: room._id,
@@ -111,10 +117,10 @@ const GameRoom = () => {
                         ...playerCards,
                         drawpile: drawpile,
                         discardpile: [...discardpile, card],
-
                         turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
-
                         isUno: false,
+                      
+                      
                     },
                 });
             } else {
@@ -122,12 +128,15 @@ const GameRoom = () => {
             }
         }
     };
+
     useEffect(() => {
-        if (playerCards.length === 5 && !isUno) {
+        if (room && playerCards) { // Add null check for room and playerCards
+          if (playerCards.length === 5 && !isUno) {
             alert("you have to say UNO");
             setPlayerCards((pre) => [...pre, ...drawpile.splice(0, 2)]);
+          }
         }
-    }, [playerCards]);
+      }, [playerCards, room, isUno]);
 
     return (
         <div>
@@ -174,6 +183,16 @@ const GameRoom = () => {
                             ) : null}
                         </div>
                     </div>
+                {
+                    showPopup && (
+                        <Modal
+                          setShowPopup={setShowPopup}
+                          skipTurn={skipTurn}
+                          reverseTurn={reverseTurn}
+                        drawCard={drawCard}
+                        />
+                      )
+                }
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
                         return (

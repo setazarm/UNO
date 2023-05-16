@@ -22,6 +22,7 @@ const GameRoomCard = ({ room }) => {
         if (passwordCorrect) {
             socket.connect();
             setPassword("");
+            socket.emit("join_room", { userId: user._id, roomId: room._id });
             setShow(false);
             setPasswordCorrect(false);
             navigate(`/game/${room._id}`);

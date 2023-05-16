@@ -16,6 +16,7 @@ export default function Container({ children }) {
     const [playerCards, setPlayerCards] = useState([]);
     const [turn, setTurn] = useState(0);
     const [isUno, setIsUno] = useState(false);
+    const[color, setColor] =useState('')
     const navigate = useNavigate();
     const deck = shuffleArray(card);
 
@@ -38,7 +39,6 @@ export default function Container({ children }) {
             setDiscardpile(gamedata.discardpile);
             const pCard = deck.slice(0, 7);
             setPlayerCards(pCard);
-            console.log("here");
         };
         const updateGame = (gamedata) => {
             console.log("game updated");
@@ -135,6 +135,8 @@ export default function Container({ children }) {
                 setShow,
                 isUno,
                 setIsUno,
+                color,
+                setColor
             }}
         >
             {children}
