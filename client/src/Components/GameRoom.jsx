@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
 import deckCard from "../assets/unoCards";
+import calculateNextTurn from "../utilis/calculateNextTurn";
 import Card from "./Card";
 const GameRoom = () => {
     // const [isUno, setIsUno] = useState(false);
@@ -77,12 +78,12 @@ const GameRoom = () => {
             });
         }
     };
-
     const cardHandler = (card) => {
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
             let skipTurn = false;
+            let reverseTurn = false;
 
             if (
                 card.color === discardpile[discardpile.length - 1].color ||
@@ -91,8 +92,17 @@ const GameRoom = () => {
                 setPlayerCards((pre) => pre.filter((item) => item !== card));
 
                 if (card.number === "skip") {
+                    
                     skipTurn = true;
+                   
                 }
+                if (card.number === "_") {
+                    reverseTurn = true;
+                   
+                }
+                console.log(card.number);
+                console.log(reverseTurn);
+                console.log(skipTurn);
 
                 socket.emit("update_game", {
                     userId: user._id,
@@ -101,9 +111,7 @@ const GameRoom = () => {
                         ...playerCards,
                         drawpile: drawpile,
                         discardpile: [...discardpile, card],
-                        turn: skipTurn
-                            ? (turn + 2) % room.players.length
-                            : (turn + 1) % room.players.length,
+                        turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
                     },
                 });
             } else {

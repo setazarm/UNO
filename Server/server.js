@@ -113,6 +113,7 @@ io.on("connection", (socket) => {
         // Remove room from User DB entry
         const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } });
         socket.leave(roomId);
+        
         if (room.players.length === 0) {
             await GameRoom.findByIdAndDelete(roomId);
         }
