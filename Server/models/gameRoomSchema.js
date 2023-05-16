@@ -21,8 +21,12 @@ const gameRoomSchema = new Schema(
             required: true,
             default: false,
         },
-        userId:
-        {type:Schema.Types.ObjectId, ref:"users"},
+        isStarted: {
+            type: Boolean,
+            required: true,
+            default: false,
+        },
+        userId: { type: Schema.Types.ObjectId, ref: "users" },
     },
     {
         timestamps: true,

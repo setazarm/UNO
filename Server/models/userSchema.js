@@ -39,8 +39,8 @@ const userSchema = new Schema(
             default: 0,
             required: true,
         },
-        socketId:{type:String},
-        room:{type:Schema.Types.ObjectId,ref:"users"}
+        socketId: { type: String },
+        room: { type: Schema.Types.ObjectId, ref: "users" },
     },
     { timestamps: true, versionKey: false }
 );

@@ -1,22 +1,18 @@
-import Router from 'express'
-import {createRoom, deleteRoom, getAllRooms, getSingleRoom} from '../controllers/gameRoom.js'
+import Router from "express";
+import { createRoom, deleteRoom, getAllRooms, getSingleRoom } from "../controllers/gameRoom.js";
 
-const router = Router()
+const router = Router();
 
 //get all rooms
-router.get("/",getAllRooms)
-
-
+router.get("/", getAllRooms);
 
 //create room
-router.post("/",createRoom)
-
+router.post("/", createRoom);
 
 //get single room by id
-router.get("/:id",getSingleRoom)
-
+router.get("/:id", getSingleRoom);
 
 //delete room
-router.delete("/:id",deleteRoom)
+router.delete("/:id", deleteRoom);
 
-export default router
+export default router;

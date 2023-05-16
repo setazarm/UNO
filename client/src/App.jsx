@@ -10,7 +10,6 @@ import Imprint from "./Components/Imprint.jsx";
 import Profile from "./Components/Profile";
 import { useState } from "react";
 
-
 function App() {
     const [isLoading, setIsloading] = useState(false);
     return (

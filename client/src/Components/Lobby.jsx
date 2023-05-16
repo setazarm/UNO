@@ -1,33 +1,19 @@
-import { useEffect, useState, useContext } from "react";
+import { useState, useContext } from "react";
 import { MyContext } from "../context/context.js";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import GameRoomCard from "./GameRoomCard.jsx";
 import RoomPasswordModal from "./RoomPasswordModal.jsx";
-import { socket } from "../socket.js";
-import Container from "../context/Container.jsx";
 
 const Lobby = () => {
     const { rooms } = useContext(MyContext);
     const navigate = useNavigate();
-    const [passwordCorrect, setPasswordCorrect] = useState(false);
-    const [password, setPassword] = useState("");
-    const [show, setShow] = useState(false);
 
     return (
         <div>
             <>
                 <div className="flex gap-4">
                     {rooms.map((room) => {
-                        return (
-                            <GameRoomCard
-                                room={room}
-                                key={room._id}
-                                setShow={setShow}
-                                setPassword={setPassword}
-                                passwordCorrect={passwordCorrect}
-                            />
-                        );
+                        return <GameRoomCard key={room._id} room={room} />;
                     })}
                 </div>
                 <button
@@ -40,12 +26,7 @@ const Lobby = () => {
                 </button>
             </>
 
-            <RoomPasswordModal
-                show={show}
-                password={password}
-                setPasswordCorrect={setPasswordCorrect}
-                setShow={setShow}
-            />
+            <RoomPasswordModal />
         </div>
     );
 };

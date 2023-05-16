@@ -14,8 +14,15 @@ export default function Container({ children }) {
     const [drawpile, setDrawpile] = useState([]);
     const [discardpile, setDiscardpile] = useState([]);
     const [playerCards, setPlayerCards] = useState([]);
+    const [turn, setTurn] = useState(0);
+    const [isUno, setIsUno] = useState(false);
     const navigate = useNavigate();
     const deck = shuffleArray(card);
+
+    // Room password checking
+    const [passwordCorrect, setPasswordCorrect] = useState(false);
+    const [password, setPassword] = useState("");
+    const [show, setShow] = useState(false);
 
     console.log(socket.id);
     useEffect(() => {
@@ -25,8 +32,7 @@ export default function Container({ children }) {
         };
 
         const getGameData = (gamedata) => {
-            console.log("game started");
-            console.log(gamedata);
+            setTurn(0);
             setGame(gamedata);
             setDrawpile(gamedata.drawpile);
             setDiscardpile(gamedata.discardpile);
@@ -34,11 +40,20 @@ export default function Container({ children }) {
             setPlayerCards(pCard);
             console.log("here");
         };
+        const updateGame = (gamedata) => {
+            console.log("game updated");
+            setGame(gamedata);
+            console.log(gamedata);
+            setDrawpile(gamedata.drawpile);
+            setDiscardpile(gamedata.discardpile);
+            setTurn(gamedata.turn);
+            setIsUno(gamedata.isUno);
+        };
+
         const afterLeave = (rooms, userId) => {
             setUser((user) => {
                 if (user._id.toString() === userId) {
                     setRooms(rooms);
-
                     navigate("/lobby");
                     setPlayerCards([]);
                     setDrawpile([]);
@@ -50,22 +65,38 @@ export default function Container({ children }) {
                 }
             });
         };
-        socket.on("room_created", allRooms);
+        socket.on("update_rooms", allRooms);
 
         socket.on("game_started", getGameData);
 
         socket.on("after_leave_room_created", afterLeave);
 
+        socket.on("game_updated", updateGame);
+
         /*   socket.on("user_left",allRooms) */
         return () => {
-            socket.off("room_created", allRooms);
+            socket.off("update_rooms", allRooms);
             socket.off("game_started", getGameData);
             socket.off("after_leave_room_created", afterLeave);
+            socket.off("game_updated", updateGame);
         };
     }, []);
     useEffect(() => {
-        if (localStorage.getItem("user")) {
-            setUser(JSON.parse(localStorage.getItem("user")));
+        const token = localStorage.getItem("token");
+        if (token) {
+            axios
+                .get(`http://localhost:8000/users/verify`, {
+                    headers: {
+                        token: token,
+                    },
+                })
+                .then((res) => {
+                    setUser(res.data.data);
+                })
+                .catch(() => {
+                    localStorage.removeItem("token");
+                    navigate("/");
+                });
         }
         axios.get("http://localhost:8000/rooms").then((res) => {
             if (res.data.success) {
@@ -94,6 +125,16 @@ export default function Container({ children }) {
                 playerCards,
                 setPlayerCards,
                 deck,
+                turn,
+                setTurn,
+                passwordCorrect,
+                setPasswordCorrect,
+                password,
+                setPassword,
+                show,
+                setShow,
+                isUno,
+                setIsUno,
             }}
         >
             {children}

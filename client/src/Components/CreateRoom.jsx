@@ -1,44 +1,30 @@
-import { useEffect, useContext } from "react";
+import { useContext, useEffect } from "react";
 import { socket } from "../socket";
-import { useNavigate } from "react-router-dom";
 import { MyContext } from "../context/context";
+import { useNavigate } from "react-router-dom";
 
 const CreateRoom = () => {
-    const { user } = useContext(MyContext);
-
-    // const navigate = useNavigate();
-    // const createRoom = (e) => {
-    //     e.preventDefault();
-    //     socket.connect(); // For when we connect clicking join
-    //     socket.emit("createRoom", {
-    //         roomName: e.target.room.value,
-    //         password: e.target.password.value,
-    //         player: JSON.parse(localStorage.getItem("user")),
-    //     });
-    // };
-
-    // useEffect(() => {
-    //     socket.on("room_created", (roomID) => {
-    //         navigate(`/game/${roomID}`);
-    //     });
-    // }, []);
-
-    // return (
-    //     <form onSubmit={createRoom}>
-    //         <input type="text" name="room" placeholder="Room name" />
-    //         <input type="password" name="password" placeholder="password" />
-    //         <button>Create a Room</button>
-    //     </form>
-    // );
-
+    const { user, rooms } = useContext(MyContext);
+    const navigate = useNavigate();
     const createRoom = (e) => {
         e.preventDefault();
         socket.emit("create_room", {
             roomName: e.target.room.value,
             password: e.target.password.value,
-            userId:user._id,
+            userId: user._id,
         });
     };
+
+    useEffect(() => {
+        const room = rooms.find((room) => {
+            return room.userId.toString() === user._id.toString() ? room : null;
+        });
+
+        if (room) {
+            socket.emit("join_room", { userId: user._id, roomId: room._id });
+            navigate(`/game/${room._id}`);
+        }
+    }, [rooms]);
 
     return (
         <form onSubmit={createRoom}>

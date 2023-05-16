@@ -1,8 +1,12 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
+import deckCard from "../assets/unoCards";
+import calculateNextTurn from "../utilis/calculateNextTurn";
+import Card from "./Card";
 const GameRoom = () => {
+  
     const { id } = useParams();
     const {
         user,
@@ -22,6 +26,10 @@ const GameRoom = () => {
         playerCards,
         setPlayerCards,
         deck,
+        turn,
+        setTurn,
+        isUno,
+        setIsUno,
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -39,6 +47,7 @@ const GameRoom = () => {
         socket.emit("start_game", {
             userId: user._id,
             roomId: room._id,
+
             gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
     };
@@ -46,10 +55,92 @@ const GameRoom = () => {
     const leaveRoom = () => {
         socket.emit("leave_room", { userId: user._id, roomId: room });
     };
+
     useEffect(() => {
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
 
+    const drawpileHandler = () => {
+        if (room.players[turn]._id.toString() !== user._id.toString()) {
+            alert("Not your turn");
+        } else {
+
+          
+            let { cards, pile } = drawCard(1, drawpile);
+            setPlayerCards((pre) => [...pre, ...cards]);
+
+            socket.emit("update_game", {
+                userId: user._id,
+                roomId: room._id,
+                gameData: {
+                    ...playerCards,
+                    drawpile: pile,
+                    discardpile: discardpile,
+                    turn: turn === room.players.length - 1 ? 0 : turn + 1,
+                    isUno: false,
+                },
+            });
+        }
+    };
+
+    const cardHandler = (card) => {
+        
+        if (room.players[turn]._id.toString() !== user._id.toString()) {
+            alert("Not your turn");
+        } else {
+            let skipTurn = false;
+            let reverseTurn = false;
+
+            if (
+                card.color === discardpile[discardpile.length - 1].color ||
+                card.number === discardpile[discardpile.length - 1].number
+            ) {
+                setPlayerCards((pre) => pre.filter((item) => item !== card));
+
+                if (card.number === "skip") {
+                    
+                    skipTurn = true;
+                   
+                }
+                if (card.number === "_") {
+                    reverseTurn = true;
+                   
+                }
+                console.log(card.number);
+                console.log(reverseTurn);
+                console.log(skipTurn);
+
+                socket.emit("update_game", {
+                    userId: user._id,
+                    roomId: room._id,
+                    gameData: {
+                        ...playerCards,
+                        drawpile: drawpile,
+                        discardpile: [...discardpile, card],
+
+                        turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
+
+                       
+                        isUno: false,
+
+                    },
+                });
+            } else {
+                alert("invalid card");
+            }
+        }
+    };
+    useEffect(()=>{
+        if(playerCards.length === 5 && !isUno){
+            alert('you have to say UNO')
+            setPlayerCards((pre)=>[...pre, ...drawpile.splice(0,2)])
+            
+            
+        }
+
+
+    },[playerCards])
+  
     return (
         <div>
             {room && (
@@ -60,52 +151,57 @@ const GameRoom = () => {
                             return <li key={player._id}>{player.name}</li>;
                         })}
                     </ul>
-                    <button onClick={startGame}>start game</button>
-
+                    {room.userId.toString() === user._id.toString() ? (
+                        <button onClick={startGame}>start game</button>
+                    ) : (
+                        !room.players.includes(room.userId.toString()) &&
+                        room.players[0]._id === user._id && (
+                            <button onClick={startGame}>Start Game with First Player</button>
+                        )
+                    )}
+                    <div className="flex">
+                        <div>
+                            <h3>Discard Pile</h3>
+                            {discardpile.length > 0 ? (
+                                <div>
+                                    <Card
+                                        color={discardpile[discardpile.length - 1].color}
+                                        number={discardpile[discardpile.length - 1].number}
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
+                        <div>
+                            <h3>Draw Pile</h3>
+                            {drawpile.length > 0 ? (
+                                <img
+                                    className="w-[200px]"
+                                    src={deckCard}
+                                    onClick={drawpileHandler}
+                                />
+                            ) : null}
+                        </div>
+                    </div>
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
                         return (
                             <div
-                                className={`rounded-lg py-2 px-4 cursor-pointer ${
-                                    card.color === "Y"
-                                        ? "bg-yellow-400"
-                                        : card.color === "B"
-                                        ? "bg-blue-400"
-                                        : card.color === "G"
-                                        ? "bg-green-400"
-                                        : card.color === "R"
-                                        ? "bg-red-400"
-                                        : ""
-                                }`}
+                                onClick={() => cardHandler(card)}
+                                className="inline-block"
                                 key={card.number + i}
                             >
-                                {card.number} {card.color}
+                                <Card color={card.color} number={card.number} />
                             </div>
                         );
                     })}
 
-                    <h3>discardpile</h3>
-                    {discardpile?.map((card, i) => {
-                        return (
-                            <div
-                                className={`rounded-lg py-2 px-4 cursor-pointer ${
-                                    card.color === "Y"
-                                        ? "bg-yellow-400"
-                                        : card.color === "B"
-                                        ? "bg-blue-400"
-                                        : card.color === "G"
-                                        ? "bg-green-400"
-                                        : card.color === "R"
-                                        ? "bg-red-400"
-                                        : ""
-                                }`}
-                                key={card.number + i}
-                            >
-                                {card.number} {card.color}
-                            </div>
-                        );
-                    })}
-                    <button onClick={leaveRoom}>leave room</button>
+
+                    <button disabled={playerCards.length!==6} onClick={() => setIsUno(true)}>UNO</button>
+
+
+                    <button className="block" onClick={leaveRoom}>
+                        leave room
+                    </button>
                 </div>
             )}
         </div>
