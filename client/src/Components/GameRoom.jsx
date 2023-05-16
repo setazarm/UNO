@@ -139,7 +139,13 @@ const GameRoom = () => {
                         })}
                     </ul>
                     {room.userId.toString() === user._id.toString() ? (
-                        <button onClick={startGame}>start game</button>
+                        <button
+                            disabled={room.players.length <= 1}
+                            onClick={startGame}
+                            className="border-slate-950 border-2 p-1 rounded"
+                        >
+                            start game
+                        </button>
                     ) : (
                         !room.players.includes(room.userId.toString()) &&
                         room.players[0]._id === user._id && (
@@ -182,11 +188,18 @@ const GameRoom = () => {
                         );
                     })}
 
-                    <button disabled={playerCards.length !== 6} onClick={() => setIsUno(true)}>
+                    <button
+                        disabled={playerCards.length !== 6}
+                        onClick={() => setIsUno(true)}
+                        className="border-slate-950 border-2 p-1 rounded"
+                    >
                         UNO
                     </button>
 
-                    <button className="block" onClick={leaveRoom}>
+                    <button
+                        className="block border-slate-950 border-2 p-1 rounded"
+                        onClick={leaveRoom}
+                    >
                         leave room
                     </button>
                 </div>
