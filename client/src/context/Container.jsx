@@ -73,16 +73,40 @@ export default function Container({ children }) {
                 }
             });
         };
-        const alarmWinner=(winner)=>{
-            alert(`winner is ${winner}`)
-            // if(winner===user._id){
-            //    socket.emit("leaveWinner",{
-            //     userId:user._id,
-            //     roomId:room._id
-            //    })
-            //    navigate("/lobby")
-            // }
+        const alarmWinner=(winner,roomId)=>{
+            alert(`winner is ${winner.name}`)
+            setUser(user=>{
+                console.log("user",user)
+                console.log("winner",winner)
+                if(user._id.toString()===winner._id.toString()){
+                    setWinner(winner)
+                    socket.emit("leaveWinner",{
+                        roomId,
+                        userId:user._id
+
+                    })
+                  
+                }
+                return user
+            })
+    
+           
         }
+        const winnerLeftRoom=(room,winUser)=>{
+          setRoom(room)
+            setUser(user=>{
+                if(winUser._id.toString()===user._id.toString()){
+                    navigate("/lobby")
+                    }
+                    return winUser
+        
+
+            })
+           
+
+        }
+       
+
 
         socket.on("update_rooms", allRooms);
 
@@ -91,12 +115,8 @@ export default function Container({ children }) {
         socket.on("after_leave_room_created", afterLeave);
 
         socket.on("game_updated", updateGame);
-        socket.on("winner",alarmWinner)
-        // socket.on("leaveWinner",
-        // ()=>{
-        //     navigate("/lobby")
-        // }
-        // )
+        socket.on("resultWinner",alarmWinner)
+        socket.on("winnerLeft",winnerLeftRoom)
 
         /*   socket.on("user_left",allRooms) */
         return () => {

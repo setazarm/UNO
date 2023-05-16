@@ -121,15 +121,15 @@ const GameRoom = () => {
                 console.log(card.number);
                 console.log(reverseTurn);
                 console.log(skipTurn);
-                if(playerCards.length===4){
-                    alert(`winner is ${user.name}`)
-                    setWinner(user.name)
-                    socket.emit("winner", {
-                        roomId: room._id,
-                        winner: user._id,
-                    } )
+                // if(playerCards.length===4){
+                //     setWinner(user.name)
+                //     socket.emit("winner", {
+                //         roomId: room._id,
+                //         winner: user,
+                //     } )
+                //     // alert(`winner is ${winner}`)
                    
-                }
+                // }
 
                 socket.emit("update_game", {
                     userId: user._id,
@@ -190,6 +190,20 @@ const GameRoom = () => {
     // }, []);
     
     // console.log("room here",room.players)
+
+    useEffect(() => {
+        if(playerCards.length===4){
+            setWinner(user.name)
+            socket.emit("winner", {
+                roomId: room._id,
+                winner: user,
+            } )
+            // alert(`winner is ${winner}`)
+           
+        }
+    }, [playerCards]);
+
+   
     console.log("game dataaaa",game)
     return (
         <div>
