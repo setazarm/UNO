@@ -6,7 +6,7 @@ import deckCard from "../assets/unoCards";
 import calculateNextTurn from "../utilis/calculateNextTurn";
 import Card from "./Card";
 const GameRoom = () => {
-    // const [isUno, setIsUno] = useState(false);
+  
     const { id } = useParams();
     const {
         user,
@@ -28,6 +28,8 @@ const GameRoom = () => {
         deck,
         turn,
         setTurn,
+        isUno,
+        setIsUno,
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -62,10 +64,11 @@ const GameRoom = () => {
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
-            console.log("drawpile before", drawpile);
+
+          
             let { cards, pile } = drawCard(1, drawpile);
             setPlayerCards((pre) => [...pre, ...cards]);
-            console.log("drawpile after", drawpile);
+
             socket.emit("update_game", {
                 userId: user._id,
                 roomId: room._id,
@@ -74,11 +77,14 @@ const GameRoom = () => {
                     drawpile: pile,
                     discardpile: discardpile,
                     turn: turn === room.players.length - 1 ? 0 : turn + 1,
+                    isUno: false,
                 },
             });
         }
     };
+
     const cardHandler = (card) => {
+        
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
@@ -111,7 +117,12 @@ const GameRoom = () => {
                         ...playerCards,
                         drawpile: drawpile,
                         discardpile: [...discardpile, card],
+
                         turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
+
+                       
+                        isUno: false,
+
                     },
                 });
             } else {
@@ -119,7 +130,17 @@ const GameRoom = () => {
             }
         }
     };
+    useEffect(()=>{
+        if(playerCards.length === 5 && !isUno){
+            alert('you have to say UNO')
+            setPlayerCards((pre)=>[...pre, ...drawpile.splice(0,2)])
+            
+            
+        }
 
+
+    },[playerCards])
+  
     return (
         <div>
             {room && (
@@ -173,6 +194,10 @@ const GameRoom = () => {
                             </div>
                         );
                     })}
+
+
+                    <button disabled={playerCards.length!==6} onClick={() => setIsUno(true)}>UNO</button>
+
 
                     <button className="block" onClick={leaveRoom}>
                         leave room

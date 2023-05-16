@@ -52,10 +52,10 @@ io.on("connection", (socket) => {
     // _________________________________________________________________
 
     //create new room
-    socket.on("create_room", async ({ roomName, userId }) => {
+    socket.on("create_room", async ({ roomName, userId, password }) => {
         console.log("create_room");
 
-        const createdRoom = await GameRoom.create({ roomName, userId });
+        const createdRoom = await GameRoom.create({ roomName, userId, password });
         console.log(createdRoom);
         // send all room
         const rooms = await GameRoom.find().populate("players");

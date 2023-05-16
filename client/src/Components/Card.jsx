@@ -20,8 +20,7 @@ const Card = ({ color, number }) => {
             : number === "D4"
             ? "Wild_Draw"
             : `${fullColor}_${number}`;
-    
- 
+
     return (
         <div className>
             {<img className="w-[200px]" src={unoCards.filter((card) => card.includes(cardImage))} alt={cardImage} />}
