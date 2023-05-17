@@ -76,6 +76,24 @@ export default function Container({ children }) {
                 }
             });
         };
+
+
+        const errorHandler = (error) => {
+            console.log(error);
+            switch (error.code) {
+                case 11000:
+                    alert("Room name already in use ");
+                    break;
+                default:
+                    if (error.message) {
+                        alert(`${error.message}`);
+                    } else {
+                        alert("An error ocurred");
+                    }
+                    break;
+            }
+        };
+
         const alarmWinner=(winner,roomId)=>{
             console.log(`winner is ${winner.name}`)
             setUser(user=>{
@@ -133,12 +151,15 @@ export default function Container({ children }) {
         socket.on("resultWinner",alarmWinner)
         socket.on("winnerLeft",winnerLeftRoom)
 
+        socket.on("error", errorHandler);
+
         /*   socket.on("user_left",allRooms) */
         return () => {
             socket.off("update_rooms", allRooms);
             socket.off("game_started", getGameData);
             socket.off("after_leave_room_created", afterLeave);
             socket.off("game_updated", updateGame);
+            socket.off("error", errorHandler);
         };
     }, []);
     useEffect(() => {

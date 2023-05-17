@@ -103,6 +103,7 @@ const GameRoom = () => {
 
     const cardHandler = (card) => {
 
+
         
         console.log("room player",room.players[turn])
         console.log("user string",user)
@@ -119,16 +120,17 @@ const GameRoom = () => {
             ) {
                 setPlayerCards((pre) => pre.filter((item) => item !== card));
 
-                if (card.number === "skip") {
+                 if (card.number === "skip") {
                     setSkipTurn(true)
                 }
                 if (card.number === "_") {
                     setReverseTurn(true)
                 }
-
                 if(card.number === "" || card.number === 'D4'){
                    setShowPopup(true) 
                 }
+
+
                 console.log(showPopup, 'popup');
 
                 console.log(card.number);
@@ -155,14 +157,6 @@ const GameRoom = () => {
                         turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
 
                         isUno: false,
-                      
-                      
-
-                         
-                       
-                     
-                        
-
 
                     },
                 });
@@ -172,14 +166,16 @@ const GameRoom = () => {
         }
     };
 
-    useEffect(()=>{
-        if(playerCards.length === 5 && !isUno){
-            alert('you have to say UNO')
-            setPlayerCards((pre)=>[...pre, ...drawpile.splice(0,2)])
-            
+    useEffect(() => {
+        if (playerCards.length === 5 && !isUno) {
+            alert("you have to say UNO");
+            setPlayerCards((pre) => [...pre, ...drawpile.splice(0, 2)]);
         }
-        
-      },[playerCards])
+    }, [playerCards]);
+
+
+
+   
    
     // useEffect(()=>{
     //     if(isStarted && playerCards.length===4){
@@ -223,6 +219,7 @@ const GameRoom = () => {
    
     console.log("game dataaaa",game)
 
+
     return (
         <div>
             {room && (
@@ -234,7 +231,13 @@ const GameRoom = () => {
                         })}
                     </ul>
                     {room.userId.toString() === user._id.toString() ? (
-                        <button onClick={startGame}>start game</button>
+                        <button
+                            disabled={room.players.length <= 1}
+                            onClick={startGame}
+                            className="border-slate-950 border-2 p-1 rounded"
+                        >
+                            start game
+                        </button>
                     ) : (
                         !room.players.includes(room.userId.toString()) &&
                         room.players[0]._id === user._id && (
@@ -291,13 +294,21 @@ const GameRoom = () => {
                         );
                     })}
 
-                    <button disabled={playerCards.length !== 6} onClick={() => setIsUno(true)}>
+
+                    <button
+                        disabled={playerCards.length !== 6}
+                        onClick={() => setIsUno(true)}
+                        className="border-slate-950 border-2 p-1 rounded"
+                    >
                         UNO
                     </button>
 
-                    <button className="block" onClick={leaveRoom}>
-                        leave room
-                    </button>
+                    <button
+                        className="block border-slate-950 border-2 p-1 rounded"
+                        onClick={leaveRoom}
+                    >
+
+                    
                 </div>
             )}
         </div>

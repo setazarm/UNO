@@ -53,10 +53,17 @@ io.on("connection", (socket) => {
 
     //create new room
     socket.on("create_room", async ({ roomName, userId, password }) => {
-        // console.log("create_room");
 
-        const createdRoom = await GameRoom.create({ roomName, userId, password });
-        // console.log(createdRoom);
+        console.log("create_room");
+        try {
+            const createdRoom = await GameRoom.create({ roomName, userId, password });
+        } catch (err) {
+            io.to(socket.id).emit("error", err);
+        }
+
+        
+
+      
         // send all room
         const rooms = await GameRoom.find().populate("players");
         io.emit("update_rooms", rooms);
@@ -131,7 +138,7 @@ io.on("connection", (socket) => {
         // Remove room from User DB entry
         const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } });
         socket.leave(roomId);
-        
+
         if (room.players.length === 0) {
             await GameRoom.findByIdAndDelete(roomId);
         }
