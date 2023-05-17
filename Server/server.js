@@ -108,6 +108,8 @@ io.on("connection", (socket) => {
     });
 
     socket.on("winner", ({winner,roomId}) => {
+        console.log(winner, 'winner');
+        console.log(roomId);
         io.in(roomId.toString()).emit("resultWinner", winner,roomId);
 
     })
@@ -129,17 +131,22 @@ io.on("connection", (socket) => {
         // console.log("leave", roomId, userId);
 
         // Remove player from Room DB entry
-        const room = await GameRoom.findByIdAndUpdate(
-            roomId,
-            { $pull: { players: userId } },
-            { new: true }
-        );
+        const room1 = await GameRoom.findById(roomId)
+        if(room1.players.includes(userId.toString())){
+            const room = await GameRoom.findByIdAndUpdate(
+                roomId,
+                { $pull: { players: userId } },
+                { new: true }
+            );
+            const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } });
+        }
+       
 
         // Remove room from User DB entry
-        const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } });
+       
         socket.leave(roomId);
 
-        if (room.players.length === 0) {
+        if (room1.players.length === 0) {
             await GameRoom.findByIdAndDelete(roomId);
         }
 
