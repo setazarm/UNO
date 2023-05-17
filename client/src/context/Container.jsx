@@ -74,7 +74,7 @@ export default function Container({ children }) {
             });
         };
         const alarmWinner=(winner,roomId)=>{
-            alert(`winner is ${winner.name}`)
+            console.log(`winner is ${winner.name}`)
             setUser(user=>{
                 console.log("user",user)
                 console.log("winner",winner)
@@ -93,12 +93,24 @@ export default function Container({ children }) {
            
         }
         const winnerLeftRoom=(room,winUser)=>{
+            console.log(room, winUser)
+            socket.emit("leave_room",{roomId:room._id,userId:winUser._id})
           setRoom(room)
+          setTurn(pre=>{
+                if(pre===room.players.length-1){
+                    return 0
+                }else{
+                    return pre+1
+                }
+          })
             setUser(user=>{
                 if(winUser._id.toString()===user._id.toString()){
                     navigate("/lobby")
-                    }
                     return winUser
+                    }else{
+                        return user
+                    }
+                  
         
 
             })

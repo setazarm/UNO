@@ -105,7 +105,7 @@ io.on("connection", (socket) => {
 
     })
     socket.on("leaveWinner",async ({userId, roomId})=>{
-      socket.leave(roomId.toString());
+    
       console.log("received leaveWinner",userId,roomId)
       const room= await GameRoom.findByIdAndUpdate(roomId,{$pull :{players: userId}},{new:true});
       const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } },{new:true});

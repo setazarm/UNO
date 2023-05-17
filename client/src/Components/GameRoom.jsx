@@ -96,9 +96,10 @@ const GameRoom = () => {
 
     const cardHandler = (card) => {
         
-        
+        console.log("room player",room.players[turn])
+        console.log("user string",user)
         if (room.players[turn]._id.toString() !== user._id.toString()) {
-            alert("Not your turn");
+            console.log("Not your turn");
         } else {
             let skipTurn = false;
             let reverseTurn = false;
@@ -192,7 +193,7 @@ const GameRoom = () => {
     // console.log("room here",room.players)
 
     useEffect(() => {
-        if(playerCards.length===4){
+        if(playerCards.length===6){
             setWinner(user.name)
             socket.emit("winner", {
                 roomId: room._id,
