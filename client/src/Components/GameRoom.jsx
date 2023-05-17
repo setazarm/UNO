@@ -6,7 +6,7 @@ import deckCard from "../assets/unoCards";
 import calculateNextTurn from "../utilis/calculateNextTurn";
 import Card from "./Card";
 const GameRoom = () => {
-  
+
     const { id } = useParams();
     const {
         user,
@@ -30,6 +30,10 @@ const GameRoom = () => {
         setTurn,
         isUno,
         setIsUno,
+        winner,
+        setWinner,
+        setIsStarted,
+        isStarted
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -47,9 +51,11 @@ const GameRoom = () => {
         socket.emit("start_game", {
             userId: user._id,
             roomId: room._id,
+            
 
             gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
+        setIsStarted(true)
     };
 
     const leaveRoom = () => {
@@ -58,6 +64,7 @@ const GameRoom = () => {
 
     useEffect(() => {
         setRoom(rooms.find((item) => item._id === id));
+        
     }, [rooms, id]);
 
     const drawpileHandler = () => {
@@ -73,11 +80,15 @@ const GameRoom = () => {
                 userId: user._id,
                 roomId: room._id,
                 gameData: {
+                    
                     ...playerCards,
                     drawpile: pile,
                     discardpile: discardpile,
                     turn: turn === room.players.length - 1 ? 0 : turn + 1,
                     isUno: false,
+
+                   
+                   
                 },
             });
         }
@@ -85,8 +96,10 @@ const GameRoom = () => {
 
     const cardHandler = (card) => {
         
+        console.log("room player",room.players[turn])
+        console.log("user string",user)
         if (room.players[turn]._id.toString() !== user._id.toString()) {
-            alert("Not your turn");
+            console.log("Not your turn");
         } else {
             let skipTurn = false;
             let reverseTurn = false;
@@ -109,6 +122,15 @@ const GameRoom = () => {
                 console.log(card.number);
                 console.log(reverseTurn);
                 console.log(skipTurn);
+                // if(playerCards.length===4){
+                //     setWinner(user.name)
+                //     socket.emit("winner", {
+                //         roomId: room._id,
+                //         winner: user,
+                //     } )
+                //     // alert(`winner is ${winner}`)
+                   
+                // }
 
                 socket.emit("update_game", {
                     userId: user._id,
@@ -119,9 +141,10 @@ const GameRoom = () => {
                         discardpile: [...discardpile, card],
 
                         turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
-
+                         
                        
                         isUno: false,
+                        
 
                     },
                 });
@@ -137,10 +160,52 @@ const GameRoom = () => {
             
             
         }
+       
 
 
     },[playerCards])
-  
+   
+    // useEffect(()=>{
+    //     if(isStarted && playerCards.length===4){
+    //          setWinner(user.name)
+    //         alert(`winner is ${user.name}`)
+
+    //     }
+    // },[playerCards])
+    
+    // const checkWinner = (players) => {
+    //     if(isStarted){
+    //     players.forEach((player) => {
+    //         if (player.cards.length === 4) {
+    //             setWinner(player.name);
+    //             alert(`winner is ${player.name}`);
+    //         }
+    //     });
+    // }
+    // };
+    // useEffect(() => {
+    //     if(isStarted){
+
+    //     checkWinner(room.players);
+    //     }
+    // }, []);
+    
+    // console.log("room here",room.players)
+
+    useEffect(() => {
+        if(playerCards.length===6){
+            setWinner(user.name)
+            socket.emit("winner", {
+                roomId: room._id,
+                winner: user,
+            } )
+            // alert(`winner is ${winner}`)
+           
+        }
+    }, [playerCards]);
+
+   
+    console.log("game dataaaa",game)
     return (
         <div>
             {room && (
