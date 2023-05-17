@@ -186,7 +186,9 @@ const GameRoom = () => {
     // console.log("room here",room.players)
 
     useEffect(() => {
+        console.log(playerCards, 'playercards');
         if (playerCards.length === 6) {
+
             setWinner(user.name);
             socket.emit("winner", {
                 roomId: room._id,
@@ -194,7 +196,7 @@ const GameRoom = () => {
             });
             // alert(`winner is ${winner}`)
         }
-    }, [playerCards]);
+    }, [playerCards.length]);
 
     console.log("game dataaaa", game);
 

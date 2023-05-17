@@ -115,7 +115,8 @@ export default function Container({ children }) {
         }
         const winnerLeftRoom=(room,winUser)=>{
             console.log(room, winUser)
-            socket.emit("leave_room",{roomId:room._id,userId:winUser._id})
+            
+            
           setRoom(room)
           setTurn(pre=>{
                 if(pre===room.players.length-1){
@@ -126,6 +127,7 @@ export default function Container({ children }) {
           })
             setUser(user=>{
                 if(winUser._id.toString()===user._id.toString()){
+                    socket.emit("leave_room",{roomId:room._id,userId:winUser._id})
                     navigate("/lobby")
                     return winUser
                     }else{
@@ -159,6 +161,8 @@ export default function Container({ children }) {
             socket.off("game_started", getGameData);
             socket.off("after_leave_room_created", afterLeave);
             socket.off("game_updated", updateGame);
+            socket.off("resultWinner",alarmWinner)
+            socket.off("winnerLeft",winnerLeftRoom)
             socket.off("error", errorHandler);
         };
     }, []);
