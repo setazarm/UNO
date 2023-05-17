@@ -232,7 +232,7 @@ export default function Container({ children }) {
                 setIsUno,
 
                 color,
-                setColor
+                setColor,
 
                 winner,
                 setWinner

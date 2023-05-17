@@ -8,11 +8,10 @@ import Card from "./Card";
 import setBgColor from "../utilis/setBgColor";
 import Modal from "./Modal";
 const GameRoom = () => {
-
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
-    const [reverseTurn, setReverseTurn] = useState(false)
-    const [skipTurn, setSkipTurn] = useState(false)
+    const [reverseTurn, setReverseTurn] = useState(false);
+    const [skipTurn, setSkipTurn] = useState(false);
     const {
         user,
         setUser,
@@ -36,13 +35,12 @@ const GameRoom = () => {
         isUno,
         setIsUno,
 
-        color
+        color,
 
         winner,
         setWinner,
         setIsStarted,
-        isStarted
-
+        isStarted,
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -64,7 +62,7 @@ const GameRoom = () => {
 
             gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
-        setIsStarted(true)
+        setIsStarted(true);
     };
 
     const leaveRoom = () => {
@@ -73,7 +71,6 @@ const GameRoom = () => {
 
     useEffect(() => {
         setRoom(rooms.find((item) => item._id === id));
-        
     }, [rooms, id]);
 
     const drawpileHandler = () => {
@@ -87,51 +84,41 @@ const GameRoom = () => {
                 userId: user._id,
                 roomId: room._id,
                 gameData: {
-                    
                     ...playerCards,
                     drawpile: pile,
                     discardpile: discardpile,
                     turn: turn === room.players.length - 1 ? 0 : turn + 1,
                     isUno: false,
-
-                   
-                   
                 },
             });
         }
     };
 
     const cardHandler = (card) => {
-
-
-        
-        console.log("room player",room.players[turn])
-        console.log("user string",user)
+        console.log("room player", room.players[turn]);
+        console.log("user string", user);
 
         if (room.players[turn]._id.toString() !== user._id.toString()) {
             console.log("Not your turn");
         } else {
-       
-
             if (
                 card.color === discardpile[discardpile.length - 1].color ||
-                card.number === discardpile[discardpile.length - 1].number || 
-                card.number === "" 
+                card.number === discardpile[discardpile.length - 1].number ||
+                card.number === ""
             ) {
                 setPlayerCards((pre) => pre.filter((item) => item !== card));
 
-                 if (card.number === "skip") {
-                    setSkipTurn(true)
+                if (card.number === "skip") {
+                    setSkipTurn(true);
                 }
                 if (card.number === "_") {
-                    setReverseTurn(true)
+                    setReverseTurn(true);
                 }
-                if(card.number === "" || card.number === 'D4'){
-                   setShowPopup(true) 
+                if (card.number === "" || card.number === "D4") {
+                    setShowPopup(true);
                 }
 
-
-                console.log(showPopup, 'popup');
+                console.log(showPopup, "popup");
 
                 console.log(card.number);
                 console.log(reverseTurn);
@@ -143,9 +130,8 @@ const GameRoom = () => {
                 //         winner: user,
                 //     } )
                 //     // alert(`winner is ${winner}`)
-                   
-                // }
 
+                // }
 
                 socket.emit("update_game", {
                     userId: user._id,
@@ -157,7 +143,6 @@ const GameRoom = () => {
                         turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
 
                         isUno: false,
-
                     },
                 });
             } else {
@@ -173,10 +158,6 @@ const GameRoom = () => {
         }
     }, [playerCards]);
 
-
-
-   
-   
     // useEffect(()=>{
     //     if(isStarted && playerCards.length===4){
     //          setWinner(user.name)
@@ -184,7 +165,7 @@ const GameRoom = () => {
 
     //     }
     // },[playerCards])
-    
+
     // const checkWinner = (players) => {
     //     if(isStarted){
     //     players.forEach((player) => {
@@ -201,24 +182,21 @@ const GameRoom = () => {
     //     checkWinner(room.players);
     //     }
     // }, []);
-    
+
     // console.log("room here",room.players)
 
     useEffect(() => {
-        if(playerCards.length===6){
-            setWinner(user.name)
+        if (playerCards.length === 6) {
+            setWinner(user.name);
             socket.emit("winner", {
                 roomId: room._id,
                 winner: user,
-            } )
+            });
             // alert(`winner is ${winner}`)
-           
         }
     }, [playerCards]);
 
-   
-    console.log("game dataaaa",game)
-
+    console.log("game dataaaa", game);
 
     return (
         <div>
@@ -271,16 +249,14 @@ const GameRoom = () => {
                             ) : null}
                         </div>
                     </div>
-                {
-                    showPopup && (
+                    {showPopup && (
                         <Modal
-                          setShowPopup={setShowPopup}
-                          skipTurn={skipTurn}
-                          reverseTurn={reverseTurn}
-                        drawCard={drawCard}
+                            setShowPopup={setShowPopup}
+                            skipTurn={skipTurn}
+                            reverseTurn={reverseTurn}
+                            drawCard={drawCard}
                         />
-                      )
-                }
+                    )}
                     <h3>player cards</h3>
                     {playerCards?.map((card, i) => {
                         return (
@@ -294,7 +270,6 @@ const GameRoom = () => {
                         );
                     })}
 
-
                     <button
                         disabled={playerCards.length !== 6}
                         onClick={() => setIsUno(true)}
@@ -307,8 +282,8 @@ const GameRoom = () => {
                         className="block border-slate-950 border-2 p-1 rounded"
                         onClick={leaveRoom}
                     >
-
-                    
+                        Leave Room
+                    </button>
                 </div>
             )}
         </div>
