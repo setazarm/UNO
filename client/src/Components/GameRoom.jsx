@@ -105,9 +105,8 @@ const GameRoom = () => {
                 if (card.number === "_") {
                     setReverseTurn(true)
                 }
-                if(card.number === ""){
-                   setShowPopup(true)
-                
+                if(card.number === "" || card.number === 'D4'){
+                   setShowPopup(true) 
                 }
                 console.log(showPopup, 'popup');
                 socket.emit("update_game", {
