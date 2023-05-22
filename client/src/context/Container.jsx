@@ -42,13 +42,22 @@ export default function Container({ children }) {
         
 
 
-        const getGameData = (gamedata) => {
+        const getGameData = (cards,remainingCards) => {
+
             setTurn(0);
-            setGame(gamedata);
-            setDrawpile(gamedata.drawpile);
-            setDiscardpile(gamedata.discardpile);
-            const pCard = deck.slice(0, 7);
-            setPlayerCards(pCard);
+            // setGame(gamedata);
+            setDrawpile(remainingCards);
+            setDiscardpile(remainingCards[0]);
+            // const pCard = deck.slice(0, 7);
+            // setPlayerCards(pCard);
+          setUser(user=>{
+           const myCardData=cards.find((item)=>item.userId.toString()===user._id.toString())
+           console.log("something",myCardData)
+           setPlayerCards(myCardData.cards)
+              return user
+        
+          })
+
         };
         const updateGame = (gamedata) => {
             console.log("game updated");

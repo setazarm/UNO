@@ -57,12 +57,12 @@ const GameRoom = () => {
 
     const startGame = () => {
         setShowPopup(false);
-        let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
+        // let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
         socket.emit("start_game", {
             userId: user._id,
             roomId: room._id,
 
-            gameData: { ...playerCards, drawpile: pile, discardpile: cards },
+            // gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
         setIsStarted(true);
     };
@@ -86,9 +86,8 @@ const GameRoom = () => {
                 userId: user._id,
                 roomId: room._id,
                 gameData: {
-                    ...playerCards,
-                    drawpile: pile,
-                    discardpile: discardpile,
+                   
+                   
                     turn: turn === room.players.length - 1 ? 0 : turn + 1,
                     isUno: false,
                 },
@@ -212,7 +211,7 @@ const GameRoom = () => {
             });
             // alert(`winner is ${winner}`)
         }
-    }, [playerCards.length]);
+    }, [playerCards]);
 
     console.log("playercardssssss", playerCards);
 
