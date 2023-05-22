@@ -21,6 +21,7 @@ export default function Container({ children }) {
 
     const [winner,setWinner]=useState(null)
     const [isStarted,setIsStarted]=useState(false)
+    const [board,setBoard]=useState([])
 
     const navigate = useNavigate();
     const deck = shuffleArray(card);
@@ -53,12 +54,13 @@ export default function Container({ children }) {
             console.log("game updated");
             setGame(gamedata);
             console.log(gamedata);
-            
+         
             setDrawpile(gamedata.drawpile);
             setDiscardpile(gamedata.discardpile);
             setTurn(gamedata.turn);
             setIsUno(gamedata.isUno);
             setWinner(gamedata.winner)
+
         };
 
         const afterLeave = (rooms, userId) => {
@@ -140,6 +142,19 @@ export default function Container({ children }) {
            
 
         }
+        const allUsersCard=(cards)=>{
+           
+            setBoard((board)=>{
+                const user=board.find((item)=>item.user._id.toString()===cards.user._id.toString())
+                if(user){
+                    user.card=cards.card
+                    return board
+                }
+                            
+                return [...board,cards]
+
+            })
+        }
        
 
 
@@ -152,6 +167,7 @@ export default function Container({ children }) {
         socket.on("game_updated", updateGame);
         socket.on("resultWinner",alarmWinner)
         socket.on("winnerLeft",winnerLeftRoom)
+        socket.on("cards",allUsersCard)
 
         socket.on("error", errorHandler);
 
@@ -239,7 +255,12 @@ export default function Container({ children }) {
                 setColor,
 
                 winner,
-                setWinner
+                setWinner,
+                setIsStarted,
+                isStarted,
+                board,
+                setBoard
+
 
             }}
         >

@@ -123,7 +123,11 @@ io.on("connection", (socket) => {
     });  
        
 
-    
+    socket.on("playerCards-status",async(data)=>{
+        const user= await User.findById(data.userId);
+        io.in(data.roomId.toString()).emit("cards",{user,card: data.length});
+
+    })
 
         
     //leave room

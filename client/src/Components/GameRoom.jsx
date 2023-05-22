@@ -41,6 +41,8 @@ const GameRoom = () => {
         setWinner,
         setIsStarted,
         isStarted,
+        board,
+        setBoard
     } = useContext(MyContext);
 
     const drawCard = (numOfcards, pile) => {
@@ -143,6 +145,7 @@ const GameRoom = () => {
                         turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
 
                         isUno: false,
+                      
                     },
                 });
             } else {
@@ -155,7 +158,20 @@ const GameRoom = () => {
         if (playerCards.length === 5 && !isUno) {
             alert("you have to say UNO");
             setPlayerCards((pre) => [...pre, ...drawpile.splice(0, 2)]);
+
         }
+        console.log("rooom",room)
+
+        room && socket.emit("playerCards-status", {
+
+                userId: user._id,
+                roomId: room._id,
+                length: playerCards.length
+                
+        }
+            
+
+            )
     }, [playerCards]);
 
     // useEffect(()=>{
@@ -187,7 +203,7 @@ const GameRoom = () => {
 
     useEffect(() => {
         console.log(playerCards, 'playercards');
-        if (playerCards.length === 6) {
+        if (playerCards.length === 2) {
 
             setWinner(user.name);
             socket.emit("winner", {
@@ -198,12 +214,17 @@ const GameRoom = () => {
         }
     }, [playerCards.length]);
 
-    console.log("game dataaaa", game);
+    console.log("playercardssssss", playerCards);
+
+    console.log("board", board);
 
     return (
         <div>
             {room && (
                 <div>
+                    {board&& board.map((item)=>{
+                        return <h1>{item?.user?.name} : {item?.card} </h1>
+                    })}
                     <h3>players</h3>
                     <ul>
                         {room.players.map((player) => {
