@@ -4,10 +4,12 @@ import axios from "axios";
 import uno from "../assets/Dizajn_bez_naslova__7_-removebg-preview.png";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
+import {BiShow} from 'react-icons/bi'
 const LoginForm = ({ setIsloading }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const [isShowed, setIsShowed] = useState(false);
     const { setUser, user } = useContext(MyContext);
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -70,7 +72,9 @@ const LoginForm = ({ setIsloading }) => {
                     <label htmlFor="password">Password</label>
                     <input
                         className="outline-double outline-2 outline-gray-500 my-2 px-1"
-                        type="password"
+                        type={
+                            isShowed ? "text" : "password"
+                        }
                         id="password"
                         name="password"
                         placeholder="Enter your password"
@@ -78,6 +82,14 @@ const LoginForm = ({ setIsloading }) => {
                             setPassword(e.target.value);
                         }}
                     />
+                    <div>
+                        <BiShow
+                            className="text-2xl"
+                            onClick={() => {
+                                setIsShowed(!isShowed);
+                            }}
+                        />
+                    </div>
                     <button
                         className="
                 text-gray-100
