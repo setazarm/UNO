@@ -53,10 +53,23 @@ const Profile = ({ setIsloading }) => {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
         const data = new FormData();
+        // data.append("name", updatedUser.name);
+        // data.append("email", updatedUser.email);
+        // data.append("status", updatedUser.status);
+        // data.append("Avatar", updatedUser.Avatar);
+
+    if (updatedUser.name) {
         data.append("name", updatedUser.name);
+    }
+    if (updatedUser.email) {
         data.append("email", updatedUser.email);
+    }
+    if (updatedUser.status) {
         data.append("status", updatedUser.status);
+    }
+    if (updatedUser.Avatar) {
         data.append("Avatar", updatedUser.Avatar);
+    }
         
         axios
             .patch(`http://localhost:8000/users/${user._id}`, data, {
