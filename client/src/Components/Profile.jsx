@@ -59,7 +59,7 @@ const Profile = ({ setIsloading }) => {
         data.append("Avatar", updatedUser.Avatar);
         
         axios
-            .patch(`http://localhost:8000/users/${user._id}`, updatedUser, {
+            .patch(`http://localhost:8000/users/${user._id}`, data, {
                 headers: {
                     token: token,
                 },
