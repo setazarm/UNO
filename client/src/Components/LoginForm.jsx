@@ -9,7 +9,7 @@ const LoginForm = ({ setIsloading }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
-    const [isShowed, setIsShowed] = useState(false)
+    const [isShowed, setIsShowed] = useState(false);
     const { setUser, user } = useContext(MyContext);
     const handleSubmit = (e) => {
         e.preventDefault();
