@@ -215,13 +215,21 @@ const GameRoom = () => {
     }, [playerCards.length]);
 
     console.log("playercardssssss", playerCards);
+  console.log(room?.bgColor, 'color');
 
     console.log("board", board);
 
     return (
-        <div>
+        <div
+        style={{
+            backgroundColor: room?.bgColor ? room?.bgColor : "#f5f5f5",
+            color: room?.bgColor === "#010101" ? "white" : "black"
+        }}
+        
+            
+        >
             {room && (
-                <div>
+                <div >
                     {board&& board.map((item)=>{
                         return <h1>{item?.user?.name} : {item?.card} </h1>
                     })}

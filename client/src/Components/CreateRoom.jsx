@@ -12,6 +12,7 @@ const CreateRoom = () => {
             roomName: e.target.room.value,
             password: e.target.password.value,
             userId: user._id,
+            bgColor: e.target["bg-color"].value,
         });
     };
 
@@ -30,6 +31,13 @@ const CreateRoom = () => {
         <form onSubmit={createRoom}>
             <input type="text" name="room" placeholder="Room name" />
             <input type="password" name="password" placeholder="password" />
+            <select name="bg-color" id="bg-color">
+                <option value="#f55142">Red</option>
+                <option value="#428af5">Blue</option>
+                <option value="#f5da42">Yellow</option>
+                <option value="#07b825">Green</option>
+                <option value="#010101">Black</option>
+            </select>
             <button>Create a Room</button>
         </form>
     );

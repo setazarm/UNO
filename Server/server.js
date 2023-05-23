@@ -52,11 +52,11 @@ io.on("connection", (socket) => {
     // _________________________________________________________________
 
     //create new room
-    socket.on("create_room", async ({ roomName, userId, password }) => {
+    socket.on("create_room", async ({ roomName, userId, password, bgColor }) => {
 
         console.log("create_room");
         try {
-            const createdRoom = await GameRoom.create({ roomName, userId, password });
+            const createdRoom = await GameRoom.create({ roomName, userId, password, bgColor });
         } catch (err) {
             io.to(socket.id).emit("error", err);
         }
