@@ -15,6 +15,7 @@ const RegisterForm = () => {
     //     Avatar: "",
         
     // };
+
     
     const getImage = (file) => {
         const reader = new FileReader();
@@ -28,17 +29,17 @@ const RegisterForm = () => {
     const submitHandler = (e) => {
         e.preventDefault();
         
-        
+        const data=new FormData()
+        data.append("name",user.name)
+        data.append("email",user.email)
+        data.append("password",user.password)
+        data.append("Avatar",user.Avatar)
+
       
       
         
         axios
-            .post("http://localhost:8000/users", JSON.stringify(user), {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Origin": "*",
-                    },
-                    })
+            .post("http://localhost:8000/users", data)
             .then((res) => {
                 if (res.data.success) {
                     setUser(res.data.data);
