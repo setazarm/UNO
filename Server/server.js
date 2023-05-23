@@ -21,6 +21,7 @@ const io = new Server(server, {
 });
 
 // Middlewares
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", exposedHeaders: ["token"] }));
 app.use(errorHandler);
