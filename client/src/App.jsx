@@ -8,6 +8,7 @@ import GameRoom from "./Components/GameRoom";
 import Footer from "./Components/Footer.jsx";
 import Imprint from "./Components/Imprint.jsx";
 import Profile from "./Components/Profile";
+import Rules from "./Components/Rules.jsx";
 import { useState } from "react";
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/game/:id" element={<GameRoom />} />
 
                 <Route path="/imprint" element={<Imprint />} />
+                <Route path="/rules" element={<Rules />} />
                 <Route
                     path="/profile"
                     element={<Profile isLoading={isLoading} setIsloading={setIsloading} />}
