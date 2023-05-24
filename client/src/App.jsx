@@ -9,6 +9,7 @@ import Footer from "./Components/Footer.jsx";
 import Imprint from "./Components/Imprint.jsx";
 import Profile from "./Components/Profile";
 import Rules from "./Components/Rules.jsx";
+import Players from "./Components/Players";
 import { useState } from "react";
 
 function App() {
@@ -33,6 +34,8 @@ function App() {
                     path="/profile"
                     element={<Profile isLoading={isLoading} setIsloading={setIsloading} />}
                 />
+                <Route path="/players" element={<Players />} />
+                
             </Routes>
             <Footer />
         </div>
