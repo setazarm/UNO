@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AiFillCloseSquare } from "react-icons/ai";
 import { MyContext } from "../context/context.js";
 
+
 const Profile = ({ setIsloading }) => {
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);

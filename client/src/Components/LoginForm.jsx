@@ -5,6 +5,7 @@ import uno from "../assets/Dizajn_bez_naslova__7_-removebg-preview.png";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
 import {BiShow} from 'react-icons/bi'
+import toast ,{Toaster} from "react-hot-toast" 
 const LoginForm = ({ setIsloading }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -31,7 +32,7 @@ const LoginForm = ({ setIsloading }) => {
                 navigate("/lobby");
             })
             .catch((err) => {
-                console.log(err);
+                toast.error(err.response.data.message);
             });
     };
 
@@ -131,6 +132,7 @@ const LoginForm = ({ setIsloading }) => {
                     <img src={uno} alt="welcomeUNO" />
                 </div>
             </div>
+            <Toaster />
         </div>
     );
 };
