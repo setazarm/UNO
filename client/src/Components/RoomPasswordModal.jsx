@@ -16,7 +16,7 @@ const RoomPasswordModal = () => {
     };
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white rounded p-4">
+    <div className="bg-white rounded p-4 relative">
         <button
             onClick={() => setShow(false)}
             className="absolute top-0 right-0 p-2 text-gray-600 hover:text-gray-900"

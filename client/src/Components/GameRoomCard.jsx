@@ -3,6 +3,7 @@ import { socket } from "../socket.js";
 import { useNavigate } from "react-router-dom";
 import { MyContext } from "../context/context.js";
 
+
 const GameRoomCard = ({ room }) => {
     const navigate = useNavigate();
     const { user } = useContext(MyContext);
@@ -33,7 +34,7 @@ const GameRoomCard = ({ room }) => {
     const disabled = room.players.length >= 4;
     console.log("room", room.isStarted);
     return (
-        <div className="bg-white border border-gray-300 rounded-md p-4 mb-4 w-64">
+        <div className="bg-[#b6d6bf] border border-gray-300 rounded-md p-4 mb-4 w-64">
         <h2 className="text-lg font-bold mb-2">{room.roomName}</h2>
         <h3 className="text-sm text-gray-600 mb-2">{room.players.length} / 4 Players</h3>
         <h3 className="text-sm text-gray-600 mb-2">

@@ -37,7 +37,7 @@ const LoginForm = ({ setIsloading }) => {
     };
 
     return (
-        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 h-full flex flex-col justify-center items-center p-6">
+        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 min-h-screen flex flex-col justify-center items-center p-6">
             <h1
                 className="
             text-3xl
@@ -132,7 +132,16 @@ const LoginForm = ({ setIsloading }) => {
                     <img src={uno} alt="welcomeUNO" />
                 </div>
             </div>
-            <Toaster />
+            <Toaster 
+             toastOptions={{
+                className: '',
+                style: {
+                  border: '1px solid #713200',
+                  padding: '32px',
+                  color: '#713200',
+                },
+              }}
+            />
         </div>
     );
 };

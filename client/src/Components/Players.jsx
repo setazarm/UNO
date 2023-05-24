@@ -25,7 +25,7 @@ const Players = () => {
   );
 
   return (
-    <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 text-white py-10 px-4 md:px-10">
+    <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 min-h-screen text-white py-10 px-4 md:px-10">
     <h1 className="text-4xl text-center mb-8">Players</h1>
     <div className="max-w-md mx-auto mb-8">
       <input

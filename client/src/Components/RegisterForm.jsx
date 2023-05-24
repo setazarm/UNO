@@ -55,7 +55,7 @@ const RegisterForm = () => {
             });
     };
     return (
-        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 h-full flex flex-col justify-center items-center p-6">
+        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 min-h-screen flex flex-col justify-center items-center p-6">
             <form
                 onSubmit={submitHandler}
                 className="flex flex-col  p-6 outline-double outline-2 rounded "

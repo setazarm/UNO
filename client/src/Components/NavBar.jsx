@@ -34,7 +34,7 @@ const NavBar = ({ isLoading, setIsloading }) => {
 
   
     return (
-     <nav className="bg-green-700 text-white flex flex-col md:flex-row justify-around py-6 items-center gap-4">
+     <nav className="bg-[#0d6fa3] text-white flex flex-col md:flex-row justify-around py-6 items-center gap-4">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-bold">UNO</h3>
         <button
