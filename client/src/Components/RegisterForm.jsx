@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { MyContext } from "../context/context";
 
+
 const RegisterForm = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
@@ -50,6 +51,7 @@ const RegisterForm = () => {
             })
             .catch((error) => {
                 setError(error.response.data.error);
+                
             });
     };
     return (
