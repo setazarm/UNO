@@ -33,6 +33,10 @@ const gameRoomSchema = new Schema(
             turn: { type: Number, default: 0 },
         },
         userId: { type: Schema.Types.ObjectId, ref: "users" },
+        bgColor: {
+            type: String,
+            default: '#f1f1f1'    
+        }
     },
     {
         timestamps: true,

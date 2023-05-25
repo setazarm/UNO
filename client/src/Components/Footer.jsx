@@ -3,7 +3,7 @@ import { AiFillTwitterCircle, AiFillInstagram } from "react-icons/ai";
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-900 py-4 mt-auto">
+        <footer className="bg-[#0d6fa3] py-4 mt-auto">
             <nav className="container mx-auto px-4">
                 <ul className="flex justify-between">
                     <li className="mr-6">

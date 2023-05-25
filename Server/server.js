@@ -9,8 +9,11 @@ import roomRouter from "./routes/gameRoom.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import GameRoom from "./models/gameRoomSchema.js";
 import User from "./models/userSchema.js";
+
 import shuffleArray from "./shuffle.js";
 import card from "./card.js";
+
+import fileupload from "express-fileupload";
 
 // Configure ENV variables
 dotenv.config();
@@ -23,6 +26,7 @@ const io = new Server(server, {
 });
 
 // Middlewares
+app.use(fileupload());
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", exposedHeaders: ["token"] }));
 app.use(errorHandler);
@@ -53,7 +57,7 @@ io.on("connection", (socket) => {
     //create new room
     socket.on("create_room", async ({ roomName, userId, password }) => {
         try {
-            const createdRoom = await GameRoom.create({ roomName, userId, password });
+            const createdRoom = await GameRoom.create({ roomName, userId, password, bgColor });
         } catch (err) {
             io.to(socket.id).emit("error", err);
         }

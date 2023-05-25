@@ -4,10 +4,13 @@ import axios from "axios";
 import uno from "../assets/Dizajn_bez_naslova__7_-removebg-preview.png";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
+import {BiShow} from 'react-icons/bi'
+import toast ,{Toaster} from "react-hot-toast" 
 const LoginForm = ({ setIsloading }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const [isShowed, setIsShowed] = useState(false);
     const { setUser, user } = useContext(MyContext);
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -29,12 +32,12 @@ const LoginForm = ({ setIsloading }) => {
                 navigate("/lobby");
             })
             .catch((err) => {
-                console.log(err);
+                toast.error(err.response.data.message);
             });
     };
 
     return (
-        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 h-full flex flex-col justify-center items-center p-6">
+        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 min-h-screen flex flex-col justify-center items-center p-6">
             <h1
                 className="
             text-3xl
@@ -70,7 +73,9 @@ const LoginForm = ({ setIsloading }) => {
                     <label htmlFor="password">Password</label>
                     <input
                         className="outline-double outline-2 outline-gray-500 my-2 px-1"
-                        type="password"
+                        type={
+                            isShowed ? "text" : "password"
+                        }
                         id="password"
                         name="password"
                         placeholder="Enter your password"
@@ -78,6 +83,14 @@ const LoginForm = ({ setIsloading }) => {
                             setPassword(e.target.value);
                         }}
                     />
+                    <div>
+                        <BiShow
+                            className="text-2xl"
+                            onClick={() => {
+                                setIsShowed(!isShowed);
+                            }}
+                        />
+                    </div>
                     <button
                         className="
                 text-gray-100
@@ -119,6 +132,16 @@ const LoginForm = ({ setIsloading }) => {
                     <img src={uno} alt="welcomeUNO" />
                 </div>
             </div>
+            <Toaster 
+             toastOptions={{
+                className: '',
+                style: {
+                  border: '1px solid #713200',
+                  padding: '32px',
+                  color: '#713200',
+                },
+              }}
+            />
         </div>
     );
 };

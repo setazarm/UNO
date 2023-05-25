@@ -4,21 +4,43 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { MyContext } from "../context/context";
 
+
 const RegisterForm = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
-    const { setUser } = useContext(MyContext);
-    const submitHandler = (e) => {
-        const user = {
-            name: e.target.name.value,
-            email: e.target.email.value,
-            password: e.target.password.value,
+    const {user, setUser } = useContext(MyContext);
+    //  user = {
+    //     name: "",
+    //     email: "",
+    //     password: "",
+    //     Avatar: "",
+        
+    // };
+
+    
+    const getImage = (file) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          setUser({ ...user, Avatar: reader.result.toString() });
         };
+       
+      };
+      console.log(user,"user")
+    const submitHandler = (e) => {
         e.preventDefault();
+        
+        const data=new FormData()
+        data.append("name",user.name)
+        data.append("email",user.email)
+        data.append("password",user.password)
+        data.append("Avatar",user.Avatar)
+
+      
+      
+        
         axios
-            .post("http://localhost:8000/users", JSON.stringify(user), {
-                headers: { "Content-Type": "application/json" },
-            })
+            .post("http://localhost:8000/users", data)
             .then((res) => {
                 if (res.data.success) {
                     setUser(res.data.data);
@@ -29,10 +51,11 @@ const RegisterForm = () => {
             })
             .catch((error) => {
                 setError(error.response.data.error);
+                
             });
     };
     return (
-        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 h-full flex flex-col justify-center items-center p-6">
+        <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 min-h-screen flex flex-col justify-center items-center p-6">
             <form
                 onSubmit={submitHandler}
                 className="flex flex-col  p-6 outline-double outline-2 rounded "
@@ -43,6 +66,7 @@ const RegisterForm = () => {
                     className="outline-double outline-2 outline-gray-500 my-2 px-1"
                     type="text"
                     name="name"
+                    onChange={(e) => setUser({ ...user, name: e.target.value })}
                 />
 
                 <label htmlFor="email">Email: </label>
@@ -50,6 +74,7 @@ const RegisterForm = () => {
                     className="outline-double outline-2 outline-gray-500 my-2 px-1"
                     type="email"
                     name="email"
+                    onChange={(e) => setUser({ ...user, email: e.target.value })}
                 />
 
                 <label htmlFor="password">Password: </label>
@@ -57,7 +82,16 @@ const RegisterForm = () => {
                     className="outline-double outline-2 outline-gray-500 my-2 px-1"
                     type="password"
                     name="password"
+                    onChange={(e) =>setUser({ ...user, password: e.target.value })}
                 />
+                <label htmlFor="Avatar">profile picture: </label>
+                <input
+                    className="outline-double outline-2 outline-gray-500 my-2 px-1"
+                    type="file"
+                    name="file"
+                    onChange={(e) => getImage(e.target.files[0])}
+                />
+
 
                 {error && <p>{error}</p>}
                 <button

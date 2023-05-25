@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AiFillCloseSquare } from "react-icons/ai";
 import { MyContext } from "../context/context.js";
 
+
 const Profile = ({ setIsloading }) => {
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
@@ -36,13 +37,40 @@ const Profile = ({ setIsloading }) => {
                 console.log(err);
             });
     };
+    const getImage = (file) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          setUpdatedUser({ ...updatedUser, Avatar: reader.result.toString() });
+        };
+       
+      };
 
     const editHandler = (e) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
+        const data = new FormData();
+        // data.append("name", updatedUser.name);
+        // data.append("email", updatedUser.email);
+        // data.append("status", updatedUser.status);
+        // data.append("Avatar", updatedUser.Avatar);
+
+    if (updatedUser.name) {
+        data.append("name", updatedUser.name);
+    }
+    if (updatedUser.email) {
+        data.append("email", updatedUser.email);
+    }
+    if (updatedUser.status) {
+        data.append("status", updatedUser.status);
+    }
+    if (updatedUser.Avatar) {
+        data.append("Avatar", updatedUser.Avatar);
+    }
+        
         axios
-            .patch(`http://localhost:8000/users/${user._id}`, updatedUser, {
+            .patch(`http://localhost:8000/users/${user._id}`, data, {
                 headers: {
                     token: token,
                 },
@@ -176,6 +204,23 @@ const Profile = ({ setIsloading }) => {
                             placeholder="Enter your new status"
                             onChange={(e) => {
                                 setUpdatedUser({ ...updatedUser, status: e.target.value });
+                            }}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className=" text-gray-700 font-bold mb-2" htmlFor="file">
+                            profile picture
+                        </label>
+                        <input
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                           
+                            name="file"
+                            type="file"
+                            placeholder="upload your profile picture"
+                            onChange={(e) => {
+                                getImage(e.target.files[0]);
+                                setUpdatedUser({ ...updatedUser, Avatar: e.target.files[0] });
+                              
                             }}
                         />
                     </div>

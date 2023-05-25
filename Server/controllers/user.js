@@ -3,9 +3,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import httpErrors from "http-errors";
 export const register = async (req, res, next) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, Avatar} = req.body;
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ name, email, password: hashedPassword, Avatar });
     try {
         await newUser.save();
         res.status(201).json({ success: true, data: newUser });
