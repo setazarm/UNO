@@ -55,7 +55,7 @@ io.on("connection", (socket) => {
     // _________________________________________________________________
 
     //create new room
-    socket.on("create_room", async ({ roomName, userId, password }) => {
+    socket.on("create_room", async ({ roomName, userId, password, bgColor }) => {
         try {
             const createdRoom = await GameRoom.create({ roomName, userId, password, bgColor });
         } catch (err) {
