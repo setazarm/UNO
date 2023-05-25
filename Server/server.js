@@ -13,9 +13,7 @@ import User from "./models/userSchema.js";
 import shuffleArray from "./shuffle.js";
 import card from "./card.js";
 
-
 import fileupload from "express-fileupload";
-
 
 // Configure ENV variables
 dotenv.config();
@@ -49,10 +47,7 @@ mongoose
     .catch((err) => console.log("Database is not connected! ", err.message));
 
 io.on("connection", (socket) => {
-    // console.log(`a user connected ${socket.id}`);
-
     socket.on("user_connected", async ({ socketId, userId }) => {
-        // console.log(userId, socketId);
         const user = await User.findByIdAndUpdate(userId, {
             socketId,
         });
@@ -60,18 +55,12 @@ io.on("connection", (socket) => {
     // _________________________________________________________________
 
     //create new room
-    socket.on("create_room", async ({ roomName, userId, password, bgColor }) => {
-
-        console.log("create_room");
+    socket.on("create_room", async ({ roomName, userId, password }) => {
         try {
             const createdRoom = await GameRoom.create({ roomName, userId, password, bgColor });
         } catch (err) {
             io.to(socket.id).emit("error", err);
         }
-
-        
-
-      
         // send all room
         const rooms = await GameRoom.find().populate("players");
         io.emit("update_rooms", rooms);
@@ -99,82 +88,124 @@ io.on("connection", (socket) => {
         }
 
         //starting game
-        socket.on("start_game", async ({ userId, roomId }) => {
-            // console.log("starting game", roomId);
-            // console.log("gamedata", gameData);
-            const cardDeck=shuffleArray(card)
-            
+        socket.on("start_game", async ({ roomId }) => {
+            const cardDeck = shuffleArray(card);
+
             const room = await GameRoom.findById(roomId);
-            let allusersCards = [];
+            let allUsersCards = [];
+
             for (let i = 0; i < room.players.length; i++) {
-                let useCards={userId:room.players[i], cards: cardDeck.slice(i*7,(i+1)*7)}
-                allusersCards.push(useCards);
+                let userCards = {
+                    userId: room.players[i],
+                    cards: cardDeck.slice(i * 7, (i + 1) * 7),
+                };
+                allUsersCards.push(userCards);
             }
-            console.log(allusersCards);
 
+            const remainingCards = cardDeck.slice(room.players.length * 7);
 
-            await GameRoom.findByIdAndUpdate(roomId, { isStarted: true }, { new: true });
-            const remainingCards = cardDeck.slice(room.players.length*7);
-            io.in(roomId.toString()).emit("game_started", allusersCards, remainingCards);
+            const updatedRoom = await GameRoom.findByIdAndUpdate(
+                roomId,
+                {
+                    gameData: {
+                        discardPile: [remainingCards[0]],
+                        drawPile: remainingCards.slice(1),
+                        isStarted: true,
+                        allPlayerCards: allUsersCards,
+                        turn: 0,
+                    },
+                },
+                { new: true }
+            ).populate("players");
+
             const rooms = await GameRoom.find().populate("players");
+
+            io.in(roomId.toString()).emit("game_update", updatedRoom);
+
+            // Updating Lobby
             io.emit("room_created", rooms);
         });
     });
-    socket.on("update_game", ({ userId, roomId, gameData }) => {
-        // console.log("update game", roomId);
-        // console.log("gamedata", gameData);
-        io.in(roomId.toString()).emit("game_updated", gameData);
+    socket.on("update_game", async (room) => {
+        const updatedRoom = await GameRoom.findByIdAndUpdate(
+            room._id,
+            {
+                ...room,
+            },
+            { new: true }
+        ).populate("players");
+
+        io.in(room._id.toString()).emit("game_update", updatedRoom);
     });
 
-    socket.on("winner", ({winner,roomId}) => {
-        console.log(winner, 'winner');
-        console.log(roomId);
-        io.in(roomId.toString()).emit("resultWinner", winner,roomId);
+    socket.on("draw_card", async ({ userId, room, num }) => {
+        try {
+            const updatedRoom = await GameRoom.findByIdAndUpdate(
+                room._id,
+                {
+                    gameData: {
+                        ...room.gameData,
+                        allPlayerCards: room.gameData.allPlayerCards.map((player) => {
+                            if (player.userId === userId) {
+                                player.cards.push(...room.gameData.drawPile.slice(0, num));
+                            }
+                            return player;
+                        }),
+                        drawPile: room.gameData.drawPile.slice(num),
+                    },
+                },
+                { new: true }
+            ).populate("players");
 
-    })
-    socket.on("leaveWinner",async ({userId, roomId})=>{
-    
-      console.log("received leaveWinner",userId,roomId)
-      const room= await GameRoom.findByIdAndUpdate(roomId,{$pull :{players: userId}},{new:true});
-      const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } },{new:true});
-      io.in(roomId.toString()).emit("winnerLeft",room,user); 
-    
-    });  
-       
+            io.in(room._id.toString()).emit("game_update", updatedRoom);
+        } catch (error) {
+            console.log(error);
+        }
+    });
 
-    socket.on("playerCards-status",async(data)=>{
-        const user= await User.findById(data.userId);
-        io.in(data.roomId.toString()).emit("cards",{user,card: data.length});
+    socket.on("winner", ({ winner, roomId }) => {
+        console.log(winner, "winner");
+        io.in(roomId.toString()).emit("resultWinner", winner, roomId);
+    });
+    socket.on("leaveWinner", async ({ userId, roomId }) => {
+        console.log("received leaveWinner", userId, roomId);
+        const room = await GameRoom.findByIdAndUpdate(
+            roomId,
+            { $pull: { players: userId } },
+            { new: true }
+        );
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $unset: { room: null } },
+            { new: true }
+        );
+        io.in(roomId.toString()).emit("winnerLeft", room, user);
+    });
 
-    })
+    socket.on("playerCards-status", async (data) => {
+        const user = await User.findById(data.userId);
+        io.in(data.roomId.toString()).emit("cards", { user, card: data.length });
+    });
 
-        
     //leave room
     socket.on("leave_room", async ({ userId, roomId }) => {
-        // console.log("leave", roomId, userId);
-
         // Remove player from Room DB entry
-        let room = await GameRoom.findById(roomId)
-        if(room.players.includes(userId.toString())){
-             room = await GameRoom.findByIdAndUpdate(
+        let room = await GameRoom.findById(roomId);
+        if (room.players.includes(userId.toString())) {
+            room = await GameRoom.findByIdAndUpdate(
                 roomId,
                 { $pull: { players: userId } },
                 { new: true }
             );
             const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } });
-        } 
+        }
         console.log(room.players);
         if (room.players.length === 0) {
-            console.log('here');
             await GameRoom.findByIdAndDelete(roomId);
         }
-       
 
         // Remove room from User DB entry
-       
         socket.leave(roomId);
-
-      
 
         // send all updated rooms data
         const rooms = await GameRoom.find().populate("players");
@@ -183,10 +214,7 @@ io.on("connection", (socket) => {
 
     // _____________________________________________________________________
     socket.on("disconnect", async () => {
-        // console.log(`user disconnected ${socket.id}`);
-
         const user = await User.findOne({ socketId: socket.id });
-        //console.log(user);
         if (user) {
             const room = await GameRoom.findByIdAndUpdate(
                 user.room,

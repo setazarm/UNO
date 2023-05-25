@@ -148,79 +148,76 @@ const GameRoom = () => {
 
     return (
         <div
-        style={{
-            backgroundColor: room?.bgColor ? room?.bgColor : "#f5f5f5",
-            color: room?.bgColor === "#010101" ? "white" : "black"
-        }}
-        
-            
+            style={{
+                backgroundColor: room?.bgColor ? room?.bgColor : "#f5f5f5",
+                color: room?.bgColor === "#010101" ? "white" : "black",
+            }}
         >
             {room && (
                 <div>
-                    {room &&
-                        room.gameData.allPlayerCards.map((player) => {
-                            return (
-                                <h1>
-                                    {player?.userId} : {player?.cards?.length}{" "}
-                                </h1>
-                            );
-                        })}
-                <div >
-
-                    <h3>players</h3>
-                    <ul>
-                        {room.players.map((player) => {
-                            return <li key={player._id}>{player.name}</li>;
-                        })}
-                    </ul>
-                    {room?.userId?.toString() === user._id.toString() ? (
-                        <button
-                            disabled={room.players.length <= 1}
-                            onClick={startGame}
-                            className="border-slate-950 border-2 p-1 rounded"
-                        >
-                            start game
-                        </button>
-                    ) : (
-                        !room.players.includes(room.userId.toString()) &&
-                        room.players[0]._id === user._id && (
-                            <button onClick={startGame}>Start Game with First Player</button>
-                        )
-                    )}
-                    <div className="flex">
-                        <div>
-                            <h3>Discard Pile</h3>
-                            {room.gameData.discardPile && (
-                                <div
-                                    className={`flex justify-center w-[300px] ${setBgColor(
-                                        room.gameData.discardPile[0]?.color
-                                    )}`}
-                                >
-                                    <Card
-                                        color={room.gameData.discardPile[0]?.color}
-                                        number={room.gameData.discardPile[0]?.number}
-                                    />
-                                </div>
-                            )}
+                    {room.gameData.allPlayerCards.map((player) => (
+                        <h1 key={player?.userId}>
+                            {player?.userId} : {player?.cards?.length}{" "}
+                        </h1>
+                    ))}
+                    <div>
+                        <h3>players</h3>
+                        <ul>
+                            {room.players.map((player) => (
+                                <li key={player._id}>{player.name}</li>
+                            ))}
+                        </ul>
+                        {room?.userId?.toString() === user._id.toString() ? (
+                            <button
+                                disabled={room.players.length <= 1}
+                                onClick={startGame}
+                                className="border-slate-950 border-2 p-1 rounded"
+                            >
+                                start game
+                            </button>
+                        ) : (
+                            !room.players.includes(room.userId.toString()) &&
+                            room.players[0]._id === user._id && (
+                                <button onClick={startGame}>Start Game with First Player</button>
+                            )
+                        )}
+                        <div className="flex">
+                            <div>
+                                <h3>Discard Pile</h3>
+                                {room.gameData.discardPile && (
+                                    <div
+                                        className={`flex justify-center w-[300px] ${setBgColor(
+                                            room.gameData.discardPile[0]?.color
+                                        )}`}
+                                    >
+                                        <Card
+                                            color={room.gameData.discardPile[0]?.color}
+                                            number={room.gameData.discardPile[0]?.number}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            <div>
+                                <h3>Draw Pile</h3>
+                                <img
+                                    className="w-[200px]"
+                                    src={deckCard}
+                                    onClick={drawPileHandler}
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <h3>Draw Pile</h3>
-                            {<img className="w-[200px]" src={deckCard} onClick={drawPileHandler} />}
-                        </div>
-                    </div>
-                    {showPopup && (
-                        <Modal
-                            setShowPopup={setShowPopup}
-                            skipTurn={skipTurn}
-                            reverseTurn={reverseTurn}
-                            drawCard={drawCard}
-                        />
-                    )}
-                    <h3>player cards</h3>
-                    {room.gameData.allPlayerCards
-                        .find((item) => item.userId === user._id)
-                        ?.cards.map((card, i) => {
-                            return (
+                        {showPopup && (
+                            <Modal
+                                setShowPopup={setShowPopup}
+                                skipTurn={skipTurn}
+                                reverseTurn={reverseTurn}
+                                drawCard={drawCard}
+                            />
+                        )}
+                        <h3>player cards</h3>
+                        {room.gameData.allPlayerCards
+                            .find((item) => item.userId === user._id)
+                            ?.cards.map((card, i) => (
                                 <div
                                     onClick={() => cardHandler(card)}
                                     className="inline-block"
@@ -228,23 +225,23 @@ const GameRoom = () => {
                                 >
                                     <Card color={card.color} number={card.number} />
                                 </div>
-                            );
-                        })}
+                            ))}
 
-                    <button
-                        // disabled={playerCards?.length !== 6}
-                        onClick={() => setIsUno(true)}
-                        className="border-slate-950 border-2 p-1 rounded"
-                    >
-                        UNO
-                    </button>
+                        <button
+                            // disabled={playerCards?.length !== 6}
+                            onClick={() => setIsUno(true)}
+                            className="border-slate-950 border-2 p-1 rounded"
+                        >
+                            UNO
+                        </button>
 
-                    <button
-                        className="block border-slate-950 border-2 p-1 rounded"
-                        onClick={leaveRoom}
-                    >
-                        Leave Room
-                    </button>
+                        <button
+                            className="block border-slate-950 border-2 p-1 rounded"
+                            onClick={leaveRoom}
+                        >
+                            Leave Room
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
