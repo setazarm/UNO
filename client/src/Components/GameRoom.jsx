@@ -76,35 +76,35 @@ const GameRoom = () => {
     };
 
     const cardHandler = (card) => {
-        if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
+         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             console.log("Not your turn");
-        } else {
+         } else {
             if (
-                card.color === room.gameData.discardPile[0].color ||
+               card.color === room.gameData.discardPile[0].color ||
                 card.number === room.gameData.discardPile[0].number ||
                 card.number === ""
             ) {
-                if (card.number === "skip") {
+                 if (card.number === "skip") {
                     setSkipTurn(true);
                 }
-                if (card.number === "_") {
-                    setReverseTurn(true);
-                }
-                if (card.number === "" || card.number === "D4") {
-                    setShowPopup(true);
+                 if (card.number === "_") {
+                     setReverseTurn(true);
+                 }
+                 if (card.number === "" || card.number === "D4") {
+                     setShowPopup(true);
                 }
 
-                const player = room.gameData.allPlayerCards.find(
-                    (item) => item.userId === user._id
-                );
+                 const player = room.gameData.allPlayerCards.find(
+                     (item) => item.userId === user._id
+                 );
                 const cardIndex = player.cards.indexOf(card);
                 player.cards.splice(cardIndex, 1);
 
-                room.gameData.discardPile.unshift(card);
-
+               room.gameData.discardPile.unshift(card);
+console.log(room);
                 socket.emit("update_game", {
                     ...room,
-                    gameData: {
+                     gameData: {
                         ...room.gameData,
                         turn: calculateNextTurn(
                             reverseTurn,
@@ -113,11 +113,12 @@ const GameRoom = () => {
                             room.players.length
                         ),
                     },
+                    
                 });
-            } else {
+           } else {
                 alert("invalid card");
-            }
-        }
+             }
+         }
     };
 
     // NEEDS REWRITE !!!

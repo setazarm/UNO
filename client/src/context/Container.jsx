@@ -80,13 +80,13 @@ export default function Container({ children }) {
             console.log(room, winUser);
 
             setRoom(room);
-            setTurn((pre) => {
-                if (pre === room.players.length - 1) {
-                    return 0;
-                } else {
-                    return pre + 1;
-                }
-            });
+            // setTurn((pre) => {
+            //     if (pre === room.players.length - 1) {
+            //         return 0;
+            //     } else {
+            //         return pre + 1;
+            //     }
+            // });
             setUser((user) => {
                 if (winUser._id.toString() === user._id.toString()) {
                     socket.emit("leave_room", { roomId: room._id, userId: winUser._id });
