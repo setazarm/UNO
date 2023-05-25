@@ -12,16 +12,13 @@ const GameRoom = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [reverseTurn, setReverseTurn] = useState(false);
     const [skipTurn, setSkipTurn] = useState(false);
+   
     const {
         user,
 
         room,
         rooms,
         setRoom,
-
-        isUno,
-        setIsUno,
-
         color,
 
         winner,
@@ -76,6 +73,7 @@ const GameRoom = () => {
     };
 
     const cardHandler = (card) => {
+      
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             console.log("Not your turn");
         } else {
@@ -97,10 +95,30 @@ const GameRoom = () => {
                 const player = room.gameData.allPlayerCards.find(
                     (item) => item.userId === user._id
                 );
-                const cardIndex = player.cards.indexOf(card);
-                player.cards.splice(cardIndex, 1);
+                let allPlayerCards = room.gameData.allPlayerCards;
 
-                room.gameData.discardPile.unshift(card);
+                if (!(player.cards.length === 4 && !player.isUno)) {
+                    const cardIndex = player.cards.indexOf(card);
+                    player.cards.splice(cardIndex, 1);
+                    room.gameData.discardPile.unshift(card);
+                    
+                }else{
+                    
+
+                    alert("You didn't say UNO!");
+
+                    const drawnCards = drawCard(2);
+                    allPlayerCards = room.gameData.allPlayerCards.map((player) => {
+                        if (player.userId === user._id) {
+                            player.cards.push(...drawnCards);
+                        }
+                        return player;
+                    });
+
+                 }
+             
+
+               
 
                 socket.emit("update_game", {
                     ...room,
@@ -112,6 +130,7 @@ const GameRoom = () => {
                             room.gameData.turn,
                             room.players.length
                         ),
+                         allPlayerCards,
                     },
                 });
             } else {
@@ -120,31 +139,12 @@ const GameRoom = () => {
         }
     };
 
-    // NEEDS REWRITE !!!
-    // useEffect(() => {
-    //     if (playerCards?.length === 5 && !isUno) {
-    //         alert("you have to say UNO");
-    //     }
-
-    //     room &&
-    //         socket.emit("playerCards-status", {
-    //             userId: user._id,
-    //             roomId: room._id,
-    //             length: playerCards?.length,
-    //         });
-    // }, [playerCards]);
-
-    // NEEDS REWRITE !!!
-    // useEffect(() => {
-    //     if (playerCards?.length === 2) {
-    //         setWinner(user.name);
-    //         socket.emit("winner", {
-    //             roomId: room._id,
-    //             winner: user,
-    //         });
-    //         // alert(`winner is ${winner}`)
-    //     }
-    // }, [playerCards]);
+    const checkUno = () => {
+        const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
+        if (player.cards.length === 2) {
+            player.isUno = true;
+        }
+    };
 
     return (
         <div
@@ -229,7 +229,7 @@ const GameRoom = () => {
 
                         <button
                             // disabled={playerCards?.length !== 6}
-                            onClick={() => setIsUno(true)}
+                            onClick={checkUno}
                             className="border-slate-950 border-2 p-1 rounded"
                         >
                             UNO
