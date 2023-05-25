@@ -98,6 +98,7 @@ io.on("connection", (socket) => {
                 let userCards = {
                     userId: room.players[i],
                     cards: cardDeck.slice(i * 7, (i + 1) * 7),
+                    
                 };
                 allUsersCards.push(userCards);
             }
