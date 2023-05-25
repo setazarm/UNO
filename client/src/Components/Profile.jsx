@@ -10,8 +10,6 @@ const Profile = ({ setIsloading }) => {
     const [updatedUser, setUpdatedUser] = useState({});
     const { user, setUser } = useContext(MyContext);
 
-
-
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -19,7 +17,6 @@ const Profile = ({ setIsloading }) => {
             return;
         }
     }, []);
-
 
     const deleteUser = () => {
         const token = localStorage.getItem("token");
@@ -58,9 +55,7 @@ const Profile = ({ setIsloading }) => {
                 console.log(err);
             });
     };
-    console.log(user);
     return (
-
         <div className="bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 h-screen flex flex-col  p-6">
             <h1 className="text-4xl font-bold mb-4">Profile</h1>
             <p>Name: {user?.name}</p>
