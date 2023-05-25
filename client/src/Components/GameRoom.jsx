@@ -147,7 +147,14 @@ const GameRoom = () => {
     // }, [playerCards]);
 
     return (
-        <div>
+        <div
+        style={{
+            backgroundColor: room?.bgColor ? room?.bgColor : "#f5f5f5",
+            color: room?.bgColor === "#010101" ? "white" : "black"
+        }}
+        
+            
+        >
             {room && (
                 <div>
                     {room &&
@@ -158,6 +165,8 @@ const GameRoom = () => {
                                 </h1>
                             );
                         })}
+                <div >
+
                     <h3>players</h3>
                     <ul>
                         {room.players.map((player) => {
