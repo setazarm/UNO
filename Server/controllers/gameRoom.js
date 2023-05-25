@@ -38,3 +38,13 @@ export const deleteRoom = async (req, res, next) => {
         next(new httpErrors.NotFound("No record found !"));
     }
 };
+
+export const getTopCard = async (req, res, next) => {
+    try {
+        const { roomId } = req.params;
+        const room = await GameRoom.findById(roomId);
+        res.json({ success: true, data: room.discardPile[0] });
+    } catch (err) {
+        next(new httpErrors.NotFound("No record found !"));
+    }
+};
