@@ -91,14 +91,15 @@ io.on("connection", (socket) => {
         socket.on("start_game", async ({ roomId }) => {
             const cardDeck = shuffleArray(card);
 
-            const room = await GameRoom.findById(roomId);
+            const room = await GameRoom.findById(roomId).populate("players");
             let allUsersCards = [];
 
             for (let i = 0; i < room.players.length; i++) {
                 let userCards = {
-                    userId: room.players[i],
+                    userId: room.players[i]._id,
                     cards: cardDeck.slice(i * 7, (i + 1) * 7),
                     isUno:false,
+                    name: room.players[i].name,
                     
                 };
                 allUsersCards.push(userCards);
