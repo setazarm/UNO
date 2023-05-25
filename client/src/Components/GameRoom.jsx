@@ -14,24 +14,11 @@ const GameRoom = () => {
     const [skipTurn, setSkipTurn] = useState(false);
     const {
         user,
-        setUser,
+
         room,
         rooms,
         setRoom,
-        setRooms,
-        players,
-        setPlayers,
-        game,
-        setGame,
-        drawpile,
-        setDrawpile,
-        discardpile,
-        setDiscardpile,
-        playerCards,
-        setPlayerCards,
-        deck,
-        turn,
-        setTurn,
+
         isUno,
         setIsUno,
 
@@ -39,32 +26,17 @@ const GameRoom = () => {
 
         winner,
         setWinner,
-        setIsStarted,
-        isStarted,
-        board,
-        setBoard
     } = useContext(MyContext);
 
-    const drawCard = (numOfcards, pile) => {
-        const cards = [];
-        for (let i = 0; i < numOfcards; i++) {
-            const card = pile.shift();
-            cards.push(card);
-        }
-
-        return { cards, pile };
+    const drawCard = (numOfCards) => {
+        return room.gameData.drawPile.splice(0, numOfCards);
     };
 
     const startGame = () => {
         setShowPopup(false);
-        let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
         socket.emit("start_game", {
-            userId: user._id,
             roomId: room._id,
-
-            gameData: { ...playerCards, drawpile: pile, discardpile: cards },
         });
-        setIsStarted(true);
     };
 
     const leaveRoom = () => {
@@ -75,41 +47,43 @@ const GameRoom = () => {
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
 
-    const drawpileHandler = () => {
-        if (room.players[turn]._id.toString() !== user._id.toString()) {
+    const drawPileHandler = () => {
+        if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             alert("Not your turn");
         } else {
-            let { cards, pile } = drawCard(1, drawpile);
-            setPlayerCards((pre) => [...pre, ...cards]);
+            const drawnCards = drawCard(1);
+            const allPlayerCards = room.gameData.allPlayerCards.map((player) => {
+                if (player.userId === user._id) {
+                    player.cards.push(...drawnCards);
+                }
+                return player;
+            });
 
             socket.emit("update_game", {
-                userId: user._id,
-                roomId: room._id,
+                ...room,
                 gameData: {
-                    ...playerCards,
-                    drawpile: pile,
-                    discardpile: discardpile,
-                    turn: turn === room.players.length - 1 ? 0 : turn + 1,
-                    isUno: false,
+                    ...room.gameData,
+                    allPlayerCards,
+                    turn: calculateNextTurn(
+                        reverseTurn,
+                        skipTurn,
+                        room.gameData.turn,
+                        room.players.length
+                    ),
                 },
             });
         }
     };
 
     const cardHandler = (card) => {
-        console.log("room player", room.players[turn]);
-        console.log("user string", user);
-
-        if (room.players[turn]._id.toString() !== user._id.toString()) {
+        if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             console.log("Not your turn");
         } else {
             if (
-                card.color === discardpile[discardpile.length - 1].color ||
-                card.number === discardpile[discardpile.length - 1].number ||
+                card.color === room.gameData.discardPile[0].color ||
+                card.number === room.gameData.discardPile[0].number ||
                 card.number === ""
             ) {
-                setPlayerCards((pre) => pre.filter((item) => item !== card));
-
                 if (card.number === "skip") {
                     setSkipTurn(true);
                 }
@@ -120,32 +94,24 @@ const GameRoom = () => {
                     setShowPopup(true);
                 }
 
-                console.log(showPopup, "popup");
+                const player = room.gameData.allPlayerCards.find(
+                    (item) => item.userId === user._id
+                );
+                const cardIndex = player.cards.indexOf(card);
+                player.cards.splice(cardIndex, 1);
 
-                console.log(card.number);
-                console.log(reverseTurn);
-                console.log(skipTurn);
-                // if(playerCards.length===4){
-                //     setWinner(user.name)
-                //     socket.emit("winner", {
-                //         roomId: room._id,
-                //         winner: user,
-                //     } )
-                //     // alert(`winner is ${winner}`)
-
-                // }
+                room.gameData.discardPile.unshift(card);
 
                 socket.emit("update_game", {
-                    userId: user._id,
-                    roomId: room._id,
+                    ...room,
                     gameData: {
-                        ...playerCards,
-                        drawpile: drawpile,
-                        discardpile: [...discardpile, card],
-                        turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
-
-                        isUno: false,
-                      
+                        ...room.gameData,
+                        turn: calculateNextTurn(
+                            reverseTurn,
+                            skipTurn,
+                            room.gameData.turn,
+                            room.players.length
+                        ),
                     },
                 });
             } else {
@@ -154,70 +120,31 @@ const GameRoom = () => {
         }
     };
 
-    useEffect(() => {
-        if (playerCards.length === 5 && !isUno) {
-            alert("you have to say UNO");
-            setPlayerCards((pre) => [...pre, ...drawpile.splice(0, 2)]);
-
-        }
-        console.log("rooom",room)
-
-        room && socket.emit("playerCards-status", {
-
-                userId: user._id,
-                roomId: room._id,
-                length: playerCards.length
-                
-        }
-            
-
-            )
-    }, [playerCards]);
-
-    // useEffect(()=>{
-    //     if(isStarted && playerCards.length===4){
-    //          setWinner(user.name)
-    //         alert(`winner is ${user.name}`)
-
-    //     }
-    // },[playerCards])
-
-    // const checkWinner = (players) => {
-    //     if(isStarted){
-    //     players.forEach((player) => {
-    //         if (player.cards.length === 4) {
-    //             setWinner(player.name);
-    //             alert(`winner is ${player.name}`);
-    //         }
-    //     });
-    // }
-    // };
+    // NEEDS REWRITE !!!
     // useEffect(() => {
-    //     if(isStarted){
-
-    //     checkWinner(room.players);
+    //     if (playerCards?.length === 5 && !isUno) {
+    //         alert("you have to say UNO");
     //     }
-    // }, []);
 
-    // console.log("room here",room.players)
+    //     room &&
+    //         socket.emit("playerCards-status", {
+    //             userId: user._id,
+    //             roomId: room._id,
+    //             length: playerCards?.length,
+    //         });
+    // }, [playerCards]);
 
-    useEffect(() => {
-        console.log(playerCards, 'playercards');
-        if (playerCards.length === 2) {
-
-            setWinner(user.name);
-            socket.emit("winner", {
-                roomId: room._id,
-                winner: user,
-            });
-            // alert(`winner is ${winner}`)
-        }
-    }, [playerCards.length]);
-
-    console.log("playercardssssss", playerCards);
-  console.log(room?.bgColor, 'color');
-
-    console.log("board", board);
+    // NEEDS REWRITE !!!
+    // useEffect(() => {
+    //     if (playerCards?.length === 2) {
+    //         setWinner(user.name);
+    //         socket.emit("winner", {
+    //             roomId: room._id,
+    //             winner: user,
+    //         });
+    //         // alert(`winner is ${winner}`)
+    //     }
+    // }, [playerCards]);
 
     return (
         <div
@@ -229,17 +156,24 @@ const GameRoom = () => {
             
         >
             {room && (
+                <div>
+                    {room &&
+                        room.gameData.allPlayerCards.map((player) => {
+                            return (
+                                <h1>
+                                    {player?.userId} : {player?.cards?.length}{" "}
+                                </h1>
+                            );
+                        })}
                 <div >
-                    {board&& board.map((item)=>{
-                        return <h1>{item?.user?.name} : {item?.card} </h1>
-                    })}
+
                     <h3>players</h3>
                     <ul>
                         {room.players.map((player) => {
                             return <li key={player._id}>{player.name}</li>;
                         })}
                     </ul>
-                    {room.userId.toString() === user._id.toString() ? (
+                    {room?.userId?.toString() === user._id.toString() ? (
                         <button
                             disabled={room.players.length <= 1}
                             onClick={startGame}
@@ -256,28 +190,22 @@ const GameRoom = () => {
                     <div className="flex">
                         <div>
                             <h3>Discard Pile</h3>
-                            {discardpile.length > 0 ? (
+                            {room.gameData.discardPile && (
                                 <div
                                     className={`flex justify-center w-[300px] ${setBgColor(
-                                        discardpile[discardpile.length - 1].color
+                                        room.gameData.discardPile[0]?.color
                                     )}`}
                                 >
                                     <Card
-                                        color={discardpile[discardpile.length - 1].color}
-                                        number={discardpile[discardpile.length - 1].number}
+                                        color={room.gameData.discardPile[0]?.color}
+                                        number={room.gameData.discardPile[0]?.number}
                                     />
                                 </div>
-                            ) : null}
+                            )}
                         </div>
                         <div>
                             <h3>Draw Pile</h3>
-                            {drawpile.length > 0 ? (
-                                <img
-                                    className="w-[200px]"
-                                    src={deckCard}
-                                    onClick={drawpileHandler}
-                                />
-                            ) : null}
+                            {<img className="w-[200px]" src={deckCard} onClick={drawPileHandler} />}
                         </div>
                     </div>
                     {showPopup && (
@@ -289,20 +217,22 @@ const GameRoom = () => {
                         />
                     )}
                     <h3>player cards</h3>
-                    {playerCards?.map((card, i) => {
-                        return (
-                            <div
-                                onClick={() => cardHandler(card)}
-                                className="inline-block"
-                                key={card.number + i}
-                            >
-                                <Card color={card.color} number={card.number} />
-                            </div>
-                        );
-                    })}
+                    {room.gameData.allPlayerCards
+                        .find((item) => item.userId === user._id)
+                        ?.cards.map((card, i) => {
+                            return (
+                                <div
+                                    onClick={() => cardHandler(card)}
+                                    className="inline-block"
+                                    key={card.number + i}
+                                >
+                                    <Card color={card.color} number={card.number} />
+                                </div>
+                            );
+                        })}
 
                     <button
-                        disabled={playerCards.length !== 6}
+                        // disabled={playerCards?.length !== 6}
                         onClick={() => setIsUno(true)}
                         className="border-slate-950 border-2 p-1 rounded"
                     >

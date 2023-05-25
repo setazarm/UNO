@@ -9,7 +9,13 @@ import roomRouter from "./routes/gameRoom.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import GameRoom from "./models/gameRoomSchema.js";
 import User from "./models/userSchema.js";
+
+import shuffleArray from "./shuffle.js";
+import card from "./card.js";
+
+
 import fileupload from "express-fileupload";
+
 
 // Configure ENV variables
 dotenv.config();
@@ -93,12 +99,23 @@ io.on("connection", (socket) => {
         }
 
         //starting game
-        socket.on("start_game", async ({ userId, roomId, gameData }) => {
+        socket.on("start_game", async ({ userId, roomId }) => {
             // console.log("starting game", roomId);
             // console.log("gamedata", gameData);
+            const cardDeck=shuffleArray(card)
+            
+            const room = await GameRoom.findById(roomId);
+            let allusersCards = [];
+            for (let i = 0; i < room.players.length; i++) {
+                let useCards={userId:room.players[i], cards: cardDeck.slice(i*7,(i+1)*7)}
+                allusersCards.push(useCards);
+            }
+            console.log(allusersCards);
+
 
             await GameRoom.findByIdAndUpdate(roomId, { isStarted: true }, { new: true });
-            io.in(roomId.toString()).emit("game_started", gameData);
+            const remainingCards = cardDeck.slice(room.players.length*7);
+            io.in(roomId.toString()).emit("game_started", allusersCards, remainingCards);
             const rooms = await GameRoom.find().populate("players");
             io.emit("room_created", rooms);
         });

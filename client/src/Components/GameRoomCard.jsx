@@ -32,7 +32,6 @@ const GameRoomCard = ({ room }) => {
     }, [passwordCorrect]);
 
     const disabled = room.players.length >= 4;
-    console.log("room", room.isStarted);
     return (
         <div className="bg-[#b6d6bf] border border-gray-300 rounded-md p-4 mb-4 w-64">
         <h2 className="text-lg font-bold mb-2">{room.roomName}</h2>
