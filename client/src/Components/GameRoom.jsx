@@ -157,6 +157,8 @@ const GameRoom = () => {
             player.isUno = true;
         }
     };
+console.log(room?.gameData.allPlayerCards,"allPlayerCards")
+console.log(room?.players,"players")
 
     return (
         <div
@@ -169,7 +171,7 @@ const GameRoom = () => {
                 <div>
                     {room.gameData.allPlayerCards.map((player) => (
                         <h1 key={player?.userId}>
-                            {player?.userId} : {player?.cards?.length}{" "}
+                            {player?.name} : {player?.cards?.length}{" "}
                         </h1>
                     ))}
                     <div>
