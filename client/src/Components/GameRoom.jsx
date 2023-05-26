@@ -133,6 +133,7 @@ const GameRoom = () => {
                 backgroundColor: room?.bgColor ? room?.bgColor : "#f5f5f5",
                 color: room?.bgColor === "#010101" ? "white" : "black",
             }}
+            className="min-h-screen w-screen flex flex-col p-6"
         >
             {room && (
                 <div>
@@ -153,13 +154,14 @@ const GameRoom = () => {
                     )}
                     <div>
                         {room?.userId?.toString() === user._id.toString() ? (
-                            <button
-                                // disabled={room.players.length <= 1}
-                                onClick={startGame}
-                                className="border-slate-950 border-2 p-1 rounded"
-                            >
-                                start game
-                            </button>
+                           <button
+                           // disabled={room.players.length <= 1}
+                           onClick={startGame}
+                           className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${!room.isStarted ? 'm-auto' : ''} font-bold`}
+                       >
+                           start game
+                       </button>
+                       
                         ) : (
                             !room.players.includes(room.userId.toString()) &&
                             room.players[0]._id === user._id && (
@@ -172,7 +174,7 @@ const GameRoom = () => {
                                     <h3>Discard Pile</h3>
                                     {room.gameData.discardPile && (
                                         <div
-                                            className={`flex justify-center w-[300px] ${setBgColor(
+                                            className={`flex justify-center w-[230px] opacity-80 rounded-md ${setBgColor(
                                                 room.gameData.discardPile[0]?.color
                                             )}`}
                                         >
@@ -224,7 +226,7 @@ const GameRoom = () => {
                         </div>
 
                         <button
-                            className="block border-slate-950 border-2 p-1 rounded"
+                             className={`p-3 rounded mt-6 bg-green-500 hover:bg-green-600  text-white block ${!room.isStarted ? 'm-auto' : ''} font-bold`}
                             onClick={leaveRoom}
                         >
                             Leave Room
