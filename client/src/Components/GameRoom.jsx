@@ -7,6 +7,7 @@ import calculateNextTurn from "../utilis/calculateNextTurn";
 import Card from "./Card";
 import setBgColor from "../utilis/setBgColor";
 import Modal from "./Modal";
+import toast, { Toaster } from "react-hot-toast";
 const GameRoom = () => {
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
@@ -19,9 +20,13 @@ const GameRoom = () => {
 
     const startGame = () => {
         setShowPopup(false);
-        socket.emit("start_game", {
-            roomId: room._id,
-        });
+        if (room.players.length < 2) {
+            toast.error("You need at least 2 people to start the game");
+        } else {
+            socket.emit("start_game", {
+                roomId: room._id,
+            });
+        }
     };
 
     const leaveRoom = () => {
@@ -34,7 +39,7 @@ const GameRoom = () => {
 
     const drawPileHandler = () => {
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
-            alert("Not your turn");
+            toast.error("Not your turn");
         } else {
             const drawnCards = drawCard(1);
             const allPlayerCards = room.gameData.allPlayerCards.map((player) => {
@@ -57,7 +62,7 @@ const GameRoom = () => {
 
     const cardHandler = (card) => {
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
-            console.log("Not your turn");
+            toast.error("Not your turn");
         } else {
             if (
                 card.color === room.gameData.discardPile[0].color ||
@@ -78,7 +83,7 @@ const GameRoom = () => {
                     player.cards.splice(cardIndex, 1);
                     room.gameData.discardPile.unshift(card);
                 } else {
-                    alert("You didn't say UNO!");
+                    toast.error("You didn't say UNO!");
 
                     const drawnCards = drawCard(2);
                     allPlayerCards = room.gameData.allPlayerCards.map((player) => {
@@ -108,7 +113,7 @@ const GameRoom = () => {
                     },
                 });
             } else {
-                alert("invalid card");
+                toast.error("invalid card");
             }
         }
     };
@@ -149,7 +154,7 @@ const GameRoom = () => {
                     <div>
                         {room?.userId?.toString() === user._id.toString() ? (
                             <button
-                                disabled={room.players.length <= 1}
+                                // disabled={room.players.length <= 1}
                                 onClick={startGame}
                                 className="border-slate-950 border-2 p-1 rounded"
                             >
@@ -227,6 +232,16 @@ const GameRoom = () => {
                     </div>
                 </div>
             )}
+            <Toaster
+                toastOptions={{
+                    className: "",
+                    style: {
+                        border: "1px solid #713200",
+                        padding: "32px",
+                        color: "#713200",
+                    },
+                }}
+            />
         </div>
     );
 };

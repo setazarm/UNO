@@ -3,6 +3,7 @@ import { MyContext } from "./context.js";
 import { socket } from "../socket.js";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Container({ children }) {
     const [user, setUser] = useState(null);
@@ -28,7 +29,7 @@ export default function Container({ children }) {
         };
 
         const updateRoom = (room) => {
-            console.log('room', room);
+            console.log("room", room);
             setRoom(room);
         };
 
@@ -50,13 +51,13 @@ export default function Container({ children }) {
             console.log(error);
             switch (error.code) {
                 case 11000:
-                    alert("Room name already in use ");
+                    toast.error("Room name already in use ");
                     break;
                 default:
                     if (error.message) {
-                        alert(`${error.message}`);
+                        toast.error(`${error.message}`);
                     } else {
-                        alert("An error ocurred");
+                        toast.error("An error ocurred");
                     }
                     break;
             }
@@ -173,6 +174,16 @@ export default function Container({ children }) {
             }}
         >
             {children}
+            <Toaster
+                toastOptions={{
+                    className: "",
+                    style: {
+                        border: "1px solid #713200",
+                        padding: "32px",
+                        color: "#713200",
+                    },
+                }}
+            />
         </MyContext.Provider>
     );
 }
