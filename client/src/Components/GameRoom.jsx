@@ -10,17 +10,14 @@ import Modal from "./Modal";
 const GameRoom = () => {
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
-    const [reverseTurn, setReverseTurn] = useState(false);
-    const [skipTurn, setSkipTurn] = useState(false);
+   
    
     const {
         user,
-
         room,
         rooms,
         setRoom,
         color,
-
         winner,
         setWinner,
     } = useContext(MyContext);
@@ -62,8 +59,8 @@ const GameRoom = () => {
                     ...room.gameData,
                     allPlayerCards,
                     turn: calculateNextTurn(
-                        reverseTurn,
-                        skipTurn,
+                        false,
+                        false,
                         room.gameData.turn,
                         room.players.length
                     ),
@@ -84,12 +81,8 @@ const GameRoom = () => {
                 card.number === room.gameData.discardPile[0].number ||
                 card.number === ""
             ) {
-                 if (card.number === "skip") {
-                    setSkipTurn(true);
-                }
-                 if (card.number === "_") {
-                     setReverseTurn(true);
-                 }
+               
+              
                  if (card.number === "" || card.number === "D4") {
                      setShowPopup(true);
                 }
@@ -123,9 +116,7 @@ const GameRoom = () => {
                
 
 
-                 const player = room.gameData.allPlayerCards.find(
-                     (item) => item.userId === user._id
-                 );
+              
                 const cardIndex = player.cards.indexOf(card);
                 player.cards.splice(cardIndex, 1);
 
@@ -136,8 +127,8 @@ const GameRoom = () => {
                      gameData: {
                         ...room.gameData,
                         turn: calculateNextTurn(
-                            reverseTurn,
-                            skipTurn,
+                            card.number === '_' ? true : false,
+                            card.number === 'skip' ? true : false,
                             room.gameData.turn,
                             room.players.length
                         ),

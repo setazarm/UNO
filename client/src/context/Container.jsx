@@ -28,9 +28,8 @@ export default function Container({ children }) {
         };
 
         const updateRoom = (room) => {
-            setRoom((previousRoom) => {
-                return room;
-            });
+            console.log('room', room);
+            setRoom(room);
         };
 
         const afterLeave = (rooms, userId) => {
