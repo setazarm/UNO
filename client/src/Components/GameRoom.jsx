@@ -10,17 +10,8 @@ import Modal from "./Modal";
 const GameRoom = () => {
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
-   
-   
-    const {
-        user,
-        room,
-        rooms,
-        setRoom,
-        color,
-        winner,
-        setWinner,
-    } = useContext(MyContext);
+
+    const { user, room, rooms, setRoom, color, winner, setWinner } = useContext(MyContext);
 
     const drawCard = (numOfCards) => {
         return room.gameData.drawPile.splice(0, numOfCards);
@@ -58,33 +49,23 @@ const GameRoom = () => {
                 gameData: {
                     ...room.gameData,
                     allPlayerCards,
-                    turn: calculateNextTurn(
-                        false,
-                        false,
-                        room.gameData.turn,
-                        room.players.length
-                    ),
+                    turn: calculateNextTurn(false, false, room.gameData.turn, room.players.length),
                 },
             });
         }
     };
 
     const cardHandler = (card) => {
-
-      
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
-
             console.log("Not your turn");
-         } else {
+        } else {
             if (
-               card.color === room.gameData.discardPile[0].color ||
+                card.color === room.gameData.discardPile[0].color ||
                 card.number === room.gameData.discardPile[0].number ||
                 card.number === ""
             ) {
-               
-              
-                 if (card.number === "" || card.number === "D4") {
-                     setShowPopup(true);
+                if (card.number === "" || card.number === "D4") {
+                    setShowPopup(true);
                 }
 
                 const player = room.gameData.allPlayerCards.find(
@@ -96,10 +77,7 @@ const GameRoom = () => {
                     const cardIndex = player.cards.indexOf(card);
                     player.cards.splice(cardIndex, 1);
                     room.gameData.discardPile.unshift(card);
-                    
-                }else{
-                    
-
+                } else {
                     alert("You didn't say UNO!");
 
                     const drawnCards = drawCard(2);
@@ -109,37 +87,30 @@ const GameRoom = () => {
                         }
                         return player;
                     });
+                }
 
-                 }
-             
-
-               
-
-
-              
                 const cardIndex = player.cards.indexOf(card);
                 player.cards.splice(cardIndex, 1);
 
-               room.gameData.discardPile.unshift(card);
+                room.gameData.discardPile.unshift(card);
 
                 socket.emit("update_game", {
                     ...room,
-                     gameData: {
+                    gameData: {
                         ...room.gameData,
                         turn: calculateNextTurn(
-                            card.number === '_' ? true : false,
-                            card.number === 'skip' ? true : false,
+                            card.number === "_" ? true : false,
+                            card.number === "skip" ? true : false,
                             room.gameData.turn,
                             room.players.length
                         ),
-                         allPlayerCards,
+                        allPlayerCards,
                     },
-                    
                 });
-           } else {
+            } else {
                 alert("invalid card");
-             }
-         }
+            }
+        }
     };
 
     const checkUno = () => {
@@ -148,8 +119,8 @@ const GameRoom = () => {
             player.isUno = true;
         }
     };
-console.log(room?.gameData.allPlayerCards,"allPlayerCards")
-console.log(room?.players,"players")
+    console.log(room?.gameData.allPlayerCards, "allPlayerCards");
+    console.log(room?.players, "players");
 
     return (
         <div
@@ -160,18 +131,22 @@ console.log(room?.players,"players")
         >
             {room && (
                 <div>
-                    {room.gameData.allPlayerCards.map((player) => (
-                        <h1 key={player?.userId}>
-                            {player?.name} : {player?.cards?.length}{" "}
-                        </h1>
-                    ))}
-                    <div>
-                        <h3>players</h3>
-                        <ul>
-                            {room.players.map((player) => (
-                                <li key={player._id}>{player.name}</li>
+                    {room.isStarted ? (
+                        <div>
+                            {room.gameData.allPlayerCards.map((player) => (
+                                <h1 key={player?.userId}>
+                                    {player?.name} : {player?.cards?.length}{" "}
+                                </h1>
                             ))}
-                        </ul>
+                        </div>
+                    ) : (
+                        <div>
+                            {room.players.map((player) => {
+                                return <h1 key={player?._id}>{player?.name}</h1>;
+                            })}
+                        </div>
+                    )}
+                    <div>
                         {room?.userId?.toString() === user._id.toString() ? (
                             <button
                                 disabled={room.players.length <= 1}
@@ -187,58 +162,61 @@ console.log(room?.players,"players")
                             )
                         )}
                         <div className="flex">
-                            <div>
-                                <h3>Discard Pile</h3>
-                                {room.gameData.discardPile && (
-                                    <div
-                                        className={`flex justify-center w-[300px] ${setBgColor(
-                                            room.gameData.discardPile[0]?.color
-                                        )}`}
-                                    >
-                                        <Card
-                                            color={room.gameData.discardPile[0]?.color}
-                                            number={room.gameData.discardPile[0]?.number}
-                                        />
-                                    </div>
+                            <div hidden={!room.isStarted}>
+                                <div>
+                                    <h3>Discard Pile</h3>
+                                    {room.gameData.discardPile && (
+                                        <div
+                                            className={`flex justify-center w-[300px] ${setBgColor(
+                                                room.gameData.discardPile[0]?.color
+                                            )}`}
+                                        >
+                                            <Card
+                                                color={room.gameData.discardPile[0]?.color}
+                                                number={room.gameData.discardPile[0]?.number}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <h3>Draw Pile</h3>
+                                    <img
+                                        className="w-[200px]"
+                                        src={deckCard}
+                                        onClick={drawPileHandler}
+                                    />
+                                </div>
+
+                                {showPopup && (
+                                    <Modal
+                                        setShowPopup={setShowPopup}
+                                        skipTurn={skipTurn}
+                                        reverseTurn={reverseTurn}
+                                        drawCard={drawCard}
+                                    />
                                 )}
-                            </div>
-                            <div>
-                                <h3>Draw Pile</h3>
-                                <img
-                                    className="w-[200px]"
-                                    src={deckCard}
-                                    onClick={drawPileHandler}
-                                />
+                                <h3>player cards</h3>
+                                {room.gameData.allPlayerCards
+                                    .find((item) => item.userId === user._id)
+                                    ?.cards.map((card, i) => (
+                                        <div
+                                            onClick={() => cardHandler(card)}
+                                            className="inline-block"
+                                            key={card.number + i}
+                                        >
+                                            <Card color={card.color} number={card.number} />
+                                        </div>
+                                    ))}
+
+                                <button
+                                    // disabled={playerCards?.length !== 6}
+                                    onClick={checkUno}
+                                    className="border-slate-950 border-2 p-1 rounded"
+                                >
+                                    UNO
+                                </button>
                             </div>
                         </div>
-                        {showPopup && (
-                            <Modal
-                                setShowPopup={setShowPopup}
-                                skipTurn={skipTurn}
-                                reverseTurn={reverseTurn}
-                                drawCard={drawCard}
-                            />
-                        )}
-                        <h3>player cards</h3>
-                        {room.gameData.allPlayerCards
-                            .find((item) => item.userId === user._id)
-                            ?.cards.map((card, i) => (
-                                <div
-                                    onClick={() => cardHandler(card)}
-                                    className="inline-block"
-                                    key={card.number + i}
-                                >
-                                    <Card color={card.color} number={card.number} />
-                                </div>
-                            ))}
-
-                        <button
-                            // disabled={playerCards?.length !== 6}
-                            onClick={checkUno}
-                            className="border-slate-950 border-2 p-1 rounded"
-                        >
-                            UNO
-                        </button>
 
                         <button
                             className="block border-slate-950 border-2 p-1 rounded"

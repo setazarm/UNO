@@ -9,7 +9,7 @@ import roomRouter from "./routes/gameRoom.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import GameRoom from "./models/gameRoomSchema.js";
 import User from "./models/userSchema.js";
-import fs from 'fs'
+import fs from "fs";
 import shuffleArray from "./shuffle.js";
 import card from "./card.js";
 
@@ -47,9 +47,8 @@ mongoose
     .catch((err) => console.log("Database is not connected! ", err.message));
 
 io.on("connection", (socket) => {
-    console.log(socket.id, 'user connected');
+    console.log(socket.id, "user connected");
     socket.on("user_connected", async ({ socketId, userId }) => {
-        
         const user = await User.findByIdAndUpdate(userId, {
             socketId,
         });
@@ -100,9 +99,8 @@ io.on("connection", (socket) => {
                 let userCards = {
                     userId: room.players[i]._id,
                     cards: cardDeck.slice(i * 7, (i + 1) * 7),
-                    isUno:false,
+                    isUno: false,
                     name: room.players[i].name,
-                    
                 };
                 allUsersCards.push(userCards);
             }
@@ -115,7 +113,6 @@ io.on("connection", (socket) => {
                     gameData: {
                         discardPile: [remainingCards[0]],
                         drawPile: remainingCards.slice(1),
-                        isStarted: true,
                         allPlayerCards: allUsersCards,
                         turn: 0,
                     },
@@ -123,8 +120,11 @@ io.on("connection", (socket) => {
                 { new: true }
             ).populate("players");
 
+            updatedRoom.isStarted = true;
+            updatedRoom.save();
+
             const rooms = await GameRoom.find().populate("players");
-                console.log('object :>> ', updatedRoom);
+            console.log("object :>> ", updatedRoom);
             io.in(roomId.toString()).emit("game_update", updatedRoom);
 
             // Updating Lobby
@@ -132,7 +132,7 @@ io.on("connection", (socket) => {
         });
     });
     socket.on("update_game", async (room) => {
-        console.log('updategame works?');
+        console.log("updategame works?");
         const updatedRoom = await GameRoom.findByIdAndUpdate(
             room._id,
             {
@@ -220,7 +220,7 @@ io.on("connection", (socket) => {
 
     // _____________________________________________________________________
     socket.on("disconnect", async () => {
-        console.log(socket.id, 'user disconnected');
+        console.log(socket.id, "user disconnected");
         const user = await User.findOne({ socketId: socket.id });
         if (user) {
             const room = await GameRoom.findByIdAndUpdate(
