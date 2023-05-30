@@ -59,64 +59,74 @@ const GameRoom = () => {
             });
         }
     };
-
     const cardHandler = (card) => {
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
-            toast.error("Not your turn");
+          toast.error("Not your turn");
         } else {
-            if (
-                card.color === room.gameData.discardPile[0].color ||
-                card.number === room.gameData.discardPile[0].number ||
-                card.number === ""
-            ) {
-                if (card.number === "" || card.number === "D4") {
-                    setShowPopup(true);
-                }
-
-                const player = room.gameData.allPlayerCards.find(
-                    (item) => item.userId === user._id
-                );
-                let allPlayerCards = room.gameData.allPlayerCards;
-
-                if (!(player.cards.length === 4 && !player.isUno)) {
-                    const cardIndex = player.cards.indexOf(card);
-                    player.cards.splice(cardIndex, 1);
-                    room.gameData.discardPile.unshift(card);
-                } else {
-                    toast.error("You didn't say UNO!");
-
-                    const drawnCards = drawCard(2);
-                    allPlayerCards = room.gameData.allPlayerCards.map((player) => {
-                        if (player.userId === user._id) {
-                            player.cards.push(...drawnCards);
-                        }
-                        return player;
-                    });
-                }
-
-                const cardIndex = player.cards.indexOf(card);
-                player.cards.splice(cardIndex, 1);
-
-                room.gameData.discardPile.unshift(card);
-
-                socket.emit("update_game", {
-                    ...room,
-                    gameData: {
-                        ...room.gameData,
-                        turn: calculateNextTurn(
-                            card.number === "_" ? true : false,
-                            card.number === "skip" ? true : false,
-                            room.gameData.turn,
-                            room.players.length
-                        ),
-                        allPlayerCards,
-                    },
-                });
-            } else {
-                toast.error("invalid card");
+          if (
+            card.color === room.gameData.discardPile[0].color ||
+            card.number === room.gameData.discardPile[0].number ||
+            card.number === "" ||
+            card.number === "D4"
+          ) {
+            if (card.number === "" || card.number === "D4") {
+              setShowPopup(true);
             }
+      
+            const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
+            let allPlayerCards = room.gameData.allPlayerCards;
+      
+            if (!(player.cards.length === 4 && !player.isUno)) {
+              const cardIndex = player.cards.indexOf(card);
+              player.cards.splice(cardIndex, 1);
+              room.gameData.discardPile.unshift(card);
+            } else {
+              toast.error("You didn't say UNO!");
+      
+              const drawnCards = drawCard(2);
+              allPlayerCards = room.gameData.allPlayerCards.map((player) => {
+                if (player.userId === user._id) {
+                  player.cards.push(...drawnCards);
+                }
+                return player;
+              });
+            }
+      
+            if (card.number === "D4") {
+              const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
+              const nextPlayer = room.gameData.allPlayerCards[nextPlayerIndex];
+      
+              const drawnCards = drawCard(4);
+              nextPlayer.cards.push(...drawnCards);
+            } else if (card.number === "D2") {
+              const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
+              const nextPlayer = room.gameData.allPlayerCards[nextPlayerIndex];
+      
+              const drawnCards = drawCard(2);
+              nextPlayer.cards.push(...drawnCards);
+            }
+      
+            socket.emit("update_game", {
+              ...room,
+              gameData: {
+                ...room.gameData,
+                turn: calculateNextTurn(
+                  card.number === "_" ? true : false,
+                  card.number === "skip" ? true : false,
+                  room.gameData.turn,
+                  room.players.length
+                ),
+                allPlayerCards,
+              },
+            });
+          } else {
+            toast.error("invalid card");
+          }
         }
-    };
+      };
+      
+      
+      
 
     const checkUno = () => {
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
@@ -195,8 +205,7 @@ const GameRoom = () => {
                                 {showPopup && (
                                     <Modal
                                         setShowPopup={setShowPopup}
-                                        skipTurn={skipTurn}
-                                        reverseTurn={reverseTurn}
+                                        room={room}
                                         drawCard={drawCard}
                                     />
                                 )}
