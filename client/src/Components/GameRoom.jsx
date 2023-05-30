@@ -28,7 +28,7 @@ const GameRoom = () => {
             });
         }
     };
-
+    console.log("object");
     const leaveRoom = () => {
         socket.emit("leave_room", { userId: user._id, roomId: room });
     };
