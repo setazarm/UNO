@@ -139,58 +139,11 @@ io.on("connection", (socket) => {
                 ...room,
             },
             { new: true }
-        ).populate("players");
+        )
+            .populate("players")
+            .populate("gameData.gameOver.winner");
 
         io.in(room._id.toString()).emit("game_update", updatedRoom);
-    });
-
-    socket.on("draw_card", async ({ userId, room, num }) => {
-        try {
-            const updatedRoom = await GameRoom.findByIdAndUpdate(
-                room._id,
-                {
-                    gameData: {
-                        ...room.gameData,
-                        allPlayerCards: room.gameData.allPlayerCards.map((player) => {
-                            if (player.userId === userId) {
-                                player.cards.push(...room.gameData.drawPile.slice(0, num));
-                            }
-                            return player;
-                        }),
-                        drawPile: room.gameData.drawPile.slice(num),
-                    },
-                },
-                { new: true }
-            ).populate("players");
-
-            io.in(room._id.toString()).emit("game_update", updatedRoom);
-        } catch (error) {
-            console.log(error);
-        }
-    });
-
-    socket.on("winner", ({ winner, roomId }) => {
-        console.log(winner, "winner");
-        io.in(roomId.toString()).emit("resultWinner", winner, roomId);
-    });
-    socket.on("leaveWinner", async ({ userId, roomId }) => {
-        console.log("received leaveWinner", userId, roomId);
-        const room = await GameRoom.findByIdAndUpdate(
-            roomId,
-            { $pull: { players: userId } },
-            { new: true }
-        );
-        const user = await User.findByIdAndUpdate(
-            userId,
-            { $unset: { room: null } },
-            { new: true }
-        );
-        io.in(roomId.toString()).emit("winnerLeft", room, user);
-    });
-
-    socket.on("playerCards-status", async (data) => {
-        const user = await User.findById(data.userId);
-        io.in(data.roomId.toString()).emit("cards", { user, card: data.length });
     });
 
     //leave room

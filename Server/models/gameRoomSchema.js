@@ -31,12 +31,19 @@ const gameRoomSchema = new Schema(
             discardPile: [{ type: Object }],
             allPlayerCards: [{ type: Object }],
             turn: { type: Number, default: 0 },
+            gameOver: {
+                status: { type: Boolean, default: false },
+                winner: {
+                    type: Schema.Types.ObjectId,
+                    ref: "User",
+                },
+            },
         },
         userId: { type: Schema.Types.ObjectId, ref: "users" },
         bgColor: {
             type: String,
-            default: '#f1f1f1'    
-        }
+            default: "#f1f1f1",
+        },
     },
     {
         timestamps: true,
