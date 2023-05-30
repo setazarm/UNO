@@ -67,33 +67,34 @@ const GameRoom = () => {
             if (
                 card.color === room.gameData.discardPile[0].color ||
                 card.number === room.gameData.discardPile[0].number ||
-                card.number === ""
+                card.number === "" ||
+                card.number === "D4"
             ) {
                 if (card.number === "" || card.number === "D4") {
                     setShowPopup(true);
                 }
-
+    
                 const player = room.gameData.allPlayerCards.find(
                     (item) => item.userId === user._id
                 );
-
+    
                 let allPlayerCards = room.gameData.allPlayerCards;
-
+    
                 if (!(player.cards.length === 4 && !player.isUno)) {
                     const cardIndex = player.cards.indexOf(card);
                     player.cards.splice(cardIndex, 1);
                     room.gameData.discardPile.unshift(card);
-
+    
                     player.isUno = false;
-
+    
                     if (player.cards.length === 3) {
-                        toast.error("You won !!");
+                        toast.error("You won!!");
                         room.gameData.gameOver.status = true;
                         room.gameData.gameOver.winner = player.userId;
                     }
                 } else {
                     toast.error("You didn't say UNO!");
-
+    
                     const drawnCards = drawCard(2);
                     allPlayerCards = room.gameData.allPlayerCards.map((player) => {
                         if (player.userId === user._id) {
@@ -102,13 +103,21 @@ const GameRoom = () => {
                         return player;
                     });
                 }
-
-                // Remove the card from players hand and put it on the discard pile
-                // const cardIndex = player.cards.indexOf(card);
-                // player.cards.splice(cardIndex, 1);
-
-                // room.gameData.discardPile.unshift(card);
-
+    
+                if (card.number === "D4") {
+                    const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
+                    const nextPlayer = room.gameData.allPlayerCards[nextPlayerIndex];
+    
+                    const drawnCards = drawCard(4);
+                    nextPlayer.cards.push(...drawnCards);
+                } else if (card.number === "D2") {
+                    const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
+                    const nextPlayer = room.gameData.allPlayerCards[nextPlayerIndex];
+    
+                    const drawnCards = drawCard(2);
+                    nextPlayer.cards.push(...drawnCards);
+                }
+    
                 socket.emit("update_game", {
                     ...room,
                     gameData: {
@@ -209,8 +218,7 @@ const GameRoom = () => {
                                     {showPopup && (
                                         <Modal
                                             setShowPopup={setShowPopup}
-                                            skipTurn={skipTurn}
-                                            reverseTurn={reverseTurn}
+                                            room={room}
                                             drawCard={drawCard}
                                         />
                                     )}
