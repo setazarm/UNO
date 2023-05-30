@@ -154,14 +154,15 @@ const GameRoom = () => {
                     )}
                     <div>
                         {room?.userId?.toString() === user._id.toString() ? (
-                           <button
-                           // disabled={room.players.length <= 1}
-                           onClick={startGame}
-                           className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${!room.isStarted ? 'm-auto' : ''} font-bold`}
-                       >
-                           start game
-                       </button>
-                       
+                            <button
+                                // disabled={room.players.length <= 1}
+                                onClick={startGame}
+                                className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${
+                                    !room.isStarted ? "m-auto" : ""
+                                } font-bold`}
+                            >
+                                start game
+                            </button>
                         ) : (
                             !room.players.includes(room.userId.toString()) &&
                             room.players[0]._id === user._id && (
@@ -226,7 +227,9 @@ const GameRoom = () => {
                         </div>
 
                         <button
-                             className={`p-3 rounded mt-6 bg-green-500 hover:bg-green-600  text-white block ${!room.isStarted ? 'm-auto' : ''} font-bold`}
+                            className={`p-3 rounded mt-6 bg-green-500 hover:bg-green-600  text-white block ${
+                                !room.isStarted ? "m-auto" : ""
+                            } font-bold`}
                             onClick={leaveRoom}
                         >
                             Leave Room
