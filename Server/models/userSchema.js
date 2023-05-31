@@ -41,6 +41,8 @@ const userSchema = new Schema(
         },
         socketId: { type: String },
         room: { type: Schema.Types.ObjectId, ref: "users" },
+
+        likes:[{type:Schema.Types.ObjectId,ref:"users"}]
     },
     { timestamps: true, versionKey: false }
 );

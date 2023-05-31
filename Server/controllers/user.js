@@ -79,3 +79,19 @@ export const deleteUser = async (req, res, next) => {
         next(new httpErrors.NotFound("No record found !"));
     }
 };
+
+export const likeUser = async (req, res, next) => {
+    
+    try {
+        const { id } = req.params;
+
+        const likedUser=await User.findById(id)
+        if(!likedUser.likes.includes(req.user._id)){
+            await likedUser.updateOne({$push:{likes:req.user._id}})
+        }
+        const users =await User.find()
+        res.json({ success: true, data: users });
+    } catch (err) {
+        next(new httpErrors.NotFound("No record found !"));
+    }
+}
