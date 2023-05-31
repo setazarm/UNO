@@ -8,6 +8,11 @@ import{FaPlus} from "react-icons/fa";
 const Lobby = () => {
     const { rooms } = useContext(MyContext);
     const navigate = useNavigate();
+    const [search, setSearch] = useState('');
+
+    const filteredRooms = rooms.filter(
+        room => room.roomName.toLowerCase().includes(search.toLowerCase())
+    )
     // const divStyle = {
     //     '--u': '2.5vmin',
     //     '--c1': '#009688',
@@ -33,11 +38,30 @@ const Lobby = () => {
     
     return (
         <div className="flex flex-col items-center min-h-screen py-10" style={divStyle}>
-        <div className="flex flex-wrap justify-center gap-4">
-            {rooms.map((room) => {
-                return <GameRoomCard key={room._id} room={room} />;
-            })}
-        </div>
+            <div className="max-w-md mx-auto mb-8">
+      <input
+        type="text"
+        placeholder="Search"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        className="w-full px-4 py-2 rounded-md bg-cyan-900 text-white focus:outline-none"
+      />
+    </div>
+
+     {
+        filteredRooms.length > 0 ? (
+            <div className="flex gap-4">
+            {filteredRooms.map((room) => (
+                <GameRoomCard
+                    key={room._id}
+                    room={room}
+                />
+            ))}
+            </div>
+        ) : (
+            <div className="text-2xl text-gray-700 bg-[#b6d6bf] p-3">No rooms found</div>
+        )
+     }
         <button
             onClick={() => {
                 navigate("/createroom");
