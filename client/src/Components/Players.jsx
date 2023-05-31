@@ -7,6 +7,7 @@ const Players = () => {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
 
+
   useEffect(() => {
     axios
       .get('http://localhost:8000/users')
@@ -23,6 +24,20 @@ const Players = () => {
   const filteredPlayers = players.filter(player =>
     player.name.toLowerCase().includes(search.toLowerCase())
   );
+  const likeHandler=(id)=>{
+    
+    console.log(id)
+
+  axios.patch(`http://localhost:8000/users/like/${id}`,null,{headers:{token:localStorage.getItem('token')}})
+  .then(res=>{
+    if(res.data.success){
+      setPlayers(res.data.data)
+    }
+
+  })
+
+  }
+
 
   return (
     <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 min-h-screen text-white py-10 px-4 md:px-10">
@@ -47,7 +62,7 @@ const Players = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredPlayers.map(player => (
           <div
-            key={player.id}
+            key={player._id}
             className=" bg-cyan-900 p-4 rounded-lg shadow-md"
           >
             <img
@@ -58,6 +73,13 @@ const Players = () => {
             <h3 className="text-xl font-semibold mb-2">{player.name}</h3>
             <p className="mb-2">Status: {player.status}</p>
             <p className="mb-2">Points: {player.points}</p>
+            <p>{player.email}</p>
+            <button
+              onClick={()=>likeHandler(player._id)}
+            >Like {" "}
+          
+              {player?.likes?.length}
+            </button>
           </div>
         ))}
       </div>
