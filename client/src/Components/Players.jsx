@@ -73,6 +73,7 @@ const Players = () => {
             <h3 className="text-xl font-semibold mb-2">{player.name}</h3>
             <p className="mb-2">Status: {player.status}</p>
             <p className="mb-2">Points: {player.points}</p>
+            <p>{player.email}</p>
             <button
               onClick={()=>likeHandler(player._id)}
             >Like {" "}
