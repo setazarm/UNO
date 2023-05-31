@@ -177,6 +177,7 @@ io.on("connection", (socket) => {
         const updatedUser = await User.findById(userId);
         updatedUser.points = updatedUser.points + 10;
         updatedUser.save();
+        io.emit("user_won", updatedUser);
     });
 
     // _____________________________________________________________________
