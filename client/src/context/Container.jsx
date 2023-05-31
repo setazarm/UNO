@@ -3,61 +3,42 @@ import { MyContext } from "./context.js";
 import { socket } from "../socket.js";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import shuffleArray from "../utilis/shuffleCard.js";
-import card from "../utilis/card.js";
+import toast, { Toaster } from "react-hot-toast";
+
 export default function Container({ children }) {
     const [user, setUser] = useState(null);
     const [room, setRoom] = useState(null);
     const [rooms, setRooms] = useState([]);
-    const [players, setPlayers] = useState([]);
-    const [game, setGame] = useState([]);
-    const [drawpile, setDrawpile] = useState([]);
-    const [discardpile, setDiscardpile] = useState([]);
-    const [playerCards, setPlayerCards] = useState([]);
-    const [turn, setTurn] = useState(0);
+
     const [isUno, setIsUno] = useState(false);
+
+    const [color, setColor] = useState("");
+
+    const [winner, setWinner] = useState(null);
+
     const navigate = useNavigate();
-    const deck = shuffleArray(card);
 
     // Room password checking
     const [passwordCorrect, setPasswordCorrect] = useState(false);
     const [password, setPassword] = useState("");
     const [show, setShow] = useState(false);
 
-    console.log(socket.id);
     useEffect(() => {
         const allRooms = (rooms) => {
-            console.log("working");
             setRooms(rooms);
         };
 
-        const getGameData = (gamedata) => {
-            setTurn(0);
-            setGame(gamedata);
-            setDrawpile(gamedata.drawpile);
-            setDiscardpile(gamedata.discardpile);
-            const pCard = deck.slice(0, 7);
-            setPlayerCards(pCard);
-            console.log("here");
-        };
-        const updateGame = (gamedata) => {
-            console.log("game updated");
-            setGame(gamedata);
-            console.log(gamedata);
-            setDrawpile(gamedata.drawpile);
-            setDiscardpile(gamedata.discardpile);
-            setTurn(gamedata.turn);
-            setIsUno(gamedata.isUno);
+        const updateRoom = (room) => {
+            console.log("room", room);
+            setRoom(room);
         };
 
         const afterLeave = (rooms, userId) => {
             setUser((user) => {
                 if (user._id.toString() === userId) {
+                    setRoom(null);
                     setRooms(rooms);
                     navigate("/lobby");
-                    setPlayerCards([]);
-                    setDrawpile([]);
-                    setDiscardpile([]);
                     return user;
                 } else {
                     setRooms(rooms);
@@ -65,22 +46,53 @@ export default function Container({ children }) {
                 }
             });
         };
+
+        const errorHandler = (error) => {
+            console.log(error);
+            switch (error.code) {
+                case 11000:
+                    toast.error("Room name already in use ");
+                    break;
+                default:
+                    if (error.message) {
+                        toast.error(`${error.message}`);
+                    } else {
+                        toast.error("An error ocurred");
+                    }
+                    break;
+            }
+        };
+
+        const incrementPoints = (updateUser) => {
+            setUser((user) => {
+                if (user._id === updateUser._id) {
+                    return updateUser;
+                }
+                return user;
+            });
+        };
+
         socket.on("update_rooms", allRooms);
 
-        socket.on("game_started", getGameData);
+        socket.on("user_won", incrementPoints);
+
+        socket.on("game_update", updateRoom);
 
         socket.on("after_leave_room_created", afterLeave);
 
-        socket.on("game_updated", updateGame);
+        socket.on("error", errorHandler);
 
         /*   socket.on("user_left",allRooms) */
         return () => {
             socket.off("update_rooms", allRooms);
-            socket.off("game_started", getGameData);
+            socket.off("game_started", updateRoom);
             socket.off("after_leave_room_created", afterLeave);
-            socket.off("game_updated", updateGame);
+            socket.off("game_updated", updateRoom);
+            socket.off("user_won", incrementPoints);
+            socket.off("error", errorHandler);
         };
     }, []);
+
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -114,30 +126,36 @@ export default function Container({ children }) {
                 rooms,
                 setRoom,
                 setRooms,
-                players,
-                setPlayers,
-                game,
-                setGame,
-                drawpile,
-                setDrawpile,
-                discardpile,
-                setDiscardpile,
-                playerCards,
-                setPlayerCards,
-                deck,
-                turn,
-                setTurn,
+
+                isUno,
+                setIsUno,
+
+                // Room Password
                 passwordCorrect,
                 setPasswordCorrect,
                 password,
                 setPassword,
                 show,
                 setShow,
-                isUno,
-                setIsUno,
+
+                color,
+                setColor,
+
+                winner,
+                setWinner,
             }}
         >
             {children}
+            <Toaster
+                toastOptions={{
+                    className: "",
+                    style: {
+                        border: "1px solid #713200",
+                        padding: "32px",
+                        color: "#713200",
+                    },
+                }}
+            />
         </MyContext.Provider>
     );
 }

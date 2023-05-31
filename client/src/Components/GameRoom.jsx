@@ -5,51 +5,28 @@ import { socket } from "../socket.js";
 import deckCard from "../assets/unoCards";
 import calculateNextTurn from "../utilis/calculateNextTurn";
 import Card from "./Card";
+import setBgColor from "../utilis/setBgColor";
+import Modal from "./Modal";
+import toast, { Toaster } from "react-hot-toast";
 const GameRoom = () => {
-  
     const { id } = useParams();
-    const {
-        user,
-        setUser,
-        room,
-        rooms,
-        setRoom,
-        setRooms,
-        players,
-        setPlayers,
-        game,
-        setGame,
-        drawpile,
-        setDrawpile,
-        discardpile,
-        setDiscardpile,
-        playerCards,
-        setPlayerCards,
-        deck,
-        turn,
-        setTurn,
-        isUno,
-        setIsUno,
-    } = useContext(MyContext);
+    const [showPopup, setShowPopup] = useState(false);
 
-    const drawCard = (numOfcards, pile) => {
-        const cards = [];
-        for (let i = 0; i < numOfcards; i++) {
-            const card = pile.shift();
-            cards.push(card);
-        }
+    const { user, room, rooms, setRoom } = useContext(MyContext);
 
-        return { cards, pile };
+    const drawCard = (numOfCards) => {
+        return room.gameData.drawPile.splice(0, numOfCards);
     };
 
     const startGame = () => {
-        let { cards, pile } = drawCard(1, deck.slice(room?.players.length * 7));
-        socket.emit("start_game", {
-            userId: user._id,
-            roomId: room._id,
-
-            gameData: { ...playerCards, drawpile: pile, discardpile: cards },
-        });
+        setShowPopup(false);
+        if (room.players.length < 2) {
+            toast.error("You need at least 2 people to start the game");
+        } else {
+            socket.emit("start_game", {
+                roomId: room._id,
+            });
+        }
     };
 
     const leaveRoom = () => {
@@ -60,150 +37,261 @@ const GameRoom = () => {
         setRoom(rooms.find((item) => item._id === id));
     }, [rooms, id]);
 
-    const drawpileHandler = () => {
-        if (room.players[turn]._id.toString() !== user._id.toString()) {
-            alert("Not your turn");
+    const drawPileHandler = () => {
+        if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
+            toast.error("Not your turn");
         } else {
-
-          
-            let { cards, pile } = drawCard(1, drawpile);
-            setPlayerCards((pre) => [...pre, ...cards]);
+            const drawnCards = drawCard(1);
+            const allPlayerCards = room.gameData.allPlayerCards.map((player) => {
+                if (player.userId === user._id) {
+                    player.cards.push(...drawnCards);
+                }
+                return player;
+            });
 
             socket.emit("update_game", {
-                userId: user._id,
-                roomId: room._id,
+                ...room,
                 gameData: {
-                    ...playerCards,
-                    drawpile: pile,
-                    discardpile: discardpile,
-                    turn: turn === room.players.length - 1 ? 0 : turn + 1,
-                    isUno: false,
+                    ...room.gameData,
+                    allPlayerCards,
+                    turn: calculateNextTurn(false, false, room.gameData.turn, room.players.length),
                 },
             });
         }
     };
 
     const cardHandler = (card) => {
-        
-        if (room.players[turn]._id.toString() !== user._id.toString()) {
-            alert("Not your turn");
+        if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
+            toast.error("Not your turn");
         } else {
-            let skipTurn = false;
-            let reverseTurn = false;
-
             if (
-                card.color === discardpile[discardpile.length - 1].color ||
-                card.number === discardpile[discardpile.length - 1].number
+                card.color === room.gameData.discardPile[0].color ||
+                card.number === room.gameData.discardPile[0].number ||
+                card.number === "" ||
+                card.number === "D4"
             ) {
-                setPlayerCards((pre) => pre.filter((item) => item !== card));
+                if (card.number === "" || card.number === "D4") {
+                    setShowPopup(true);
+                }
 
-                if (card.number === "skip") {
-                    
-                    skipTurn = true;
-                   
+                const player = room.gameData.allPlayerCards.find(
+                    (item) => item.userId === user._id
+                );
+
+                let allPlayerCards = room.gameData.allPlayerCards;
+
+                if (!(player.cards.length === 4 && !player.isUno)) {
+                    const cardIndex = player.cards.indexOf(card);
+                    player.cards.splice(cardIndex, 1);
+                    room.gameData.discardPile.unshift(card);
+
+                    player.isUno = false;
+
+                    if (player.cards.length === 3) {
+                        toast.error("You won!!");
+                        room.gameData.gameOver.status = true;
+                        room.gameData.gameOver.winner = player.userId;
+                        socket.emit("winner", player.userId);
+                    }
+                } else {
+                    toast.error("You didn't say UNO!");
+
+                    const drawnCards = drawCard(2);
+                    allPlayerCards = room.gameData.allPlayerCards.map((player) => {
+                        if (player.userId === user._id) {
+                            player.cards.push(...drawnCards);
+                        }
+                        return player;
+                    });
                 }
-                if (card.number === "_") {
-                    reverseTurn = true;
-                   
+
+                if (card.number === "D4") {
+                    const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
+                    const nextPlayer = room.gameData.allPlayerCards[nextPlayerIndex];
+
+                    const drawnCards = drawCard(4);
+                    nextPlayer.cards.push(...drawnCards);
+                } else if (card.number === "D2") {
+                    const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
+                    const nextPlayer = room.gameData.allPlayerCards[nextPlayerIndex];
+
+                    const drawnCards = drawCard(2);
+                    nextPlayer.cards.push(...drawnCards);
                 }
-                console.log(card.number);
-                console.log(reverseTurn);
-                console.log(skipTurn);
 
                 socket.emit("update_game", {
-                    userId: user._id,
-                    roomId: room._id,
+                    ...room,
                     gameData: {
-                        ...playerCards,
-                        drawpile: drawpile,
-                        discardpile: [...discardpile, card],
-
-                        turn: calculateNextTurn(reverseTurn, skipTurn, turn, room.players.length),
-
-                       
-                        isUno: false,
-
+                        ...room.gameData,
+                        turn: calculateNextTurn(
+                            card.number === "_" ? true : false,
+                            card.number === "skip" ? true : false,
+                            room.gameData.turn,
+                            room.players.length
+                        ),
+                        allPlayerCards,
                     },
                 });
             } else {
-                alert("invalid card");
+                toast.error("invalid card");
             }
         }
     };
-    useEffect(()=>{
-        if(playerCards.length === 5 && !isUno){
-            alert('you have to say UNO')
-            setPlayerCards((pre)=>[...pre, ...drawpile.splice(0,2)])
-            
-            
+
+    const checkUno = () => {
+        const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
+        if (player.cards.length === 4) {
+            player.isUno = true;
         }
+    };
 
-
-    },[playerCards])
-  
     return (
-        <div>
+        <div
+            style={{
+                backgroundColor: room?.bgColor ? room?.bgColor : "#f5f5f5",
+                color: room?.bgColor === "#010101" ? "white" : "black",
+            }}
+            className="min-h-screen w-screen flex flex-col p-6"
+        >
             {room && (
                 <div>
-                    <h3>players</h3>
-                    <ul>
-                        {room.players.map((player) => {
-                            return <li key={player._id}>{player.name}</li>;
-                        })}
-                    </ul>
-                    {room.userId.toString() === user._id.toString() ? (
-                        <button onClick={startGame}>start game</button>
+                    {room.isStarted ? (
+                        <div>
+                            {room.gameData.allPlayerCards.map((player) => (
+                                <h1 key={player?.userId}>
+                                    {player?.name} : {player?.cards?.length}{" "}
+                                </h1>
+                            ))}
+                        </div>
                     ) : (
-                        !room.players.includes(room.userId.toString()) &&
-                        room.players[0]._id === user._id && (
-                            <button onClick={startGame}>Start Game with First Player</button>
-                        )
+                        <div>
+                            {room.players.map((player) => {
+                                return <h1 key={player?._id}>{player?.name}</h1>;
+                            })}
+                        </div>
                     )}
-                    <div className="flex">
+                    {!room.gameData.gameOver.status ? (
                         <div>
-                            <h3>Discard Pile</h3>
-                            {discardpile.length > 0 ? (
-                                <div>
-                                    <Card
-                                        color={discardpile[discardpile.length - 1].color}
-                                        number={discardpile[discardpile.length - 1].number}
-                                    />
+                            {room?.userId?.toString() === user._id.toString() ? (
+                                <button
+                                    // disabled={room.players.length <= 1}
+                                    onClick={startGame}
+                                    className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${
+                                        !room.isStarted ? "m-auto" : ""
+                                    } font-bold`}
+                                >
+                                    Start Game
+                                </button>
+                            ) : (
+                                !room.players.includes(room.userId.toString()) &&
+                                room.players[0]._id === user._id && (
+                                    <button onClick={startGame}>
+                                        Start Game with First Player
+                                    </button>
+                                )
+                            )}
+                            <div className="flex">
+                                <div hidden={!room.isStarted}>
+                                    <div>
+                                        <h3>Discard Pile</h3>
+                                        {room.gameData.discardPile && (
+                                            <div
+                                                className={`flex justify-center w-[230px] opacity-80 rounded-md ${setBgColor(
+                                                    room.gameData.discardPile[0]?.color
+                                                )}`}
+                                            >
+                                                <Card
+                                                    color={room.gameData.discardPile[0]?.color}
+                                                    number={room.gameData.discardPile[0]?.number}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <h3>Draw Pile</h3>
+                                        <img
+                                            className="w-[200px]"
+                                            src={deckCard}
+                                            onClick={drawPileHandler}
+                                        />
+                                    </div>
+
+                                    {showPopup && (
+                                        <Modal
+                                            setShowPopup={setShowPopup}
+                                            room={room}
+                                            drawCard={drawCard}
+                                        />
+                                    )}
+                                    <h3>player cards</h3>
+                                    {room.gameData.allPlayerCards
+                                        .find((item) => item.userId === user._id)
+                                        ?.cards.map((card, i) => (
+                                            <div
+                                                onClick={() => cardHandler(card)}
+                                                className="inline-block"
+                                                key={card.number + i}
+                                            >
+                                                <Card color={card.color} number={card.number} />
+                                            </div>
+                                        ))}
+
+                                    <button
+                                        // disabled={playerCards?.length !== 6}
+                                        onClick={checkUno}
+                                        className="border-slate-950 border-2 p-1 rounded"
+                                    >
+                                        UNO
+                                    </button>
                                 </div>
-                            ) : null}
-                        </div>
-                        <div>
-                            <h3>Draw Pile</h3>
-                            {drawpile.length > 0 ? (
-                                <img
-                                    className="w-[200px]"
-                                    src={deckCard}
-                                    onClick={drawpileHandler}
-                                />
-                            ) : null}
-                        </div>
-                    </div>
-                    <h3>player cards</h3>
-                    {playerCards?.map((card, i) => {
-                        return (
-                            <div
-                                onClick={() => cardHandler(card)}
-                                className="inline-block"
-                                key={card.number + i}
-                            >
-                                <Card color={card.color} number={card.number} />
                             </div>
-                        );
-                    })}
 
-
-                    <button disabled={playerCards.length!==6} onClick={() => setIsUno(true)}>UNO</button>
-
-
-                    <button className="block" onClick={leaveRoom}>
-                        leave room
-                    </button>
+                            <button
+                                className={`p-3 rounded mt-6 bg-green-500 hover:bg-green-600  text-white block ${
+                                    !room.isStarted ? "m-auto" : ""
+                                } font-bold`}
+                                onClick={leaveRoom}
+                            >
+                                Leave Room
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="text-gray-200 rounded-md p-8 mt-4 w-2/3 mx-auto bg-[#0d6fa3]">
+                            <h1 className="text-center text-lg font-bold">The game is over</h1>
+                            <h2 className="text-center mb-8 text-lg font-semibold">
+                                {room?.gameData?.gameOver?.winner?.name} has won
+                            </h2>
+                            <button
+                                // disabled={room.players.length <= 1}
+                                onClick={startGame}
+                                className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${
+                                    !room.isStarted ? "m-auto" : ""
+                                } font-bold`}
+                            >
+                                Play Again
+                            </button>
+                            <button
+                                className={`p-3 rounded mt-6 bg-green-500 hover:bg-green-600  text-white block ${
+                                    !room.isStarted ? "m-auto" : ""
+                                } font-bold`}
+                                onClick={leaveRoom}
+                            >
+                                Leave Room
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
+            <Toaster
+                toastOptions={{
+                    className: "",
+                    style: {
+                        border: "1px solid #713200",
+                        padding: "32px",
+                        color: "#713200",
+                    },
+                }}
+            />
         </div>
     );
 };

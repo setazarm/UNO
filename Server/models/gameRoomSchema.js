@@ -26,7 +26,24 @@ const gameRoomSchema = new Schema(
             required: true,
             default: false,
         },
-        userId: { type: Schema.Types.ObjectId, ref: "users" },
+        gameData: {
+            drawPile: [{ type: Object }],
+            discardPile: [{ type: Object }],
+            allPlayerCards: [{ type: Object }],
+            turn: { type: Number, default: 0 },
+            gameOver: {
+                status: { type: Boolean, default: false },
+                winner: {
+                    type: Schema.Types.ObjectId,
+                    ref: "User",
+                },
+            },
+        },
+        userId: { type: Schema.Types.ObjectId, ref: "User" },
+        bgColor: {
+            type: String,
+            default: "#f1f1f1",
+        },
     },
     {
         timestamps: true,
