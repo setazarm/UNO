@@ -12,7 +12,7 @@ const GameRoom = () => {
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
 
-    const { user, room, rooms, setRoom, color, winner, setWinner } = useContext(MyContext);
+    const { user, room, rooms, setRoom } = useContext(MyContext);
 
     const drawCard = (numOfCards) => {
         return room.gameData.drawPile.splice(0, numOfCards);
