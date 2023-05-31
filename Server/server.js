@@ -131,6 +131,8 @@ io.on("connection", (socket) => {
             io.emit("room_created", rooms);
         });
     });
+
+    // update game state
     socket.on("update_game", async (room) => {
         console.log("updategame works?");
         const updatedRoom = await GameRoom.findByIdAndUpdate(
@@ -169,6 +171,12 @@ io.on("connection", (socket) => {
         // send all updated rooms data
         const rooms = await GameRoom.find().populate("players");
         io.emit("after_leave_room_created", rooms, userId);
+    });
+
+    socket.on("winner", async (userId) => {
+        const updatedUser = await User.findById(userId);
+        updatedUser.points = updatedUser.points + 10;
+        updatedUser.save();
     });
 
     // _____________________________________________________________________
