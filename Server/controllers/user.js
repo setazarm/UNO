@@ -16,7 +16,7 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
     const { email, password } = req.body;
     try {
-        const existingUser = await User.findOne({ email });
+        const existingUser = await User.findOne({ email }).populate("likes");
         if (!existingUser) return res.status(404).json({ message: "User doesn't exist" });
         const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
         if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
@@ -88,6 +88,8 @@ export const likeUser = async (req, res, next) => {
         const likedUser=await User.findById(id)
         if(!likedUser.likes.includes(req.user._id)){
             await likedUser.updateOne({$push:{likes:req.user._id}})
+        }else{
+            await likedUser.updateOne({$pull:{likes:req.user._id}})
         }
         const users =await User.find()
         res.json({ success: true, data: users });

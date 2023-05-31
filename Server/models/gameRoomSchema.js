@@ -39,7 +39,7 @@ const gameRoomSchema = new Schema(
                 },
             },
         },
-        userId: { type: Schema.Types.ObjectId, ref: "users" },
+        userId: { type: Schema.Types.ObjectId, ref: "User" },
         bgColor: {
             type: String,
             default: "#f1f1f1",

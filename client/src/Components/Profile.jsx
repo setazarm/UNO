@@ -98,7 +98,7 @@ const Profile = ({ setIsloading }) => {
                 People who liked you:
                 {user?.likes?.map((like) => (
                     <div>
-                        <p>{like}</p>
+                        <p>{like.name}</p>
                         </div>
                 ))}
             </div>
