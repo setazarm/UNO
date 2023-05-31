@@ -63,7 +63,18 @@ export default function Container({ children }) {
             }
         };
 
+        const incrementPoints = (updateUser) => {
+            setUser((user) => {
+                if (user._id === updateUser._id) {
+                    return updateUser;
+                }
+                return user;
+            });
+        };
+
         socket.on("update_rooms", allRooms);
+
+        socket.on("user_won", incrementPoints);
 
         socket.on("game_update", updateRoom);
 
@@ -77,7 +88,7 @@ export default function Container({ children }) {
             socket.off("game_started", updateRoom);
             socket.off("after_leave_room_created", afterLeave);
             socket.off("game_updated", updateRoom);
-
+            socket.off("user_won", incrementPoints);
             socket.off("error", errorHandler);
         };
     }, []);
