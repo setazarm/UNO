@@ -44,6 +44,7 @@ export default function Container({ children }) {
                 if (user._id.toString() === userId) {
                     setRoom(null);
                     setRooms(rooms);
+                    setMessageList([])
                     navigate("/lobby");
                     return user;
                 } else {
