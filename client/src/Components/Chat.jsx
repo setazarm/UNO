@@ -31,22 +31,22 @@ const Chat = () => {
 
    return (
     <div className="flex flex-col justify-between w-2/4 mx-auto">
-      <div className="h-full rounded-md bg-gray-500 p-4">
+      <div className="h-full rounded-md bg-gray-300 p-4">
       {messageList.map((message) => {
         return (
-          <div key={message.time} className={`flex ${user.name === message.author ? "justify-start" : "justify-end"} mb-4`}>
-            <div className={` rounded-lg px-4 py-2 ${user.name === message.author ? "mr-4 bg-blue-300" : "ml-4 bg-white"} text-sm`}>
+          <div key={message.time} className={`flex  text-white ${user.name === message.author ? "justify-start" : "justify-end"} mb-4`}>
+            <div className={` rounded-lg px-4 py-2 ${user.name === message.author ? "mr-4 bg-[#0d6fa3]" : "ml-4 bg-[#353538]"} text-sm`}>
               <p className="font-medium">{user.name === message.author ? "You" : message.author}</p>
               <p>{message.content}</p>
-              <p className="text-gray-500 text-xs">{message.time}</p>
+              <p className="text-gray-200 text-xs">{message.time}</p>
             </div>
           </div>
         );
       })}
     </div>
-    <div className="flex items-center justify-between bg-gray-500 p-4">
+    <div className="flex items-center justify-between bg-[#0d6fa3] p-4">
       <input type="text"
-       className="border border-gray-400 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500"
+       className="border border-gray-400 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring focus:ring-blue-800 focus:border-blue-800"
        placeholder="Hey..."
        value={currentMessage}
           onChange={(e) => {
