@@ -8,11 +8,16 @@ import Card from "./Card";
 import setBgColor from "../utilis/setBgColor";
 import Modal from "./Modal";
 import toast, { Toaster } from "react-hot-toast";
+
 import { WiStars } from "react-icons/wi";
+
+import Chat from "./Chat";
+
 const GameRoom = () => {
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
     const { user, room, rooms, setRoom } = useContext(MyContext);
+    const [showChat, setShowChat] = useState(true);
     const drawCard = (numOfCards) => {
         return room.gameData.drawPile.splice(0, numOfCards);
     };
@@ -333,6 +338,10 @@ const GameRoom = () => {
                     },
                 }}
             />
+            <button onClick={()=>setShowChat(!showChat)}>
+               Chat
+            </button>
+            {showChat && <Chat />}
         </div>
     );
 };

@@ -15,6 +15,7 @@ export default function Container({ children }) {
     const [color, setColor] = useState("");
 
     const [winner, setWinner] = useState(null);
+    const [messageList, setMessageList] = useState([]);
 
     const navigate = useNavigate();
 
@@ -22,6 +23,11 @@ export default function Container({ children }) {
     const [passwordCorrect, setPasswordCorrect] = useState(false);
     const [password, setPassword] = useState("");
     const [show, setShow] = useState(false);
+
+    const addMessageToList = (message) => {
+        console.log(message,"message")
+        setMessageList((list) => [...list, message]);
+      };
 
     useEffect(() => {
         const allRooms = (rooms) => {
@@ -81,6 +87,10 @@ export default function Container({ children }) {
             })
             
          }
+         const addingMessage = (message) => {
+            addMessageToList(message);
+
+         }
         socket.on("update_rooms", allRooms);
 
         socket.on("user_won", incrementPoints);
@@ -88,7 +98,9 @@ export default function Container({ children }) {
         socket.on("game_update", updateRoom);
 
         socket.on("after_leave_room_created", afterLeave);
-        socket.on('uno_says', displayUno)
+        socket.on('uno_says', displayUno);
+        socket.on("receive_message", addingMessage);
+        
 
         socket.on("error", errorHandler);
 
@@ -100,6 +112,8 @@ export default function Container({ children }) {
             socket.off("game_updated", updateRoom);
             socket.off("user_won", incrementPoints);
             socket.off("error", errorHandler);
+            socket.off("uno_says", displayUno);
+            socket.off("receive_message", addingMessage);
         };
     }, []);
 
@@ -153,6 +167,9 @@ export default function Container({ children }) {
 
                 winner,
                 setWinner,
+                messageList
+               
+
             }}
         >
             {children}
