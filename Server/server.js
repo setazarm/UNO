@@ -152,15 +152,23 @@ io.on("connection", (socket) => {
     socket.on("leave_room", async ({ userId, roomId }) => {
         // Remove player from Room DB entry
         let room = await GameRoom.findById(roomId);
+
         if (room.players.includes(userId.toString())) {
             room = await GameRoom.findByIdAndUpdate(
                 roomId,
                 { $pull: { players: userId } },
                 { new: true }
             );
+
             const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } });
         }
-        console.log(room.players);
+
+        if (room.userId.toString() === userId.toString()) {
+            room = await GameRoom.findByIdAndUpdate(roomId, {
+                userId: room.players[0],
+            });
+        }
+
         if (room.players.length === 0) {
             await GameRoom.findByIdAndDelete(roomId);
         }
@@ -172,10 +180,10 @@ io.on("connection", (socket) => {
         const rooms = await GameRoom.find().populate("players");
         io.emit("after_leave_room_created", rooms, userId);
     });
-    socket.on('uno_said', ({room, userName})=>{
-        console.log('username',userName);
-        io.in(room._id.toString()).emit('uno_says', userName)
-    })
+    socket.on("uno_said", ({ room, userName }) => {
+        console.log("username", userName);
+        io.in(room._id.toString()).emit("uno_says", userName);
+    });
 
     socket.on("winner", async (userId) => {
         const updatedUser = await User.findById(userId);
