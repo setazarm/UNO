@@ -172,6 +172,10 @@ io.on("connection", (socket) => {
         const rooms = await GameRoom.find().populate("players");
         io.emit("after_leave_room_created", rooms, userId);
     });
+    socket.on('uno_said', ({room, userName})=>{
+        console.log('username',userName);
+        io.in(room._id.toString()).emit('uno_says', userName)
+    })
 
     socket.on("winner", async (userId) => {
         const updatedUser = await User.findById(userId);

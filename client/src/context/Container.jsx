@@ -72,6 +72,15 @@ export default function Container({ children }) {
             });
         };
 
+         const displayUno =(userName)=> {
+            setUser(user =>{
+                if(user.name !== userName){
+                    toast.error(`${userName} says UNO!`)
+                }
+                return user
+            })
+            
+         }
         socket.on("update_rooms", allRooms);
 
         socket.on("user_won", incrementPoints);
@@ -79,6 +88,7 @@ export default function Container({ children }) {
         socket.on("game_update", updateRoom);
 
         socket.on("after_leave_room_created", afterLeave);
+        socket.on('uno_says', displayUno)
 
         socket.on("error", errorHandler);
 

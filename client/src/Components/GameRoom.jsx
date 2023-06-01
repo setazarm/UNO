@@ -11,9 +11,7 @@ import toast, { Toaster } from "react-hot-toast";
 const GameRoom = () => {
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
-
     const { user, room, rooms, setRoom } = useContext(MyContext);
-
     const drawCard = (numOfCards) => {
         return room.gameData.drawPile.splice(0, numOfCards);
     };
@@ -142,6 +140,8 @@ const GameRoom = () => {
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
         if (player.cards.length === 4) {
             player.isUno = true;
+            console.log('player',player);
+            socket.emit('uno_said', {room, userName: player.name})
         }
     };
 
