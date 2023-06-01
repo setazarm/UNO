@@ -145,7 +145,6 @@ const GameRoom = () => {
             socket.emit("uno_said", { room, userName: player.name });
         }
     };
-    
 
     return (
         <div
@@ -161,11 +160,15 @@ const GameRoom = () => {
                     {room.isStarted ? (
                         <div className="bg-white w-40 p-3 rounded flex flex-col gap-3 shadow-xl">
                             {room.gameData.allPlayerCards.map((player) => (
-                                <h1  className={`border-y-2 p-2 ${
-                                    room.players[room.gameData.turn]?._id.toString() === player.userId.toString()
-                                        ? "text-blue-500"
-                                        : ""
-                                }`}  key={player?.userId}>
+                                <h1
+                                    className={`border-y-2 p-2 ${
+                                        room.players[room.gameData.turn]?._id.toString() ===
+                                        player.userId.toString()
+                                            ? "text-blue-500"
+                                            : ""
+                                    }`}
+                                    key={player?.userId}
+                                >
                                     {player?.name} : {player?.cards?.length}{" "}
                                 </h1>
                             ))}
@@ -220,7 +223,7 @@ const GameRoom = () => {
                                             <h3>Discard Pile</h3>
                                             {room.gameData.discardPile && (
                                                 <div
-                                                    className={`flex flex-col justify-center w-[230px] opacity-80 rounded-md`}
+                                                    className={`flex flex-col justify-center  opacity-80 rounded-md `}
                                                 >
                                                     <Card
                                                         color={room.gameData.discardPile[0]?.color}
@@ -234,7 +237,7 @@ const GameRoom = () => {
                                         <div className="text-center">
                                             <h3>Draw Pile</h3>
                                             <img
-                                                className="w-[180px]"
+                                                className="w-[180px] transition-transform transition-ease-out duration-300 hover:scale-110"
                                                 src={deckCard}
                                                 onClick={drawPileHandler}
                                             />
@@ -253,10 +256,12 @@ const GameRoom = () => {
                                             // disabled={playerCards?.length !== 6}
                                             onClick={checkUno}
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
-                                                room.gameData.allPlayerCards.find((item) => item.userId === user._id)?.cards.length === 4
-                                                  ? "animate-bounce"
-                                                  : ""
-                                              }`}
+                                                room.gameData.allPlayerCards.find(
+                                                    (item) => item.userId === user._id
+                                                )?.cards.length === 4
+                                                    ? "animate-bounce"
+                                                    : ""
+                                            }`}
                                         >
                                             <WiStars /> UNO
                                         </button>
@@ -317,6 +322,7 @@ const GameRoom = () => {
                     )}
                 </div>
             )}
+            
             <Toaster
                 toastOptions={{
                     className: "",
