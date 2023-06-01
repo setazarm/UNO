@@ -207,7 +207,7 @@ io.on("connection", (socket) => {
     //chatbox
     socket.on("send_message", async (messageData) => {
         console.log(messageData)
-        socket.to(messageData.room).emit("receive_message", messageData);
+        io.in(messageData.room._id.toString()).emit("receive_message", messageData);
     }
     );
 });

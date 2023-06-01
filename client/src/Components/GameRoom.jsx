@@ -13,7 +13,7 @@ const GameRoom = () => {
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
     const { user, room, rooms, setRoom } = useContext(MyContext);
-    const [showChat, setShowChat] = useState(false);
+    const [showChat, setShowChat] = useState(true);
     const drawCard = (numOfCards) => {
         return room.gameData.drawPile.splice(0, numOfCards);
     };

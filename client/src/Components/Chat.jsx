@@ -4,12 +4,10 @@ import { socket } from "../socket.js";
 
 const Chat = () => {
     const [currentMessage, setCurrentMessage] = useState("");
-    const [messageList, setMessageList] = useState([]);
-    const {user,room} = useContext(MyContext)
+ 
+    const {user,room,messageList} = useContext(MyContext)
 
-    const addMessageToList = (message) => {
-      setMessageList((list) => [...list, message]);
-    };
+  
     const handleSendMessage =  () => {
       console.log(currentMessage,"currentMessage")
       console.log(room,"room")
@@ -25,10 +23,11 @@ const Chat = () => {
             new Date(Date.now()).getMinutes(),
         };
        socket.emit("send_message", messageData);
-        addMessageToList(messageData);
+        // addMessageToList(messageData);
         setCurrentMessage("");
       }
     };
+  
 
    return (
     <div>
