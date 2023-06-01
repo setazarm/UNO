@@ -211,6 +211,13 @@ io.on("connection", (socket) => {
         const rooms = await GameRoom.find().populate("players");
         io.emit("update_rooms", rooms);
     });
+
+    //chatbox
+    socket.on("send_message", async (messageData) => {
+        console.log(messageData)
+        io.in(messageData.room._id.toString()).emit("receive_message", messageData);
+    }
+    );
 });
 
 server.listen(8000, () => console.log(`The server is listening on port ${process.env.PORT}`));
