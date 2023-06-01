@@ -30,8 +30,8 @@ const Chat = () => {
   
 
    return (
-    <div className="flex flex-col justify-between w-2/4 mx-auto">
-      <div className="h-full rounded-md bg-gray-300 p-4">
+    <div className="flex flex-col justify-between w-200 mx-auto">
+      <div className="h-56 rounded-md bg-gray-300 p-4 overflow-y-auto">
       {messageList.map((message) => {
         return (
           <div key={message.time} className={`flex  text-white ${user.name === message.author ? "justify-start" : "justify-end"} mb-4`}>
