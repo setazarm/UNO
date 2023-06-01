@@ -8,6 +8,7 @@ import Card from "./Card";
 import setBgColor from "../utilis/setBgColor";
 import Modal from "./Modal";
 import toast, { Toaster } from "react-hot-toast";
+import { WiStars } from "react-icons/wi";
 const GameRoom = () => {
     const { id } = useParams();
     const [showPopup, setShowPopup] = useState(false);
@@ -140,25 +141,31 @@ const GameRoom = () => {
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
         if (player.cards.length === 4) {
             player.isUno = true;
-            console.log('player',player);
-            socket.emit('uno_said', {room, userName: player.name})
+            console.log("player", player);
+            socket.emit("uno_said", { room, userName: player.name });
         }
     };
+    
 
     return (
         <div
             style={{
                 backgroundColor: room?.bgColor ? room?.bgColor : "#f5f5f5",
                 color: room?.bgColor === "#010101" ? "white" : "black",
+                border: "10px solid black",
             }}
             className="min-h-screen w-screen flex flex-col p-6"
         >
             {room && (
-                <div>
+                <div className="">
                     {room.isStarted ? (
-                        <div>
+                        <div className="bg-white w-40 p-3 rounded flex flex-col gap-3 shadow-xl">
                             {room.gameData.allPlayerCards.map((player) => (
-                                <h1 key={player?.userId}>
+                                <h1  className={`border-y-2 p-2 ${
+                                    room.players[room.gameData.turn]?._id.toString() === player.userId.toString()
+                                        ? "text-blue-500"
+                                        : ""
+                                }`}  key={player?.userId}>
                                     {player?.name} : {player?.cards?.length}{" "}
                                 </h1>
                             ))}
@@ -190,30 +197,48 @@ const GameRoom = () => {
                                     </button>
                                 )
                             )}
-                            <div className="flex">
+                            <div className="flex flex-col justify-center items-center">
                                 <div hidden={!room.isStarted}>
-                                    <div>
-                                        <h3>Discard Pile</h3>
-                                        {room.gameData.discardPile && (
-                                            <div
-                                                className={`flex justify-center w-[230px] opacity-80 rounded-md ${setBgColor(
-                                                    room.gameData.discardPile[0]?.color
-                                                )}`}
-                                            >
-                                                <Card
-                                                    color={room.gameData.discardPile[0]?.color}
-                                                    number={room.gameData.discardPile[0]?.number}
-                                                />
-                                            </div>
-                                        )}
+                                    <div
+                                        className={`flex justify-center items-center text-center border-slate-950 border-2 ${setBgColor(
+                                            room.gameData.discardPile[0]?.color
+                                        )}`}
+                                        style={{
+                                            position: "absolute",
+                                            top: "16vh",
+                                            right: "16vw",
+                                            height: "80px",
+                                            width: "80px",
+                                            zIndex: 1,
+                                            borderRadius: "50%",
+                                        }}
+                                    >
+                                        Current Color
                                     </div>
-                                    <div>
-                                        <h3>Draw Pile</h3>
-                                        <img
-                                            className="w-[200px]"
-                                            src={deckCard}
-                                            onClick={drawPileHandler}
-                                        />
+                                    <div className="flex gap-1 justify-center items-center relative">
+                                        <div className="text-center">
+                                            <h3>Discard Pile</h3>
+                                            {room.gameData.discardPile && (
+                                                <div
+                                                    className={`flex flex-col justify-center w-[230px] opacity-80 rounded-md`}
+                                                >
+                                                    <Card
+                                                        color={room.gameData.discardPile[0]?.color}
+                                                        number={
+                                                            room.gameData.discardPile[0]?.number
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="text-center">
+                                            <h3>Draw Pile</h3>
+                                            <img
+                                                className="w-[180px]"
+                                                src={deckCard}
+                                                onClick={drawPileHandler}
+                                            />
+                                        </div>
                                     </div>
 
                                     {showPopup && (
@@ -223,26 +248,36 @@ const GameRoom = () => {
                                             drawCard={drawCard}
                                         />
                                     )}
-                                    <h3>player cards</h3>
-                                    {room.gameData.allPlayerCards
-                                        .find((item) => item.userId === user._id)
-                                        ?.cards.map((card, i) => (
-                                            <div
-                                                onClick={() => cardHandler(card)}
-                                                className="inline-block"
-                                                key={card.number + i}
-                                            >
-                                                <Card color={card.color} number={card.number} />
-                                            </div>
-                                        ))}
-
-                                    <button
-                                        // disabled={playerCards?.length !== 6}
-                                        onClick={checkUno}
-                                        className="border-slate-950 border-2 p-1 rounded"
-                                    >
-                                        UNO
-                                    </button>
+                                    <div className="flex flex-col items-end ">
+                                        <button
+                                            // disabled={playerCards?.length !== 6}
+                                            onClick={checkUno}
+                                            className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
+                                                room.gameData.allPlayerCards.find((item) => item.userId === user._id)?.cards.length === 4
+                                                  ? "animate-bounce"
+                                                  : ""
+                                              }`}
+                                        >
+                                            <WiStars /> UNO
+                                        </button>
+                                        <div className="mx-auto">
+                                            <h3>player cards</h3>
+                                            {room.gameData.allPlayerCards
+                                                .find((item) => item.userId === user._id)
+                                                ?.cards.map((card, i) => (
+                                                    <div
+                                                        onClick={() => cardHandler(card)}
+                                                        className="inline-block mx-auto"
+                                                        key={card.number + i}
+                                                    >
+                                                        <Card
+                                                            color={card.color}
+                                                            number={card.number}
+                                                        />
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

@@ -22,9 +22,9 @@ const Card = ({ color, number }) => {
             : `${fullColor}_${number}`;
 
     return (
-        <div className>
-            {<img className="w-[200px]" src={unoCards.filter((card) => card.includes(cardImage))} alt={cardImage} />}
-        </div>
+        <>
+            {<img className="w-[180px] transition-transform transition-ease-out duration-300 hover:scale-110" src={unoCards.filter((card) => card.includes(cardImage))} alt={cardImage} />}
+        </>
     );
 };
 export default Card;
