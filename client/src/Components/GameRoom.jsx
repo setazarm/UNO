@@ -10,6 +10,8 @@ import Modal from "./Modal";
 import toast, { Toaster } from "react-hot-toast";
 
 import { WiStars } from "react-icons/wi";
+import {IoMdChatbubbles} from 'react-icons/io'
+
 
 import Chat from "./Chat";
 
@@ -341,11 +343,31 @@ const GameRoom = () => {
             />
              <button
                                 onClick={() => setShowChat(!showChat)}
-                               
+                               className="flex items-center justify-center mt-4 "
+                               style={{
+                                      position: "fixed",
+                                        bottom: "70px",
+                                        right: "4vw",
+                               }}
                             >
-                                Chat
+                               <IoMdChatbubbles
+                               size={32}
+                                className={`text-2xl text-green-500 hover:text-gray-400 transition-colors duration-200 ease-in-out`}
+                               /> 
                             </button>
-                            {showChat && <Chat />}
+                            {showChat && (
+                                <div className="
+                                w-[300px]
+                                fixed"
+                                style={{
+                                        position: "fixed",
+                                        bottom: "16vh",
+                                        right: "4vw",
+
+                                }}>
+                            <Chat />
+                            </div>
+                            )}
         </div>
     );
 };

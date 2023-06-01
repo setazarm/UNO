@@ -13,14 +13,14 @@ const Chat = () => {
       console.log(room,"room")
       console.log(user.name,"user.name")
       if (currentMessage) {
+        const hours = new Date(Date.now()).getHours();
+const minutes = new Date(Date.now()).getMinutes().toString().padStart(2, '0');
+
         const messageData = {
           room: room,
           author: user.name,
           content: currentMessage,
-          time:
-            new Date(Date.now()).getHours() +
-            ":" +
-            new Date(Date.now()).getMinutes(),
+          time: hours + ":" + minutes,
         };
        socket.emit("send_message", messageData);
         // addMessageToList(messageData);
@@ -30,7 +30,7 @@ const Chat = () => {
   
 
    return (
-    <div className="flex flex-col justify-between w-200 mx-auto">
+    <div className="flex flex-col justify-between mx-auto">
       <div className="h-56 rounded-md bg-gray-300 p-4 overflow-y-auto">
       {messageList.map((message) => {
         return (
