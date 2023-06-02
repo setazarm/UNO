@@ -95,9 +95,12 @@ export default function Container({ children }) {
         };
         const addingMessage = (message) => {
             addMessageToList(message);
-            if (message.author !== user.name) {
-                playMessageSound();
-            }
+            setUser((user) => {
+                if (message.author !== user.name) {
+                    playMessageSound();
+                }
+                return user;
+            });
         };
         socket.on("update_rooms", allRooms);
 

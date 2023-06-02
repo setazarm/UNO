@@ -206,9 +206,8 @@ const GameRoom = () => {
                     )}
                     {!room.gameData.gameOver.status ? (
                         <div>
-                            {room?.userId?.toString() === user._id?.toString() ? (
+                            {room?.userId?.toString() === user?._id?.toString() ? (
                                 <button
-                                    // disabled={room.players.length <= 1}
                                     onClick={startGame}
                                     className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${
                                         !room.isStarted ? "m-auto" : ""
@@ -218,7 +217,7 @@ const GameRoom = () => {
                                 </button>
                             ) : (
                                 !room.players.includes(room.userId.toString()) &&
-                                room.players[0]._id === user._id && (
+                                room?.players[0]?._id === user?._id && (
                                     <button onClick={startGame}>
                                         Start Game with First Player
                                     </button>
@@ -277,11 +276,10 @@ const GameRoom = () => {
                                     )}
                                     <div className="flex flex-col items-end ">
                                         <button
-                                            // disabled={playerCards?.length !== 6}
                                             onClick={checkUno}
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
-                                                    (item) => item.userId === user._id
+                                                    (item) => item.userId === user?._id
                                                 )?.cards.length === 4
                                                     ? "animate-bounce"
                                                     : ""
@@ -292,7 +290,7 @@ const GameRoom = () => {
                                         <div className="mx-auto">
                                             <h3>player cards</h3>
                                             {room.gameData.allPlayerCards
-                                                .find((item) => item.userId === user._id)
+                                                .find((item) => item.userId === user?._id)
                                                 ?.cards.map((card, i) => (
                                                     <div
                                                         onClick={() => cardHandler(card)}
@@ -326,7 +324,6 @@ const GameRoom = () => {
                                 {room?.gameData?.gameOver?.winner?.name} has won
                             </h2>
                             <button
-                                // disabled={room.players.length <= 1}
                                 onClick={startGame}
                                 className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${
                                     !room.isStarted ? "m-auto" : ""

@@ -29,23 +29,23 @@ const Chat = () => {
                 {messageList.map((message) => {
                     return (
                         <div
-                            key={message.time}
+                            key={message?.time + Math.random() * 100}
                             className={`flex  text-white ${
-                                user.name === message.author ? "justify-start" : "justify-end"
+                                user?.name === message?.author ? "justify-start" : "justify-end"
                             } mb-4`}
                         >
                             <div
                                 className={` rounded-lg px-4 py-2 ${
-                                    user.name === message.author
+                                    user?.name === message?.author
                                         ? "mr-4 bg-[#0d6fa3]"
                                         : "ml-4 bg-[#353538]"
                                 } text-sm`}
                             >
                                 <p className="font-medium">
-                                    {user.name === message.author ? "You" : message.author}
+                                    {user?.name === message?.author ? "You" : message?.author}
                                 </p>
-                                <p>{message.content}</p>
-                                <p className="text-gray-200 text-xs">{message.time}</p>
+                                <p>{message?.content}</p>
+                                <p className="text-gray-200 text-xs">{message?.time}</p>
                             </div>
                         </div>
                     );

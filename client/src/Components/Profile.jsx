@@ -49,10 +49,6 @@ const Profile = ({ setIsloading }) => {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
         const data = new FormData();
-        // data.append("name", updatedUser.name);
-        // data.append("email", updatedUser.email);
-        // data.append("status", updatedUser.status);
-        // data.append("Avatar", updatedUser.Avatar);
 
         if (updatedUser.name) {
             data.append("name", updatedUser.name);
