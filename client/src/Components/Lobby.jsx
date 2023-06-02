@@ -21,36 +21,37 @@ const Lobby = () => {
 
     return (
         <div className="flex flex-col items-center min-h-screen py-10" style={divStyle}>
-            <div className="max-w-md mx-auto mb-8">
-                <input
-                    type="text"
-                    placeholder="Search"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="w-full px-4 py-2 rounded-md bg-cyan-900 text-white focus:outline-none"
-                />
-            </div>
-
+        <div className="max-w-md w-full mx-auto mb-8 px-4">
+            <input
+                type="text"
+                placeholder="Search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full px-4 py-2 rounded-md bg-cyan-900 text-white focus:outline-none"
+            />
+        </div>
+    
+        <div className="flex gap-4 flex-wrap justify-center">
             {filteredRooms.length > 0 ? (
-                <div className="flex gap-4">
-                    {filteredRooms.map((room) => (
-                        <GameRoomCard key={room._id} room={room} />
-                    ))}
-                </div>
+                filteredRooms.map((room) => (
+                    <GameRoomCard key={room._id} room={room} className="m-2" />
+                ))
             ) : (
                 <div className="text-2xl text-gray-700 bg-[#b6d6bf] p-3">No rooms found</div>
             )}
-            <button
-                onClick={() => {
-                    navigate("/createroom");
-                }}
-                className="mt-4 flex justify-center items-center gap-3 px-4 py-2 rounded bg-green-900 text-white hover:bg-green-600"
-            >
-                Create a New Room <FaPlus />
-            </button>
-
-            <RoomPasswordModal />
         </div>
+    
+        <button
+            onClick={() => {
+                navigate("/createroom");
+            }}
+            className="mt-4 flex justify-center items-center gap-3 px-4 py-2 rounded bg-green-900 text-white hover:bg-green-600"
+        >
+            Create a New Room <FaPlus />
+        </button>
+    
+        <RoomPasswordModal />
+    </div>
     );
 };
 
