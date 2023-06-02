@@ -9,6 +9,11 @@ import setBgColor from "../utilis/setBgColor";
 import Modal from "./Modal";
 import toast, { Toaster } from "react-hot-toast";
 
+import useSound from "use-sound";
+import drawSound from "../assets/sounds_uno/draw_card.mp3";
+import cardSound from "../assets/sounds_uno/play_card.mp3";
+import messageSound from "../assets/sounds_uno/message.mp3";
+
 import { WiStars } from "react-icons/wi";
 import {IoMdChatbubbles} from 'react-icons/io'
 
@@ -17,9 +22,22 @@ import Chat from "./Chat";
 
 const GameRoom = () => {
     const { id } = useParams();
-    const [showPopup, setShowPopup] = useState(false);
     const { user, room, rooms, setRoom } = useContext(MyContext);
     const [showChat, setShowChat] = useState(false);
+
+
+    const [showPopup, setShowPopup] = useState(false);
+
+    // Sounds
+    const [playDrawSound] = useSound(drawSound, {
+        volume: 0.45,
+        playbackRate: 0.75,
+    });
+    const [playCardSound] = useSound(cardSound, {
+        volume: 0.45,
+        playbackRate: 0.75,
+    });
+
     const drawCard = (numOfCards) => {
         return room.gameData.drawPile.splice(0, numOfCards);
     };
@@ -47,6 +65,7 @@ const GameRoom = () => {
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             toast.error("Not your turn");
         } else {
+            playDrawSound();
             const drawnCards = drawCard(1);
             const allPlayerCards = room.gameData.allPlayerCards.map((player) => {
                 if (player.userId === user._id) {
@@ -70,6 +89,7 @@ const GameRoom = () => {
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             toast.error("Not your turn");
         } else {
+            playCardSound();
             if (
                 card.color === room.gameData.discardPile[0].color ||
                 card.number === room.gameData.discardPile[0].number ||
