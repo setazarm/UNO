@@ -15,15 +15,18 @@ import cardSound from "../assets/sounds_uno/play_card.mp3";
 import messageSound from "../assets/sounds_uno/message.mp3";
 
 import { WiStars } from "react-icons/wi";
+import {IoMdChatbubbles} from 'react-icons/io'
+
 
 import Chat from "./Chat";
 
 const GameRoom = () => {
     const { id } = useParams();
     const { user, room, rooms, setRoom } = useContext(MyContext);
+    const [showChat, setShowChat] = useState(false);
+
 
     const [showPopup, setShowPopup] = useState(false);
-    const [showChat, setShowChat] = useState(true);
 
     // Sounds
     const [playDrawSound] = useSound(drawSound, {
@@ -342,6 +345,7 @@ const GameRoom = () => {
                             >
                                 Leave Room
                             </button>
+                           
                         </div>
                     )}
                 </div>
@@ -357,8 +361,33 @@ const GameRoom = () => {
                     },
                 }}
             />
-            <button onClick={() => setShowChat(!showChat)}>Chat</button>
-            {showChat && <Chat />}
+             <button
+                                onClick={() => setShowChat(!showChat)}
+                               className="flex items-center justify-center mt-4 "
+                               style={{
+                                      position: "fixed",
+                                        bottom: "70px",
+                                        right: "4vw",
+                               }}
+                            >
+                               <IoMdChatbubbles
+                               size={32}
+                                className={`text-2xl text-green-500 hover:text-gray-400 transition-colors duration-200 ease-in-out`}
+                               /> 
+                            </button>
+                            {showChat && (
+                                <div className="
+                                w-[300px]
+                                fixed"
+                                style={{
+                                        position: "fixed",
+                                        bottom: "16vh",
+                                        right: "4vw",
+
+                                }}>
+                            <Chat />
+                            </div>
+                            )}
         </div>
     );
 };
