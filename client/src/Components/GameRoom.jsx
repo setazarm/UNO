@@ -15,8 +15,7 @@ import cardSound from "../assets/sounds_uno/play_card.mp3";
 import messageSound from "../assets/sounds_uno/message.mp3";
 
 import { WiStars } from "react-icons/wi";
-import {IoMdChatbubbles} from 'react-icons/io'
-
+import { IoMdChatbubbles } from "react-icons/io";
 
 import Chat from "./Chat";
 
@@ -24,7 +23,6 @@ const GameRoom = () => {
     const { id } = useParams();
     const { user, room, rooms, setRoom } = useContext(MyContext);
     const [showChat, setShowChat] = useState(false);
-
 
     const [showPopup, setShowPopup] = useState(false);
 
@@ -168,7 +166,6 @@ const GameRoom = () => {
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
         if (player.cards.length === 4) {
             player.isUno = true;
-            console.log("player", player);
             socket.emit("uno_said", { room, userName: player.name });
         }
     };
@@ -209,7 +206,7 @@ const GameRoom = () => {
                     )}
                     {!room.gameData.gameOver.status ? (
                         <div>
-                            {room?.userId?.toString() === user._id.toString() ? (
+                            {room?.userId?.toString() === user._id?.toString() ? (
                                 <button
                                     // disabled={room.players.length <= 1}
                                     onClick={startGame}
@@ -345,7 +342,6 @@ const GameRoom = () => {
                             >
                                 Leave Room
                             </button>
-                           
                         </div>
                     )}
                 </div>
@@ -361,33 +357,34 @@ const GameRoom = () => {
                     },
                 }}
             />
-             <button
-                                onClick={() => setShowChat(!showChat)}
-                               className="flex items-center justify-center mt-4 "
-                               style={{
-                                      position: "fixed",
-                                        bottom: "70px",
-                                        right: "4vw",
-                               }}
-                            >
-                               <IoMdChatbubbles
-                               size={32}
-                                className={`text-2xl text-green-500 hover:text-gray-400 transition-colors duration-200 ease-in-out`}
-                               /> 
-                            </button>
-                            {showChat && (
-                                <div className="
+            <button
+                onClick={() => setShowChat(!showChat)}
+                className="flex items-center justify-center mt-4 "
+                style={{
+                    position: "fixed",
+                    bottom: "70px",
+                    right: "4vw",
+                }}
+            >
+                <IoMdChatbubbles
+                    size={32}
+                    className={`text-2xl text-green-500 hover:text-gray-400 transition-colors duration-200 ease-in-out`}
+                />
+            </button>
+            {showChat && (
+                <div
+                    className="
                                 w-[300px]
                                 fixed"
-                                style={{
-                                        position: "fixed",
-                                        bottom: "16vh",
-                                        right: "4vw",
-
-                                }}>
-                            <Chat />
-                            </div>
-                            )}
+                    style={{
+                        position: "fixed",
+                        bottom: "16vh",
+                        right: "4vw",
+                    }}
+                >
+                    <Chat />
+                </div>
+            )}
         </div>
     );
 };

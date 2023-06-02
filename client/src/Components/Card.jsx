@@ -23,7 +23,13 @@ const Card = ({ color, number }) => {
 
     return (
         <>
-            {<img className="w-[180px] transition-transform transition-ease-out duration-300 hover:scale-110" src={unoCards.filter((card) => card.includes(cardImage))} alt={cardImage} />}
+            {
+                <img
+                    className="w-[180px] transition-transform transition-ease-out duration-300 hover:scale-110"
+                    src={unoCards.filter((card) => card.includes(cardImage))}
+                    alt={cardImage}
+                />
+            }
         </>
     );
 };

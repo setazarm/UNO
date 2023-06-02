@@ -42,7 +42,7 @@ const userSchema = new Schema(
         socketId: { type: String },
         room: { type: Schema.Types.ObjectId, ref: "User" },
 
-        likes:[{type:Schema.Types.ObjectId,ref:"User"}]
+        likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     },
     { timestamps: true, versionKey: false }
 );

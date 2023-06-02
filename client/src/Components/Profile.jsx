@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { AiFillCloseSquare } from "react-icons/ai";
 import { MyContext } from "../context/context.js";
 
-
 const Profile = ({ setIsloading }) => {
     const navigate = useNavigate();
     const [isEditing, setIsEditing] = useState(false);
@@ -41,10 +40,9 @@ const Profile = ({ setIsloading }) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
-          setUpdatedUser({ ...updatedUser, Avatar: reader.result.toString() });
+            setUpdatedUser({ ...updatedUser, Avatar: reader.result.toString() });
         };
-       
-      };
+    };
 
     const editHandler = (e) => {
         e.preventDefault();
@@ -56,19 +54,19 @@ const Profile = ({ setIsloading }) => {
         // data.append("status", updatedUser.status);
         // data.append("Avatar", updatedUser.Avatar);
 
-    if (updatedUser.name) {
-        data.append("name", updatedUser.name);
-    }
-    if (updatedUser.email) {
-        data.append("email", updatedUser.email);
-    }
-    if (updatedUser.status) {
-        data.append("status", updatedUser.status);
-    }
-    if (updatedUser.Avatar) {
-        data.append("Avatar", updatedUser.Avatar);
-    }
-        
+        if (updatedUser.name) {
+            data.append("name", updatedUser.name);
+        }
+        if (updatedUser.email) {
+            data.append("email", updatedUser.email);
+        }
+        if (updatedUser.status) {
+            data.append("status", updatedUser.status);
+        }
+        if (updatedUser.Avatar) {
+            data.append("Avatar", updatedUser.Avatar);
+        }
+
         axios
             .patch(`http://localhost:8000/users/${user._id}`, data, {
                 headers: {
@@ -83,7 +81,7 @@ const Profile = ({ setIsloading }) => {
                 console.log(err);
             });
     };
-    console.log(user,"user in prof")
+
     return (
         <div className="bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 h-screen flex flex-col  p-6">
             <h1 className="text-4xl font-bold mb-4">Profile</h1>
@@ -92,18 +90,17 @@ const Profile = ({ setIsloading }) => {
             <p>Points: {user?.points}</p>
             <img src={user?.Avatar} alt={user?.name} style={{ width: "150px", height: "150px" }} />
             <p>Status: {user?.status}</p>
-           
+
             <p> Number of played games {user?.numOfPlayedGames} </p>
             <div>
                 People who liked you:
                 {user?.likes?.map((like) => (
                     <div>
                         <p>{like.name}</p>
-                        </div>
+                    </div>
                 ))}
             </div>
 
-           
             <div className="position: absolute right-2 flex gap-2 mx-2">
                 <button
                     className="
@@ -225,14 +222,12 @@ const Profile = ({ setIsloading }) => {
                         </label>
                         <input
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                           
                             name="file"
                             type="file"
                             placeholder="upload your profile picture"
                             onChange={(e) => {
                                 getImage(e.target.files[0]);
                                 setUpdatedUser({ ...updatedUser, Avatar: e.target.files[0] });
-                              
                             }}
                         />
                     </div>

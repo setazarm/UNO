@@ -4,41 +4,28 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { MyContext } from "../context/context";
 
-
 const RegisterForm = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
-    const {user, setUser } = useContext(MyContext);
-    //  user = {
-    //     name: "",
-    //     email: "",
-    //     password: "",
-    //     Avatar: "",
-        
-    // };
+    const { user, setUser } = useContext(MyContext);
 
-    
     const getImage = (file) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
-          setUser({ ...user, Avatar: reader.result.toString() });
+            setUser({ ...user, Avatar: reader.result.toString() });
         };
-       
-      };
-      console.log(user,"user")
+    };
+
     const submitHandler = (e) => {
         e.preventDefault();
-        
-        const data=new FormData()
-        data.append("name",user.name)
-        data.append("email",user.email)
-        data.append("password",user.password)
-        data.append("Avatar",user.Avatar)
 
-      
-      
-        
+        const data = new FormData();
+        data.append("name", user.name);
+        data.append("email", user.email);
+        data.append("password", user.password);
+        data.append("Avatar", user.Avatar);
+
         axios
             .post("http://localhost:8000/users", data)
             .then((res) => {
@@ -51,7 +38,6 @@ const RegisterForm = () => {
             })
             .catch((error) => {
                 setError(error.response.data.error);
-                
             });
     };
     return (
@@ -82,7 +68,7 @@ const RegisterForm = () => {
                     className="outline-double outline-2 outline-gray-500 my-2 px-1"
                     type="password"
                     name="password"
-                    onChange={(e) =>setUser({ ...user, password: e.target.value })}
+                    onChange={(e) => setUser({ ...user, password: e.target.value })}
                 />
                 <label htmlFor="Avatar">profile picture: </label>
                 <input
@@ -91,7 +77,6 @@ const RegisterForm = () => {
                     name="file"
                     onChange={(e) => getImage(e.target.files[0])}
                 />
-
 
                 {error && <p>{error}</p>}
                 <button

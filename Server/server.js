@@ -47,7 +47,6 @@ mongoose
     .catch((err) => console.log("Database is not connected! ", err.message));
 
 io.on("connection", (socket) => {
-    console.log(socket.id, "user connected");
     socket.on("user_connected", async ({ socketId, userId }) => {
         const user = await User.findByIdAndUpdate(userId, {
             socketId,
@@ -124,7 +123,6 @@ io.on("connection", (socket) => {
             updatedRoom.save();
 
             const rooms = await GameRoom.find().populate("players");
-            console.log("object :>> ", updatedRoom);
             io.in(roomId.toString()).emit("game_update", updatedRoom);
 
             // Updating Lobby
@@ -134,7 +132,6 @@ io.on("connection", (socket) => {
 
     // update game state
     socket.on("update_game", async (room) => {
-        console.log("updategame works?");
         const updatedRoom = await GameRoom.findByIdAndUpdate(
             room._id,
             {
@@ -181,7 +178,6 @@ io.on("connection", (socket) => {
         io.emit("after_leave_room_created", rooms, userId);
     });
     socket.on("uno_said", ({ room, userName }) => {
-        console.log("username", userName);
         io.in(room._id.toString()).emit("uno_says", userName);
     });
 
@@ -214,10 +210,8 @@ io.on("connection", (socket) => {
 
     //chatbox
     socket.on("send_message", async (messageData) => {
-        console.log(messageData)
         io.in(messageData.room._id.toString()).emit("receive_message", messageData);
-    }
-    );
+    });
 });
 
 server.listen(8000, () => console.log(`The server is listening on port ${process.env.PORT}`));

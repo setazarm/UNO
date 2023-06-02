@@ -5,6 +5,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
+import useSound from "use-sound";
+import messageSound from "../assets/sounds_uno/message.mp3";
+
 export default function Container({ children }) {
     const [user, setUser] = useState(null);
     const [room, setRoom] = useState(null);
@@ -19,15 +22,19 @@ export default function Container({ children }) {
 
     const navigate = useNavigate();
 
+    const [playMessageSound] = useSound(messageSound, {
+        volume: 0.45,
+        playbackRate: 0.75,
+    });
+
     // Room password checking
     const [passwordCorrect, setPasswordCorrect] = useState(false);
     const [password, setPassword] = useState("");
     const [show, setShow] = useState(false);
 
     const addMessageToList = (message) => {
-        console.log(message,"message")
         setMessageList((list) => [...list, message]);
-      };
+    };
 
     useEffect(() => {
         const allRooms = (rooms) => {
@@ -35,7 +42,6 @@ export default function Container({ children }) {
         };
 
         const updateRoom = (room) => {
-            console.log("room", room);
             setRoom(room);
         };
 
@@ -44,7 +50,7 @@ export default function Container({ children }) {
                 if (user._id.toString() === userId) {
                     setRoom(null);
                     setRooms(rooms);
-                    setMessageList([])
+                    setMessageList([]);
                     navigate("/lobby");
                     return user;
                 } else {
@@ -79,19 +85,20 @@ export default function Container({ children }) {
             });
         };
 
-         const displayUno =(userName)=> {
-            setUser(user =>{
-                if(user.name !== userName){
-                    toast.error(`${userName} says UNO!`)
+        const displayUno = (userName) => {
+            setUser((user) => {
+                if (user.name !== userName) {
+                    toast.error(`${userName} says UNO!`);
                 }
-                return user
-            })
-            
-         }
-         const addingMessage = (message) => {
+                return user;
+            });
+        };
+        const addingMessage = (message) => {
             addMessageToList(message);
-
-         }
+            if (message.author !== user.name) {
+                playMessageSound();
+            }
+        };
         socket.on("update_rooms", allRooms);
 
         socket.on("user_won", incrementPoints);
@@ -99,9 +106,8 @@ export default function Container({ children }) {
         socket.on("game_update", updateRoom);
 
         socket.on("after_leave_room_created", afterLeave);
-        socket.on('uno_says', displayUno);
+        socket.on("uno_says", displayUno);
         socket.on("receive_message", addingMessage);
-        
 
         socket.on("error", errorHandler);
 
@@ -168,9 +174,7 @@ export default function Container({ children }) {
 
                 winner,
                 setWinner,
-                messageList
-               
-
+                messageList,
             }}
         >
             {children}
