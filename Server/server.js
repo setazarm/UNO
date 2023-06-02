@@ -131,7 +131,7 @@ io.on("connection", (socket) => {
     });
 
     // update game state
-    socket.on("update_game", async (room) => {
+    socket.on("update_game", async (room, confirmEmit) => {
         const updatedRoom = await GameRoom.findByIdAndUpdate(
             room._id,
             {
@@ -141,7 +141,7 @@ io.on("connection", (socket) => {
         )
             .populate("players")
             .populate("gameData.gameOver.winner");
-
+        confirmEmit();
         io.in(room._id.toString()).emit("game_update", updatedRoom);
     });
 

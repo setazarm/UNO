@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
@@ -25,6 +25,8 @@ const GameRoom = () => {
     const [showChat, setShowChat] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
+
+    const clicked = useRef(false);
 
     // Sounds
     const [playDrawSound] = useSound(drawSound, {
@@ -84,9 +86,11 @@ const GameRoom = () => {
     };
 
     const cardHandler = (card) => {
+        if (clicked.current) return;
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             toast.error("Not your turn");
         } else {
+            clicked.current = true;
             playCardSound();
             if (
                 card.color === room.gameData.discardPile[0].color ||
@@ -143,19 +147,25 @@ const GameRoom = () => {
                     nextPlayer.cards.push(...drawnCards);
                 }
 
-                socket.emit("update_game", {
-                    ...room,
-                    gameData: {
-                        ...room.gameData,
-                        turn: calculateNextTurn(
-                            card.number === "_" ? true : false,
-                            card.number === "skip" ? true : false,
-                            room.gameData.turn,
-                            room.players.length
-                        ),
-                        allPlayerCards,
+                socket.emit(
+                    "update_game",
+                    {
+                        ...room,
+                        gameData: {
+                            ...room.gameData,
+                            turn: calculateNextTurn(
+                                card.number === "_" ? true : false,
+                                card.number === "skip" ? true : false,
+                                room.gameData.turn,
+                                room.players.length
+                            ),
+                            allPlayerCards,
+                        },
                     },
-                });
+                    () => {
+                        clicked.current = false;
+                    }
+                );
             } else {
                 toast.error("invalid card");
             }

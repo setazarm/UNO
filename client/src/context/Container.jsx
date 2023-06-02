@@ -95,12 +95,11 @@ export default function Container({ children }) {
         };
         const addingMessage = (message) => {
             addMessageToList(message);
-            setUser((user) => {
-                if (message.author !== user.name) {
+            setTimeout(() => {
+                if (user?.name !== message.author) {
                     playMessageSound();
                 }
-                return user;
-            });
+            }, 100);
         };
         socket.on("update_rooms", allRooms);
 
@@ -110,6 +109,7 @@ export default function Container({ children }) {
 
         socket.on("after_leave_room_created", afterLeave);
         socket.on("uno_says", displayUno);
+
         socket.on("receive_message", addingMessage);
 
         socket.on("error", errorHandler);
