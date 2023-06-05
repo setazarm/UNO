@@ -6,7 +6,8 @@ import "./index.css";
 import axios from "axios";
 import { HashRouter } from "react-router-dom";
 import Container from "./context/Container.jsx";
-//axios.defaults.baseURL = "http://localhost:8000";
+import {config} from "./config.js";
+axios.defaults.baseURL =config.server;
 ReactDOM.createRoot(document.getElementById("root")).render(
     <HashRouter>
         <Container>

@@ -1,4 +1,5 @@
 import io from "socket.io-client";
-
-export const socket = io("https://uno-5dzs.onrender.com", { autoConnect: true });
+import {config} from "./config";
+console.log(process.env.NODE_ENV)
+export const socket = io(config.server, { autoConnect: true });
 //export const socket = io("http://localhost:8000", { autoConnect: true });
