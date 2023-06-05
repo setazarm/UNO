@@ -119,7 +119,7 @@ const GameRoom = () => {
 
                 let allPlayerCards = room.gameData.allPlayerCards;
 
-                if (!(player.cards.length === 4 && !player.isUno)) {
+                if (!(player.cards.length === 2 && !player.isUno)) {
                     const cardIndex = player.cards.indexOf(card);
                     player.cards.splice(cardIndex, 1);
                     room.gameData.discardPile.unshift(card);
