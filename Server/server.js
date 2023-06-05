@@ -145,7 +145,9 @@ io.on("connection", (socket) => {
         )
             .populate("players")
             .populate("gameData.gameOver.winner");
-        confirmEmit();
+            console.log(typeof confirmEmit)
+             confirmEmit();
+
         io.in(room._id.toString()).emit("game_update", updatedRoom);
     });
 
