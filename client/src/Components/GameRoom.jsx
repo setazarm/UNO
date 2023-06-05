@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
@@ -8,11 +8,35 @@ import Card from "./Card";
 import setBgColor from "../utilis/setBgColor";
 import Modal from "./Modal";
 import toast, { Toaster } from "react-hot-toast";
+
+import useSound from "use-sound";
+import drawSound from "../assets/sounds_uno/draw_card.mp3";
+import cardSound from "../assets/sounds_uno/play_card.mp3";
+import messageSound from "../assets/sounds_uno/message.mp3";
+
+import { WiStars } from "react-icons/wi";
+import { IoMdChatbubbles } from "react-icons/io";
+
+import Chat from "./Chat";
+
 const GameRoom = () => {
     const { id } = useParams();
+    const { user, room, rooms, setRoom } = useContext(MyContext);
+    const [showChat, setShowChat] = useState(false);
+
     const [showPopup, setShowPopup] = useState(false);
 
-    const { user, room, rooms, setRoom } = useContext(MyContext);
+    const clicked = useRef(false);
+
+    // Sounds
+    const [playDrawSound] = useSound(drawSound, {
+        volume: 0.45,
+        playbackRate: 0.75,
+    });
+    const [playCardSound] = useSound(cardSound, {
+        volume: 0.45,
+        playbackRate: 0.75,
+    });
 
     const drawCard = (numOfCards) => {
         return room.gameData.drawPile.splice(0, numOfCards);
@@ -41,6 +65,7 @@ const GameRoom = () => {
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             toast.error("Not your turn");
         } else {
+            playDrawSound();
             const drawnCards = drawCard(1);
             const allPlayerCards = room.gameData.allPlayerCards.map((player) => {
                 if (player.userId === user._id) {
@@ -61,9 +86,12 @@ const GameRoom = () => {
     };
 
     const cardHandler = (card) => {
+        if (clicked.current) return;
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             toast.error("Not your turn");
         } else {
+            clicked.current = true;
+            playCardSound();
             if (
                 card.color === room.gameData.discardPile[0].color ||
                 card.number === room.gameData.discardPile[0].number ||
@@ -119,19 +147,25 @@ const GameRoom = () => {
                     nextPlayer.cards.push(...drawnCards);
                 }
 
-                socket.emit("update_game", {
-                    ...room,
-                    gameData: {
-                        ...room.gameData,
-                        turn: calculateNextTurn(
-                            card.number === "_" ? true : false,
-                            card.number === "skip" ? true : false,
-                            room.gameData.turn,
-                            room.players.length
-                        ),
-                        allPlayerCards,
+                socket.emit(
+                    "update_game",
+                    {
+                        ...room,
+                        gameData: {
+                            ...room.gameData,
+                            turn: calculateNextTurn(
+                                card.number === "_" ? true : false,
+                                card.number === "skip" ? true : false,
+                                room.gameData.turn,
+                                room.players.length
+                            ),
+                            allPlayerCards,
+                        },
                     },
-                });
+                    () => {
+                        clicked.current = false;
+                    }
+                );
             } else {
                 toast.error("invalid card");
             }
@@ -142,6 +176,7 @@ const GameRoom = () => {
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
         if (player.cards.length === 4) {
             player.isUno = true;
+            socket.emit("uno_said", { room, userName: player.name });
         }
     };
 
@@ -150,15 +185,24 @@ const GameRoom = () => {
             style={{
                 backgroundColor: room?.bgColor ? room?.bgColor : "#f5f5f5",
                 color: room?.bgColor === "#010101" ? "white" : "black",
+                border: "10px solid black",
             }}
             className="min-h-screen w-screen flex flex-col p-6"
         >
             {room && (
-                <div>
+                <div className="">
                     {room.isStarted ? (
-                        <div>
+                        <div className="bg-white w-40 p-3 rounded flex flex-col gap-3 shadow-xl">
                             {room.gameData.allPlayerCards.map((player) => (
-                                <h1 key={player?.userId}>
+                                <h1
+                                    className={`border-y-2 p-2 ${
+                                        room.players[room.gameData.turn]?._id.toString() ===
+                                        player.userId.toString()
+                                            ? "text-blue-500"
+                                            : ""
+                                    }`}
+                                    key={player?.userId}
+                                >
                                     {player?.name} : {player?.cards?.length}{" "}
                                 </h1>
                             ))}
@@ -172,9 +216,8 @@ const GameRoom = () => {
                     )}
                     {!room.gameData.gameOver.status ? (
                         <div>
-                            {room?.userId?.toString() === user._id.toString() ? (
+                            {room?.userId?.toString() === user?._id?.toString() ? (
                                 <button
-                                    // disabled={room.players.length <= 1}
                                     onClick={startGame}
                                     className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${
                                         !room.isStarted ? "m-auto" : ""
@@ -184,36 +227,54 @@ const GameRoom = () => {
                                 </button>
                             ) : (
                                 !room.players.includes(room.userId.toString()) &&
-                                room.players[0]._id === user._id && (
+                                room?.players[0]?._id === user?._id && (
                                     <button onClick={startGame}>
                                         Start Game with First Player
                                     </button>
                                 )
                             )}
-                            <div className="flex">
+                            <div className="flex flex-col justify-center items-center">
                                 <div hidden={!room.isStarted}>
-                                    <div>
-                                        <h3>Discard Pile</h3>
-                                        {room.gameData.discardPile && (
-                                            <div
-                                                className={`flex justify-center w-[230px] opacity-80 rounded-md ${setBgColor(
-                                                    room.gameData.discardPile[0]?.color
-                                                )}`}
-                                            >
-                                                <Card
-                                                    color={room.gameData.discardPile[0]?.color}
-                                                    number={room.gameData.discardPile[0]?.number}
-                                                />
-                                            </div>
-                                        )}
+                                    <div
+                                        className={`flex justify-center items-center text-center border-slate-950 border-2 ${setBgColor(
+                                            room.gameData.discardPile[0]?.color
+                                        )}`}
+                                        style={{
+                                            position: "absolute",
+                                            top: "16vh",
+                                            right: "16vw",
+                                            height: "80px",
+                                            width: "80px",
+                                            zIndex: 1,
+                                            borderRadius: "50%",
+                                        }}
+                                    >
+                                        Current Color
                                     </div>
-                                    <div>
-                                        <h3>Draw Pile</h3>
-                                        <img
-                                            className="w-[200px]"
-                                            src={deckCard}
-                                            onClick={drawPileHandler}
-                                        />
+                                    <div className="flex gap-1 justify-center items-center relative">
+                                        <div className="text-center">
+                                            <h3>Discard Pile</h3>
+                                            {room.gameData.discardPile && (
+                                                <div
+                                                    className={`flex flex-col justify-center  opacity-80 rounded-md `}
+                                                >
+                                                    <Card
+                                                        color={room.gameData.discardPile[0]?.color}
+                                                        number={
+                                                            room.gameData.discardPile[0]?.number
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="text-center">
+                                            <h3>Draw Pile</h3>
+                                            <img
+                                                className="w-[180px] transition-transform transition-ease-out duration-300 hover:scale-110"
+                                                src={deckCard}
+                                                onClick={drawPileHandler}
+                                            />
+                                        </div>
                                     </div>
 
                                     {showPopup && (
@@ -223,26 +284,37 @@ const GameRoom = () => {
                                             drawCard={drawCard}
                                         />
                                     )}
-                                    <h3>player cards</h3>
-                                    {room.gameData.allPlayerCards
-                                        .find((item) => item.userId === user._id)
-                                        ?.cards.map((card, i) => (
-                                            <div
-                                                onClick={() => cardHandler(card)}
-                                                className="inline-block"
-                                                key={card.number + i}
-                                            >
-                                                <Card color={card.color} number={card.number} />
-                                            </div>
-                                        ))}
-
-                                    <button
-                                        // disabled={playerCards?.length !== 6}
-                                        onClick={checkUno}
-                                        className="border-slate-950 border-2 p-1 rounded"
-                                    >
-                                        UNO
-                                    </button>
+                                    <div className="flex flex-col items-end ">
+                                        <button
+                                            onClick={checkUno}
+                                            className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
+                                                room.gameData.allPlayerCards.find(
+                                                    (item) => item.userId === user?._id
+                                                )?.cards.length === 4
+                                                    ? "animate-bounce"
+                                                    : ""
+                                            }`}
+                                        >
+                                            <WiStars /> UNO
+                                        </button>
+                                        <div className="mx-auto">
+                                            <h3>player cards</h3>
+                                            {room.gameData.allPlayerCards
+                                                .find((item) => item.userId === user?._id)
+                                                ?.cards.map((card, i) => (
+                                                    <div
+                                                        onClick={() => cardHandler(card)}
+                                                        className="inline-block mx-auto"
+                                                        key={card.number + i}
+                                                    >
+                                                        <Card
+                                                            color={card.color}
+                                                            number={card.number}
+                                                        />
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -262,7 +334,6 @@ const GameRoom = () => {
                                 {room?.gameData?.gameOver?.winner?.name} has won
                             </h2>
                             <button
-                                // disabled={room.players.length <= 1}
                                 onClick={startGame}
                                 className={`p-3 rounded m-2 bg-green-500 hover:bg-green-600 text-white block ${
                                     !room.isStarted ? "m-auto" : ""
@@ -282,6 +353,7 @@ const GameRoom = () => {
                     )}
                 </div>
             )}
+
             <Toaster
                 toastOptions={{
                     className: "",
@@ -292,6 +364,34 @@ const GameRoom = () => {
                     },
                 }}
             />
+            <button
+                onClick={() => setShowChat(!showChat)}
+                className="flex items-center justify-center mt-4 "
+                style={{
+                    position: "fixed",
+                    bottom: "70px",
+                    right: "4vw",
+                }}
+            >
+                <IoMdChatbubbles
+                    size={32}
+                    className={`text-2xl text-green-500 hover:text-gray-400 transition-colors duration-200 ease-in-out`}
+                />
+            </button>
+            {showChat && (
+                <div
+                    className="
+                                w-[300px]
+                                fixed"
+                    style={{
+                        position: "fixed",
+                        bottom: "16vh",
+                        right: "4vw",
+                    }}
+                >
+                    <Chat />
+                </div>
+            )}
         </div>
     );
 };

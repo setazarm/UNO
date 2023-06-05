@@ -35,7 +35,6 @@ function App() {
                     element={<Profile isLoading={isLoading} setIsloading={setIsloading} />}
                 />
                 <Route path="/players" element={<Players />} />
-                
             </Routes>
             <Footer />
         </div>

@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import httpErrors from "http-errors";
 export const register = async (req, res, next) => {
-    const { name, email, password, Avatar} = req.body;
+    const { name, email, password, Avatar } = req.body;
     const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({ name, email, password: hashedPassword, Avatar });
     try {
@@ -81,19 +81,18 @@ export const deleteUser = async (req, res, next) => {
 };
 
 export const likeUser = async (req, res, next) => {
-    
     try {
         const { id } = req.params;
 
-        const likedUser=await User.findById(id)
-        if(!likedUser.likes.includes(req.user._id)){
-            await likedUser.updateOne({$push:{likes:req.user._id}})
-        }else{
-            await likedUser.updateOne({$pull:{likes:req.user._id}})
+        const likedUser = await User.findById(id);
+        if (!likedUser.likes.includes(req.user._id)) {
+            await likedUser.updateOne({ $push: { likes: req.user._id } });
+        } else {
+            await likedUser.updateOne({ $pull: { likes: req.user._id } });
         }
-        const users =await User.find()
+        const users = await User.find();
         res.json({ success: true, data: users });
     } catch (err) {
         next(new httpErrors.NotFound("No record found !"));
     }
-}
+};

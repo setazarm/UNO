@@ -47,7 +47,6 @@ mongoose
     .catch((err) => console.log("Database is not connected! ", err.message));
 
 io.on("connection", (socket) => {
-    console.log(socket.id, "user connected");
     socket.on("user_connected", async ({ socketId, userId }) => {
         const user = await User.findByIdAndUpdate(userId, {
             socketId,
@@ -124,7 +123,6 @@ io.on("connection", (socket) => {
             updatedRoom.save();
 
             const rooms = await GameRoom.find().populate("players");
-            console.log("object :>> ", updatedRoom);
             io.in(roomId.toString()).emit("game_update", updatedRoom);
 
             // Updating Lobby
@@ -133,8 +131,7 @@ io.on("connection", (socket) => {
     });
 
     // update game state
-    socket.on("update_game", async (room) => {
-        console.log("updategame works?");
+    socket.on("update_game", async (room, confirmEmit) => {
         const updatedRoom = await GameRoom.findByIdAndUpdate(
             room._id,
             {
@@ -144,7 +141,7 @@ io.on("connection", (socket) => {
         )
             .populate("players")
             .populate("gameData.gameOver.winner");
-
+        confirmEmit();
         io.in(room._id.toString()).emit("game_update", updatedRoom);
     });
 
@@ -152,15 +149,23 @@ io.on("connection", (socket) => {
     socket.on("leave_room", async ({ userId, roomId }) => {
         // Remove player from Room DB entry
         let room = await GameRoom.findById(roomId);
+
         if (room.players.includes(userId.toString())) {
             room = await GameRoom.findByIdAndUpdate(
                 roomId,
                 { $pull: { players: userId } },
                 { new: true }
             );
+
             const user = await User.findByIdAndUpdate(userId, { $unset: { room: null } });
         }
-        console.log(room.players);
+
+        if (room.userId.toString() === userId.toString()) {
+            room = await GameRoom.findByIdAndUpdate(roomId, {
+                userId: room.players[0],
+            });
+        }
+
         if (room.players.length === 0) {
             await GameRoom.findByIdAndDelete(roomId);
         }
@@ -171,6 +176,9 @@ io.on("connection", (socket) => {
         // send all updated rooms data
         const rooms = await GameRoom.find().populate("players");
         io.emit("after_leave_room_created", rooms, userId);
+    });
+    socket.on("uno_said", ({ room, userName }) => {
+        io.in(room._id.toString()).emit("uno_says", userName);
     });
 
     socket.on("winner", async (userId) => {
@@ -198,6 +206,11 @@ io.on("connection", (socket) => {
         // send all updated rooms data
         const rooms = await GameRoom.find().populate("players");
         io.emit("update_rooms", rooms);
+    });
+
+    //chatbox
+    socket.on("send_message", async (messageData) => {
+        io.in(messageData.room._id.toString()).emit("receive_message", messageData);
     });
 });
 
