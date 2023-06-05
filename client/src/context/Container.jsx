@@ -131,7 +131,7 @@ export default function Container({ children }) {
         const token = localStorage.getItem("token");
         if (token) {
             axios
-                .get(`http://localhost:8000/users/verify`, {
+                .get(`/users/verify`, {
                     headers: {
                         token: token,
                     },
@@ -144,7 +144,7 @@ export default function Container({ children }) {
                     navigate("/");
                 });
         }
-        axios.get("http://localhost:8000/rooms").then((res) => {
+        axios.get("/rooms").then((res) => {
             if (res.data.success) {
                 setRooms(res.data.data);
             }

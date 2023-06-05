@@ -27,7 +27,7 @@ const RegisterForm = () => {
         data.append("Avatar", user.Avatar);
 
         axios
-            .post("http://localhost:8000/users", data)
+            .post("/users", data)
             .then((res) => {
                 if (res.data.success) {
                     setUser(res.data.data);

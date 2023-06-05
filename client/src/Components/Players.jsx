@@ -9,7 +9,7 @@ const Players = () => {
 
     useEffect(() => {
         axios
-            .get("http://localhost:8000/users")
+            .get("/users")
             .then((res) => {
                 setPlayers(res.data.data);
                 setLoading(false);
@@ -25,7 +25,7 @@ const Players = () => {
     );
     const likeHandler = (id) => {
         axios
-            .patch(`http://localhost:8000/users/like/${id}`, null, {
+            .patch(`/users/like/${id}`, null, {
                 headers: { token: localStorage.getItem("token") },
             })
             .then((res) => {
