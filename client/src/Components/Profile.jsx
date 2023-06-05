@@ -86,12 +86,10 @@ const Profile = ({ setIsloading }) => {
             <p>Points: {user?.points}</p>
             <img src={user?.Avatar} alt={user?.name} style={{ width: "150px", height: "150px" }} />
             <p>Status: {user?.status}</p>
-
-            <p> Number of played games {user?.numOfPlayedGames} </p>
             <div>
                 People who liked you:
-                {user?.likes?.map((like) => (
-                    <div>
+                {user?.likes?.map((like,i) => (
+                    <div key={i}>
                         <p>{like.name}</p>
                     </div>
                 ))}

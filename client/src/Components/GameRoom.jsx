@@ -126,7 +126,7 @@ const GameRoom = () => {
 
                     player.isUno = false;
 
-                    if (player.cards.length === 3) {
+                    if (player.cards.length === 0) {
                         toast.error("You won!!");
                         room.gameData.gameOver.status = true;
                         room.gameData.gameOver.winner = player.userId;
@@ -185,7 +185,7 @@ const GameRoom = () => {
 
     const checkUno = () => {
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
-        if (player.cards.length === 4) {
+        if (player.cards.length === 2) {
             player.isUno = true;
             socket.emit("uno_said", { room, userName: player.name });
         }
@@ -264,7 +264,7 @@ const GameRoom = () => {
                                     </div>
                                     <div className="flex gap-1 justify-center items-center relative">
                                         <div className="text-center">
-                                            <h3>Discard Pile</h3>
+                                           
                                             {room.gameData.discardPile && (
                                                 <div
                                                     className={`flex flex-col justify-center  opacity-80 rounded-md `}
@@ -279,7 +279,6 @@ const GameRoom = () => {
                                             )}
                                         </div>
                                         <div className="text-center">
-                                            <h3>Draw Pile</h3>
                                             <img
                                                 className="w-[180px] transition-transform transition-ease-out duration-300 hover:scale-110"
                                                 src={deckCard}
@@ -302,7 +301,7 @@ const GameRoom = () => {
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
                                                     (item) => item.userId === user?._id
-                                                )?.cards.length === 4
+                                                )?.cards.length === 2
                                                     ? "animate-bounce"
                                                     : ""
                                             }`}
@@ -310,7 +309,7 @@ const GameRoom = () => {
                                             <WiStars /> UNO
                                         </button>
                                         <div className="mx-auto">
-                                            <h3>player cards</h3>
+            
                                             {room.gameData.allPlayerCards
                                                 .find((item) => item.userId === user?._id)
                                                 ?.cards.map((card, i) => (
