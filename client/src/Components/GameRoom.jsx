@@ -74,14 +74,25 @@ const GameRoom = () => {
                 return player;
             });
 
-            socket.emit("update_game", {
-                ...room,
-                gameData: {
-                    ...room.gameData,
-                    allPlayerCards,
-                    turn: calculateNextTurn(false, false, room.gameData.turn, room.players.length),
+            socket.emit(
+                "update_game",
+                {
+                    ...room,
+                    gameData: {
+                        ...room.gameData,
+                        allPlayerCards,
+                        turn: calculateNextTurn(
+                            false,
+                            false,
+                            room.gameData.turn,
+                            room.players.length
+                        ),
+                    },
                 },
-            });
+                () => {
+                    clicked.current = false;
+                }
+            );
         }
     };
 
@@ -282,6 +293,7 @@ const GameRoom = () => {
                                             setShowPopup={setShowPopup}
                                             room={room}
                                             drawCard={drawCard}
+                                            clicked={clicked}
                                         />
                                     )}
                                     <div className="flex flex-col items-end ">

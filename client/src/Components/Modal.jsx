@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { MyContext } from "../context/context";
 import { socket } from "../socket.js";
 
-const Modal = ({ setShowPopup, room }) => {
+const Modal = ({ setShowPopup, room, clicked }) => {
     const { setColor } = useContext(MyContext);
     const handleColorSelect = (event) => {
         event.preventDefault();
@@ -12,14 +12,20 @@ const Modal = ({ setShowPopup, room }) => {
         updatedDiscardPile[0].color = color;
         const allPlayerCards = [...room.gameData.allPlayerCards];
 
-        socket.emit("update_game", {
-            ...room,
-            gameData: {
-                ...room.gameData,
-                discardPile: updatedDiscardPile,
-                allPlayerCards,
+        socket.emit(
+            "update_game",
+            {
+                ...room,
+                gameData: {
+                    ...room.gameData,
+                    discardPile: updatedDiscardPile,
+                    allPlayerCards,
+                },
             },
-        });
+            () => {
+                clicked.current = false;
+            }
+        );
 
         setShowPopup(false);
     };

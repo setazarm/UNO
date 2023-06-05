@@ -19,7 +19,7 @@ const LoginForm = ({ setIsloading }) => {
             password: password,
         };
         axios
-            .post("http://localhost:8000/users/login", data)
+            .post("/users/login", data)
             .then((res) => {
                 setUser({ ...res.data.data, socketId: socket.id });
                 socket.emit("user_connected", { userId: res.data.data._id, socketId: socket.id });

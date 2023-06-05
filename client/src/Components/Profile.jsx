@@ -22,7 +22,7 @@ const Profile = ({ setIsloading }) => {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user"));
         axios
-            .delete(`http://localhost:8000/users/${user._id}`, {
+            .delete(`/users/${user._id}`, {
                 headers: {
                     token: token,
                 },
@@ -64,7 +64,7 @@ const Profile = ({ setIsloading }) => {
         }
 
         axios
-            .patch(`http://localhost:8000/users/${user._id}`, data, {
+            .patch(`/users/${user._id}`, data, {
                 headers: {
                     token: token,
                 },

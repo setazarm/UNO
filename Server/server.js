@@ -30,6 +30,10 @@ app.use(fileupload());
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", exposedHeaders: ["token"] }));
 app.use(errorHandler);
+app.use(express.static("views/dist"));
+app.get("/", (req, res) => {
+    res.sendFile("./views/dist/index.html", { root:"." });
+})
 
 // Routes
 app.use("/users", userRouter);
@@ -141,7 +145,9 @@ io.on("connection", (socket) => {
         )
             .populate("players")
             .populate("gameData.gameOver.winner");
-        confirmEmit();
+            console.log(typeof confirmEmit)
+             confirmEmit();
+
         io.in(room._id.toString()).emit("game_update", updatedRoom);
     });
 
