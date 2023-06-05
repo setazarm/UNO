@@ -97,9 +97,10 @@ export default function Container({ children }) {
             addMessageToList(message);
             setTimeout(() => {
                 if (user?.name !== message.author) {
+
                     playMessageSound();
                 }
-            }, 100);
+            }, 200);
         };
         socket.on("update_rooms", allRooms);
 
