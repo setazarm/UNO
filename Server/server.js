@@ -30,6 +30,10 @@ app.use(fileupload());
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5173", exposedHeaders: ["token"] }));
 app.use(errorHandler);
+app.use(express.static("views/dist"));
+app.get("/", (req, res) => {
+    res.sendFile("./views/dist/index.html", { root:"." });
+})
 
 // Routes
 app.use("/users", userRouter);
