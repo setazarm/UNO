@@ -24,7 +24,9 @@ const RegisterForm = () => {
         data.append("name", user.name);
         data.append("email", user.email);
         data.append("password", user.password);
+        if(user.Avatar){
         data.append("Avatar", user.Avatar);
+        }
 
         axios
             .post("/users", data)
