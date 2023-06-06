@@ -179,6 +179,7 @@ const GameRoom = () => {
                 );
             } else {
                 toast.error("invalid card");
+                clicked.current = false;
             }
         }
     };
@@ -264,7 +265,6 @@ const GameRoom = () => {
                                     </div>
                                     <div className="flex gap-1 justify-center items-center relative">
                                         <div className="text-center">
-                                           
                                             {room.gameData.discardPile && (
                                                 <div
                                                     className={`flex flex-col justify-center  opacity-80 rounded-md `}
@@ -309,7 +309,6 @@ const GameRoom = () => {
                                             <WiStars /> UNO
                                         </button>
                                         <div className="mx-auto">
-            
                                             {room.gameData.allPlayerCards
                                                 .find((item) => item.userId === user?._id)
                                                 ?.cards.map((card, i) => (
