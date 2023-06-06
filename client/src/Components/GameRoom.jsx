@@ -21,11 +21,11 @@ import Chat from "./Chat";
 
 const GameRoom = () => {
     const { id } = useParams();
-    const { user, room, rooms, setRoom } = useContext(MyContext);
+    const { user, room, rooms, setRoom,messageList } = useContext(MyContext);
     const [showChat, setShowChat] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
-    
+    const [chatToggle, setChatToggle] = useState(false);
 
     const clicked = useRef(false);
 
@@ -192,8 +192,11 @@ const GameRoom = () => {
             socket.emit("uno_said", { room, userName: player.name });
         }
     }
-    
-    console.log(room?.turn,"turn")
+    useEffect(() => {
+        if(messageList.length > 0){
+     setChatToggle(true)
+        }
+    }, [messageList.length]);
 
     return (
         <div
@@ -384,7 +387,7 @@ const GameRoom = () => {
                 }}
             />
             <button
-                onClick={() => setShowChat(!showChat)}
+                onClick={() => {setShowChat(!showChat); setChatToggle(false)}}
                 className="flex items-center justify-center mt-4 "
                 style={{
                     position: "fixed",
@@ -394,7 +397,7 @@ const GameRoom = () => {
             >
                 <IoMdChatbubbles
                     size={32}
-                    className={`text-2xl text-green-500 hover:text-gray-400 transition-colors duration-200 ease-in-out`}
+                    className={`text-2xl hover:text-gray-400 transition-colors duration-200 ease-in-out ${chatToggle ? " text-green-500" :" text-[#0d6fa3]"}`}
                 />
             </button>
             {showChat && (

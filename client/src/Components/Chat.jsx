@@ -22,6 +22,7 @@ const Chat = () => {
             setCurrentMessage("");
         }
     };
+    
 
     return (
         <div className="flex flex-col justify-between mx-auto">
