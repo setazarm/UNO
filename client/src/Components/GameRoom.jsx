@@ -185,6 +185,7 @@ const GameRoom = () => {
                 );
             } else {
                 toast.error("invalid card");
+                clicked.current = false;
             }
         }
     };
