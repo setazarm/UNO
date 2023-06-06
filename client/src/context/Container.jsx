@@ -7,6 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 
 import useSound from "use-sound";
 import messageSound from "../assets/sounds_uno/message.mp3";
+import unoSound from "../assets/sounds_uno/uno_2.mp3";
 
 export default function Container({ children }) {
     const [user, setUser] = useState(null);
@@ -25,6 +26,10 @@ export default function Container({ children }) {
     const [playMessageSound] = useSound(messageSound, {
         volume: 0.45,
         playbackRate: 0.75,
+    });
+
+    const [playUnoSound] = useSound(unoSound, {
+        volume: 0.45,
     });
 
     // Room password checking
@@ -89,6 +94,7 @@ export default function Container({ children }) {
             setUser((user) => {
                 if (user.name !== userName) {
                     toast.error(`${userName} says UNO!`);
+                    playUnoSound();
                 }
                 return user;
             });
@@ -97,7 +103,6 @@ export default function Container({ children }) {
             addMessageToList(message);
             setTimeout(() => {
                 if (user?.name !== message.author) {
-
                     playMessageSound();
                 }
             }, 200);
