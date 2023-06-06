@@ -94,6 +94,7 @@ export default function Container({ children }) {
             setUser((user) => {
                 if (user.name !== userName) {
                     toast.error(`${userName} says UNO!`);
+                    console.log("PLS FIX THE SOUND");
                     playUnoSound();
                 }
                 return user;
