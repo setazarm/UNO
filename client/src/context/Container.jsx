@@ -95,12 +95,12 @@ export default function Container({ children }) {
         };
         const addingMessage = (message) => {
             addMessageToList(message);
-            setTimeout(() => {
-                if (user?.name !== message.author) {
-
+       
+                 if (user?.name !== message.author) {
+                    console.log("don't remove this console")
                     playMessageSound();
                 }
-            }, 200);
+            
         };
         socket.on("update_rooms", allRooms);
 
