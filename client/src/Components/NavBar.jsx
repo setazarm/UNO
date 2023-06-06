@@ -30,6 +30,7 @@ const NavBar = ({ isLoading, setIsloading }) => {
     }
   }, []);
 
+
   useEffect(() => {
     navigate(closeMenu);
   }, [navigate, closeMenu]);

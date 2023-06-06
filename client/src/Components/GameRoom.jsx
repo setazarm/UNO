@@ -21,10 +21,11 @@ import Chat from "./Chat";
 
 const GameRoom = () => {
     const { id } = useParams();
-    const { user, room, rooms, setRoom } = useContext(MyContext);
+    const { user, room, rooms, setRoom,messageList } = useContext(MyContext);
     const [showChat, setShowChat] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
+    const [chatToggle, setChatToggle] = useState(false);
 
     const clicked = useRef(false);
 
@@ -189,12 +190,18 @@ const GameRoom = () => {
     };
 
     const checkUno = () => {
+      
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
         if (player.cards.length === 2) {
             player.isUno = true;
             socket.emit("uno_said", { room, userName: player.name });
         }
-    };
+    }
+    useEffect(() => {
+        if(messageList.length > 0){
+     setChatToggle(true)
+        }
+    }, [messageList.length]);
 
     return (
         <div
@@ -302,10 +309,14 @@ const GameRoom = () => {
                                     <div className="flex flex-col items-end ">
                                         <button
                                             onClick={checkUno}
+                                            disabled={
+                                               ( room?.players[room.gameData.turn]?._id.toString() !== user?._id.toString())
+                                            }
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
                                                     (item) => item.userId === user?._id
-                                                )?.cards.length === 2
+                                                )?.cards.length === 2 
+                        
                                                     ? "animate-bounce"
                                                     : ""
                                             }`}
@@ -379,7 +390,7 @@ const GameRoom = () => {
                 }}
             />
             <button
-                onClick={() => setShowChat(!showChat)}
+                onClick={() => {setShowChat(!showChat); setChatToggle(false)}}
                 className="flex items-center justify-center mt-4 "
                 style={{
                     position: "fixed",
@@ -389,7 +400,7 @@ const GameRoom = () => {
             >
                 <IoMdChatbubbles
                     size={32}
-                    className={`text-2xl text-green-500 hover:text-gray-400 transition-colors duration-200 ease-in-out`}
+                    className={`text-2xl hover:text-gray-400 transition-colors duration-200 ease-in-out ${chatToggle ? " text-green-500" :" text-[#0d6fa3]"}`}
                 />
             </button>
             {showChat && (
