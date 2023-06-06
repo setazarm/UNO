@@ -35,7 +35,7 @@ const NavBar = ({ isLoading, setIsloading }) => {
     return (
         <nav className="bg-[#0d6fa3] text-white flex flex-col md:flex-row justify-around py-6 items-center gap-4">
             <div className="flex justify-between items-center">
-                <h3 className="text-xl font-bold">UNO</h3>
+                <h3 className="text-xl font-bold">UNO</h3>          
                 <button className="block md:hidden absolute top-0 right-0 m-4" onClick={toggleMenu}>
                     {isOpen ? <AiOutlineClose size={24} /> : <GiHamburgerMenu size={24} />}
                 </button>

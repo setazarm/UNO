@@ -25,6 +25,7 @@ const GameRoom = () => {
     const [showChat, setShowChat] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
+    
 
     const clicked = useRef(false);
 
@@ -184,12 +185,15 @@ const GameRoom = () => {
     };
 
     const checkUno = () => {
+      
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
         if (player.cards.length === 2) {
             player.isUno = true;
             socket.emit("uno_said", { room, userName: player.name });
         }
-    };
+    }
+    
+    console.log(room?.turn,"turn")
 
     return (
         <div
@@ -298,10 +302,14 @@ const GameRoom = () => {
                                     <div className="flex flex-col items-end ">
                                         <button
                                             onClick={checkUno}
+                                            disabled={
+                                               ( room?.players[room.gameData.turn]?._id.toString() !== user?._id.toString())
+                                            }
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
                                                     (item) => item.userId === user?._id
-                                                )?.cards.length === 2
+                                                )?.cards.length === 2 
+                        
                                                     ? "animate-bounce"
                                                     : ""
                                             }`}
