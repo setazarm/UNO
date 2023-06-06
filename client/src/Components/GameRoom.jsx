@@ -12,7 +12,7 @@ import toast, { Toaster } from "react-hot-toast";
 import useSound from "use-sound";
 import drawSound from "../assets/sounds_uno/draw_card.mp3";
 import cardSound from "../assets/sounds_uno/play_card.mp3";
-import messageSound from "../assets/sounds_uno/message.mp3";
+import winnerSound from "../assets/sounds_uno/winner.mp3";
 
 import { WiStars } from "react-icons/wi";
 import { IoMdChatbubbles } from "react-icons/io";
@@ -37,6 +37,10 @@ const GameRoom = () => {
     const [playCardSound] = useSound(cardSound, {
         volume: 0.45,
         playbackRate: 0.75,
+    });
+
+    const [playWinnerSound] = useSound(winnerSound, {
+        volume: 0.45,
     });
 
     const drawCard = (numOfCards) => {
@@ -131,6 +135,7 @@ const GameRoom = () => {
                         toast.error("You won!!");
                         room.gameData.gameOver.status = true;
                         room.gameData.gameOver.winner = player.userId;
+                        playWinnerSound();
                         socket.emit("winner", player.userId);
                     }
                 } else {
@@ -271,7 +276,6 @@ const GameRoom = () => {
                                     </div>
                                     <div className="flex gap-1 justify-center items-center relative">
                                         <div className="text-center">
-                                           
                                             {room.gameData.discardPile && (
                                                 <div
                                                     className={`flex flex-col justify-center  opacity-80 rounded-md `}
@@ -320,7 +324,6 @@ const GameRoom = () => {
                                             <WiStars /> UNO
                                         </button>
                                         <div className="mx-auto">
-            
                                             {room.gameData.allPlayerCards
                                                 .find((item) => item.userId === user?._id)
                                                 ?.cards.map((card, i) => (
