@@ -320,7 +320,12 @@ const GameRoom = () => {
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
                                                     (item) => item.userId === user?._id
+
                                                 )?.cards.length === 2
+
+                                               
+                        
+
                                                     ? "animate-bounce"
                                                     : ""
                                             }`}
