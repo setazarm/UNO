@@ -90,7 +90,7 @@ const GameRoom = () => {
                         ...room.gameData,
                         allPlayerCards,
                         turn: calculateNextTurn(
-                            false,
+                            room.gameData.isReverse,
                             false,
                             room.gameData.turn,
                             room.players.length
