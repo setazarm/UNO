@@ -104,7 +104,9 @@ export default function Container({ children }) {
             addMessageToList(message);
                  if (user?.name !== message.author) {
                     console.log("don't remove this console")
-                    playMessageSound();
+                    playMessageSound();  
+                    
+
                  }
         };
         socket.on("update_rooms", allRooms);
