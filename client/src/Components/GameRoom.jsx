@@ -154,7 +154,7 @@ const GameRoom = () => {
                 }
                 if (card.number === "_") {
                     console.log('room.gameData.isReverse', room.gameData.isReverse)
-                    room.gameData.isReverse = true;
+                    room.gameData.isReverse = !room.gameData.isReverse;
                 }
                 if (card.number === "D4") {
                     const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
