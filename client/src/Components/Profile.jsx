@@ -141,6 +141,7 @@ const Profile = ({ setIsloading }) => {
                     onClick={() => {
                         setIsloading((prev) => !prev);
                         localStorage.removeItem("token");
+                        localStorage.removeItem('user')
                         navigate("/");
                     }}
                 >
@@ -154,6 +155,50 @@ const Profile = ({ setIsloading }) => {
                 >
                     Delete Profile
                 </button>
+                {
+                    showDeletePopup && (
+                        <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+                            <div className="bg-white w-full md:w-1/2 rounded-lg shadow-lg p-6 relative overflow-hidden">
+                                <div className="flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setShowDeletePopup(false);
+                                        }}
+                                        className="text-gray-500 hover:text-gray-700 focus:outline-none focus:underline"
+                                    >
+                                        <AiFillCloseSquare size={30} />
+                                    </button>
+                                </div>
+                                <div className="mb-4">
+                                    <p className="text-gray-700 font-bold mb-2">
+                                        Are you sure you want to delete your profile?
+                                    </p>
+                                </div>
+                                <div className="flex justify-center">
+                                    <button
+                                        className="bg-gradient-to-br from-red-300 via-red-500 to-red-700 text-white font-bold py-2 px-4 rounded my-1 sm:mx-2 text-sm sm:text-base"
+                                        onClick={() => {
+                                            confirmDelete()
+                                        }}
+                                    >
+                                        Yes
+                                    </button>
+                                    <button
+                                        className="bg-gradient-to-br from-green-300 via-green-500 to-green-700 text-white font-bold py-2 px-4 rounded my-1 sm:mx-2 text-sm sm:text-base"
+                                        onClick={() => {
+
+                                            cancelDelete()
+                                        }}
+                                    >
+                                        No
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    )
+                }
             </div>
 
             {isEditing && (
