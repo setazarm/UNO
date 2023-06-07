@@ -91,7 +91,7 @@ const Profile = ({ setIsloading }) => {
     return (
         <div className="bg-gradient-to-br from-yellow-300 via-yellow-500 to-yellow-600 min-h-screen flex flex-col font-mono p-6">
             <div className="flex justify-center">
-                <div className="w-full md:w-1/2 bg-white rounded-lg shadow-lg p-6 relative overflow-hidden">
+                <div className="w-full md:w-1/2 bg-blue-100 rounded-lg shadow-lg p-6 relative overflow-hidden">
                     <div className="flex flex-col md:flex-row items-center mb-6">
                         <img
                             src={user?.Avatar}
@@ -158,7 +158,7 @@ const Profile = ({ setIsloading }) => {
                 {
                     showDeletePopup && (
                         <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
-                            <div className="bg-white w-full md:w-1/2 rounded-lg shadow-lg p-6 relative overflow-hidden">
+                            <div className="bg-blue-100  w-full md:w-1/2 rounded-lg shadow-lg p-6 relative overflow-hidden">
                                 <div className="flex justify-end">
                                     <button
                                         type="button"
@@ -203,7 +203,7 @@ const Profile = ({ setIsloading }) => {
 
             {isEditing && (
                 <div className="flex justify-center mt-5">
-               <form onSubmit={editHandler} className="bg-white w-full md:w-1/2 rounded-lg shadow-lg p-6 relative overflow-hidden">
+               <form onSubmit={editHandler} className="bg-blue-100  w-full md:w-1/2 rounded-lg shadow-lg p-6 relative overflow-hidden">
                <div className="flex justify-end">
                  <button
                    type="button"

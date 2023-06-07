@@ -32,10 +32,10 @@ const GameRoomCard = ({ room }) => {
 
     const disabled = room.players.length >= 4;
     return (
-        <div className="bg-[#b6d6bf] border border-gray-300 rounded-md p-4 mb-4 w-64">
-            <h2 className="text-lg font-bold mb-2">{room.roomName}</h2>
+        <div className="bg-[#b6d6bf] border border-gray-500 shadow-lg rounded-md p-4 mb-4 w-64">
+            <h2 className="text-xl font-thin mb-2">{room.roomName.toUpperCase()}</h2>
             <h3 className="text-sm text-gray-600 mb-2">{room.players.length} / 4 Players</h3>
-            <h3 className="text-sm text-gray-600 mb-2">
+            <h3 className="text-sm italic text-gray-600 mb-2">
                 Password Needed: {room.password ? "Yes" : "No"}
             </h3>
             <button
