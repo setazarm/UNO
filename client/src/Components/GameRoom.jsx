@@ -21,7 +21,7 @@ import Chat from "./Chat";
 
 const GameRoom = () => {
     const { id } = useParams();
-    const { user, room, rooms, setRoom,messageList } = useContext(MyContext);
+    const { user, room, rooms, setRoom, messageList } = useContext(MyContext);
     const [showChat, setShowChat] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
@@ -67,9 +67,12 @@ const GameRoom = () => {
     }, [rooms, id]);
 
     const drawPileHandler = () => {
+        if (clicked.current) return;
+
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             toast.error("Not your turn");
         } else {
+            clicked.current = true;
             playDrawSound();
             const drawnCards = drawCard(1);
             const allPlayerCards = room.gameData.allPlayerCards.map((player) => {
@@ -124,7 +127,7 @@ const GameRoom = () => {
 
                 let allPlayerCards = room.gameData.allPlayerCards;
 
-                if (!(player.cards.length === 5 && !player.isUno)) {
+                if (!(player.cards.length === 2 && !player.isUno)) {
                     const cardIndex = player.cards.indexOf(card);
                     player.cards.splice(cardIndex, 1);
                     room.gameData.discardPile.unshift(card);
@@ -191,16 +194,15 @@ const GameRoom = () => {
     };
 
     const checkUno = () => {
-      
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
-        if (player.cards.length === 5) {
+        if (player.cards.length === 2) {
             player.isUno = true;
             socket.emit("uno_said", { room, userName: player.name });
         }
-    }
+    };
     useEffect(() => {
-        if(messageList.length > 0){
-     setChatToggle(true)
+        if (messageList.length > 0) {
+            setChatToggle(true);
         }
     }, [messageList.length]);
 
@@ -311,13 +313,19 @@ const GameRoom = () => {
                                         <button
                                             onClick={checkUno}
                                             disabled={
-                                               ( room?.players[room.gameData.turn]?._id.toString() !== user?._id.toString())
+                                                room?.players[
+                                                    room.gameData.turn
+                                                ]?._id.toString() !== user?._id.toString()
                                             }
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
                                                     (item) => item.userId === user?._id
-                                                )?.cards.length === 5 
+
+                                                )?.cards.length === 2
+
+                                               
                         
+
                                                     ? "animate-bounce"
                                                     : ""
                                             }`}
@@ -391,7 +399,10 @@ const GameRoom = () => {
                 }}
             />
             <button
-                onClick={() => {setShowChat(!showChat); setChatToggle(false)}}
+                onClick={() => {
+                    setShowChat(!showChat);
+                    setChatToggle(false);
+                }}
                 className="flex items-center justify-center mt-4 "
                 style={{
                     position: "fixed",
@@ -401,7 +412,9 @@ const GameRoom = () => {
             >
                 <IoMdChatbubbles
                     size={32}
-                    className={`text-2xl hover:text-gray-400 transition-colors duration-200 ease-in-out ${chatToggle ? " text-green-500" :" text-[#0d6fa3]"}`}
+                    className={`text-2xl hover:text-gray-400 transition-colors duration-200 ease-in-out ${
+                        chatToggle ? " text-green-500" : " text-[#0d6fa3]"
+                    }`}
                 />
             </button>
             {showChat && (
