@@ -37,7 +37,8 @@ const LoginForm = ({ setIsloading }) => {
     };
 
     useEffect(() => {
-        if (user) {
+        const token = localStorage.getItem("token");
+        if (token) {
             setIsloading(true);
             navigate("/lobby");
         }
