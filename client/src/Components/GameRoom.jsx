@@ -124,7 +124,7 @@ const GameRoom = () => {
 
                 let allPlayerCards = room.gameData.allPlayerCards;
 
-                if (!(player.cards.length === 2 && !player.isUno)) {
+                if (!(player.cards.length === 5 && !player.isUno)) {
                     const cardIndex = player.cards.indexOf(card);
                     player.cards.splice(cardIndex, 1);
                     room.gameData.discardPile.unshift(card);
@@ -193,7 +193,7 @@ const GameRoom = () => {
     const checkUno = () => {
       
         const player = room.gameData.allPlayerCards.find((item) => item.userId === user._id);
-        if (player.cards.length === 2) {
+        if (player.cards.length === 5) {
             player.isUno = true;
             socket.emit("uno_said", { room, userName: player.name });
         }
@@ -316,7 +316,7 @@ const GameRoom = () => {
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
                                                     (item) => item.userId === user?._id
-                                                )?.cards.length === 2 
+                                                )?.cards.length === 5 
                         
                                                     ? "animate-bounce"
                                                     : ""
