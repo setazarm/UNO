@@ -38,6 +38,7 @@ const gameRoomSchema = new Schema(
                     ref: "User",
                 },
             },
+            isReverse: { type: Boolean, default: false },
         },
         userId: { type: Schema.Types.ObjectId, ref: "User" },
         bgColor: {

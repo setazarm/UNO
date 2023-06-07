@@ -152,7 +152,10 @@ const GameRoom = () => {
                         return player;
                     });
                 }
-
+                if (card.number === "_") {
+                    console.log('room.gameData.isReverse', room.gameData.isReverse)
+                    room.gameData.isReverse = true;
+                }
                 if (card.number === "D4") {
                     const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
                     const nextPlayer = room.gameData.allPlayerCards[nextPlayerIndex];
@@ -171,15 +174,19 @@ const GameRoom = () => {
                     "update_game",
                     {
                         ...room,
+
                         gameData: {
                             ...room.gameData,
                             turn: calculateNextTurn(
-                                card.number === "_" ? true : false,
+                                room.gameData.isReverse,
                                 card.number === "skip" ? true : false,
                                 room.gameData.turn,
                                 room.players.length
                             ),
                             allPlayerCards,
+                            
+
+
                         },
                     },
                     () => {

@@ -13,8 +13,8 @@ export default function Container({ children }) {
     const [user, setUser] = useState(null);
     const [room, setRoom] = useState(null);
     const [rooms, setRooms] = useState([]);
-    const messagePlay= new Audio(messageSound)
-    const uNOPlay = new Audio(unoSound)
+    const messagePlay = new Audio(messageSound);
+    const uNOPlay = new Audio(unoSound);
     const [isUno, setIsUno] = useState(false);
 
     const [color, setColor] = useState("");
@@ -48,6 +48,7 @@ export default function Container({ children }) {
         };
 
         const updateRoom = (room) => {
+            console.log("Container: ", room.gameData);
             setRoom(room);
         };
 
@@ -97,20 +98,20 @@ export default function Container({ children }) {
                     toast.error(`${userName} says UNO!`);
                     console.log("PLS FIX THE SOUND");
                     //playUnoSound();
-                    uNOPlay.play()
+                    uNOPlay.play();
                 }
                 return user;
             });
         };
         const addingMessage = (message) => {
             addMessageToList(message);
-            setUser(oldUser=>{
-                if(oldUser.name!==message.author){
+            setUser((oldUser) => {
+                if (oldUser.name !== message.author) {
                     // playMessageSound();
-                    messagePlay.play()
+                    messagePlay.play();
                 }
-                return oldUser
-            })
+                return oldUser;
+            });
             // if (user?.name !== message.author) {
             //     console.log("don't remove this console");
             //     playMessageSound();

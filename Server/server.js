@@ -118,13 +118,16 @@ io.on("connection", (socket) => {
                         drawPile: remainingCards.slice(1),
                         allPlayerCards: allUsersCards,
                         turn: 0,
+                        isReverse: false,
                     },
                 },
                 { new: true }
             ).populate("players");
 
             updatedRoom.isStarted = true;
-            updatedRoom.save();
+            await updatedRoom.save();
+            
+          
 
             const rooms = await GameRoom.find().populate("players");
             io.in(roomId.toString()).emit("game_update", updatedRoom);
@@ -138,14 +141,15 @@ io.on("connection", (socket) => {
     socket.on("update_game", async (room, confirmEmit) => {
         const updatedRoom = await GameRoom.findByIdAndUpdate(
             room._id,
-            {
-                ...room,
-            },
+            
+            room,
+            
             { new: true }
         )
             .populate("players")
             .populate("gameData.gameOver.winner");
             console.log(typeof confirmEmit)
+        
              confirmEmit();
 
         io.in(room._id.toString()).emit("game_update", updatedRoom);
