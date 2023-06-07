@@ -72,9 +72,9 @@ const RegisterForm = () => {
                     name="password"
                     onChange={(e) => setUser({ ...user, password: e.target.value })}
                 />
-                <label htmlFor="Avatar">profile picture: </label>
+                <label htmlFor="Avatar">Profile picture: </label>
                 <input
-                    className="outline-double outline-2 outline-gray-500 my-2 px-1"
+                    className="outline-double outline-2 outline-gray-500 my-2 p-2"
                     type="file"
                     name="file"
                     onChange={(e) => getImage(e.target.files[0])}

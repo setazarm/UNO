@@ -7,12 +7,14 @@ import toast, { Toaster } from "react-hot-toast";
 
 import useSound from "use-sound";
 import messageSound from "../assets/sounds_uno/message.mp3";
+import unoSound from "../assets/sounds_uno/uno_2.mp3";
 
 export default function Container({ children }) {
     const [user, setUser] = useState(null);
     const [room, setRoom] = useState(null);
     const [rooms, setRooms] = useState([]);
-
+    const messagePlay = new Audio(messageSound);
+    const uNOPlay = new Audio(unoSound);
     const [isUno, setIsUno] = useState(false);
 
     const [color, setColor] = useState("");
@@ -22,10 +24,14 @@ export default function Container({ children }) {
 
     const navigate = useNavigate();
 
-    const [playMessageSound] = useSound(messageSound, {
-        volume: 0.45,
-        playbackRate: 0.75,
-    });
+    // const [playMessageSound] = useSound(messageSound, {
+    //     volume: 0.45,
+    //     playbackRate: 0.75,
+    // });
+
+    // const [playUnoSound] = useSound(unoSound, {
+    //     volume: 0.45,
+    // });
 
     // Room password checking
     const [passwordCorrect, setPasswordCorrect] = useState(false);
@@ -42,6 +48,7 @@ export default function Container({ children }) {
         };
 
         const updateRoom = (room) => {
+            console.log("Container: ", room.gameData);
             setRoom(room);
         };
 
@@ -89,18 +96,26 @@ export default function Container({ children }) {
             setUser((user) => {
                 if (user.name !== userName) {
                     toast.error(`${userName} says UNO!`);
+                    console.log("PLS FIX THE SOUND");
+                    //playUnoSound();
+                    uNOPlay.play();
                 }
                 return user;
             });
         };
         const addingMessage = (message) => {
             addMessageToList(message);
-            setTimeout(() => {
-                if (user?.name !== message.author) {
-
-                    playMessageSound();
+            setUser((oldUser) => {
+                if (oldUser.name !== message.author) {
+                    // playMessageSound();
+                    messagePlay.play();
                 }
-            }, 200);
+                return oldUser;
+            });
+            // if (user?.name !== message.author) {
+            //     console.log("don't remove this console");
+            //     playMessageSound();
+            // }
         };
         socket.on("update_rooms", allRooms);
 

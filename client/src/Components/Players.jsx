@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import {BiLike} from "react-icons/bi";
 
 const Players = () => {
     const [players, setPlayers] = useState([]);
@@ -67,8 +68,8 @@ const Players = () => {
                             <p className="mb-2">Status: {player.status}</p>
                             <p className="mb-2">Points: {player.points}</p>
                             <p>{player.email}</p>
-                            <button onClick={() => likeHandler(player._id)}>
-                                Like {player?.likes?.length}
+                            <button className={"flex gap-2"} onClick={() => likeHandler(player._id)}>
+                           < BiLike size={24}/> {player?.likes?.length}
                             </button>
                         </div>
                     ))}

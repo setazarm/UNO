@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import uno from "../assets/Dizajn_bez_naslova__7_-removebg-preview.png";
@@ -35,6 +35,14 @@ const LoginForm = ({ setIsloading }) => {
                 toast.error(err.response.data.message);
             });
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            setIsloading(true);
+            navigate("/lobby");
+        }
+    }, [user]);
 
     return (
         <div className="bg-gradient-to-br from-cyan-300 via-cyan-500 to-cyan-700 min-h-screen flex flex-col justify-center items-center p-6">

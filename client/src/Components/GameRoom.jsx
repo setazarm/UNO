@@ -12,7 +12,7 @@ import toast, { Toaster } from "react-hot-toast";
 import useSound from "use-sound";
 import drawSound from "../assets/sounds_uno/draw_card.mp3";
 import cardSound from "../assets/sounds_uno/play_card.mp3";
-import messageSound from "../assets/sounds_uno/message.mp3";
+import winnerSound from "../assets/sounds_uno/winner.mp3";
 
 import { WiStars } from "react-icons/wi";
 import { IoMdChatbubbles } from "react-icons/io";
@@ -21,10 +21,11 @@ import Chat from "./Chat";
 
 const GameRoom = () => {
     const { id } = useParams();
-    const { user, room, rooms, setRoom } = useContext(MyContext);
+    const { user, room, rooms, setRoom, messageList } = useContext(MyContext);
     const [showChat, setShowChat] = useState(false);
 
     const [showPopup, setShowPopup] = useState(false);
+    const [chatToggle, setChatToggle] = useState(false);
 
     const clicked = useRef(false);
 
@@ -36,6 +37,10 @@ const GameRoom = () => {
     const [playCardSound] = useSound(cardSound, {
         volume: 0.45,
         playbackRate: 0.75,
+    });
+
+    const [playWinnerSound] = useSound(winnerSound, {
+        volume: 0.45,
     });
 
     const drawCard = (numOfCards) => {
@@ -62,9 +67,12 @@ const GameRoom = () => {
     }, [rooms, id]);
 
     const drawPileHandler = () => {
+        if (clicked.current) return;
+
         if (room.players[room.gameData.turn]._id.toString() !== user._id.toString()) {
             toast.error("Not your turn");
         } else {
+            clicked.current = true;
             playDrawSound();
             const drawnCards = drawCard(1);
             const allPlayerCards = room.gameData.allPlayerCards.map((player) => {
@@ -107,7 +115,7 @@ const GameRoom = () => {
                 card.color === room.gameData.discardPile[0].color ||
                 card.number === room.gameData.discardPile[0].number ||
                 card.number === "" ||
-                card.number === "D4"
+                card.number === "D4" || room.gameData.discardPile[0].color === 'W'
             ) {
                 if (card.number === "" || card.number === "D4") {
                     setShowPopup(true);
@@ -130,6 +138,7 @@ const GameRoom = () => {
                         toast.error("You won!!");
                         room.gameData.gameOver.status = true;
                         room.gameData.gameOver.winner = player.userId;
+                        playWinnerSound();
                         socket.emit("winner", player.userId);
                     }
                 } else {
@@ -143,7 +152,10 @@ const GameRoom = () => {
                         return player;
                     });
                 }
-
+                if (card.number === "_") {
+                    console.log('room.gameData.isReverse', room.gameData.isReverse)
+                    room.gameData.isReverse = true;
+                }
                 if (card.number === "D4") {
                     const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
                     const nextPlayer = room.gameData.allPlayerCards[nextPlayerIndex];
@@ -162,15 +174,19 @@ const GameRoom = () => {
                     "update_game",
                     {
                         ...room,
+
                         gameData: {
                             ...room.gameData,
                             turn: calculateNextTurn(
-                                card.number === "_" ? true : false,
+                                room.gameData.isReverse,
                                 card.number === "skip" ? true : false,
                                 room.gameData.turn,
                                 room.players.length
                             ),
                             allPlayerCards,
+                            
+
+
                         },
                     },
                     () => {
@@ -179,6 +195,7 @@ const GameRoom = () => {
                 );
             } else {
                 toast.error("invalid card");
+                clicked.current = false;
             }
         }
     };
@@ -190,6 +207,11 @@ const GameRoom = () => {
             socket.emit("uno_said", { room, userName: player.name });
         }
     };
+    useEffect(() => {
+        if (messageList.length > 0) {
+            setChatToggle(true);
+        }
+    }, [messageList.length]);
 
     return (
         <div
@@ -264,7 +286,6 @@ const GameRoom = () => {
                                     </div>
                                     <div className="flex gap-1 justify-center items-center relative">
                                         <div className="text-center">
-                                           
                                             {room.gameData.discardPile && (
                                                 <div
                                                     className={`flex flex-col justify-center  opacity-80 rounded-md `}
@@ -298,10 +319,20 @@ const GameRoom = () => {
                                     <div className="flex flex-col items-end ">
                                         <button
                                             onClick={checkUno}
+                                            disabled={
+                                                room?.players[
+                                                    room.gameData.turn
+                                                ]?._id.toString() !== user?._id.toString()
+                                            }
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
                                                     (item) => item.userId === user?._id
+
                                                 )?.cards.length === 2
+
+                                               
+                        
+
                                                     ? "animate-bounce"
                                                     : ""
                                             }`}
@@ -309,7 +340,6 @@ const GameRoom = () => {
                                             <WiStars /> UNO
                                         </button>
                                         <div className="mx-auto">
-            
                                             {room.gameData.allPlayerCards
                                                 .find((item) => item.userId === user?._id)
                                                 ?.cards.map((card, i) => (
@@ -376,7 +406,10 @@ const GameRoom = () => {
                 }}
             />
             <button
-                onClick={() => setShowChat(!showChat)}
+                onClick={() => {
+                    setShowChat(!showChat);
+                    setChatToggle(false);
+                }}
                 className="flex items-center justify-center mt-4 "
                 style={{
                     position: "fixed",
@@ -386,7 +419,9 @@ const GameRoom = () => {
             >
                 <IoMdChatbubbles
                     size={32}
-                    className={`text-2xl text-green-500 hover:text-gray-400 transition-colors duration-200 ease-in-out`}
+                    className={`text-2xl hover:text-gray-400 transition-colors duration-200 ease-in-out ${
+                        chatToggle ? " text-green-500" : " text-[#0d6fa3]"
+                    }`}
                 />
             </button>
             {showChat && (
