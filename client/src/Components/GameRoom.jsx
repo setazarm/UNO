@@ -115,7 +115,7 @@ const GameRoom = () => {
                 card.color === room.gameData.discardPile[0].color ||
                 card.number === room.gameData.discardPile[0].number ||
                 card.number === "" ||
-                card.number === "D4"
+                card.number === "D4" || room.gameData.discardPile[0].color === 'W'
             ) {
                 if (card.number === "" || card.number === "D4") {
                     setShowPopup(true);

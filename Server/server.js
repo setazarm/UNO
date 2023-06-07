@@ -110,6 +110,7 @@ io.on("connection", (socket) => {
 
             const remainingCards = cardDeck.slice(room.players.length * 7);
 
+         
             const updatedRoom = await GameRoom.findByIdAndUpdate(
                 roomId,
                 {
