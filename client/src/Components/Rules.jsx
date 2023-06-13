@@ -1,5 +1,5 @@
 import React from "react";
-
+import rules from '../assets/rules.png'
 const Rules = () => {
     return (
         <div className="bg-white p-6">
@@ -16,7 +16,7 @@ const Rules = () => {
             <p className="mb-4">Utilize, store, share, print, and savor the enjoyment!</p>
             <img
                 className="mb-4"
-                src="https://www.unorules.org/wp-content/uploads/2021/03/Uno-Rules-infographic-A-Quick-start-guide.png"
+                src={rules}
                 alt="Uno infographic"
             />
             <p className="mb-4">
@@ -27,6 +27,7 @@ const Rules = () => {
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block mb-4"
                 href="https://www.unorules.org/wp-content/uploads/2021/03/Uno-Rules-PDF-Official-Rules-unorules.org_.pdf"
                 target="_blank"
+                rel="noreferrer"
             >
                 Download PDF
             </a>
