@@ -90,7 +90,7 @@ const GameRoom = () => {
                         ...room.gameData,
                         allPlayerCards,
                         turn: calculateNextTurn(
-                            false,
+                            room.gameData.isReverse,
                             false,
                             room.gameData.turn,
                             room.players.length
@@ -158,7 +158,7 @@ const GameRoom = () => {
                 }
                 if (card.number === "_") {
                     console.log("room.gameData.isReverse", room.gameData.isReverse);
-                    room.gameData.isReverse = true;
+                    room.gameData.isReverse = !room.gameData.isReverse;
                 }
                 if (card.number === "D4") {
                     const nextPlayerIndex = (room.gameData.turn + 1) % room.players.length;
