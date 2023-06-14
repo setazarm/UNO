@@ -115,7 +115,8 @@ const GameRoom = () => {
                 card.color === room.gameData.discardPile[0].color ||
                 card.number === room.gameData.discardPile[0].number ||
                 card.number === "" ||
-                card.number === "D4" || room.gameData.discardPile[0].color === 'W'
+                card.number === "D4" ||
+                room.gameData.discardPile[0].color === "W"
             ) {
                 if (card.number === "" || card.number === "D4") {
                     setShowPopup(true);
@@ -143,6 +144,9 @@ const GameRoom = () => {
                     }
                 } else {
                     toast.error("You didn't say UNO!");
+                    const cardIndex = player.cards.indexOf(card);
+                    player.cards.splice(cardIndex, 1);
+                    room.gameData.discardPile.unshift(card);
 
                     const drawnCards = drawCard(2);
                     allPlayerCards = room.gameData.allPlayerCards.map((player) => {
@@ -153,7 +157,7 @@ const GameRoom = () => {
                     });
                 }
                 if (card.number === "_") {
-                    console.log('room.gameData.isReverse', room.gameData.isReverse)
+                    console.log("room.gameData.isReverse", room.gameData.isReverse);
                     room.gameData.isReverse = !room.gameData.isReverse;
                 }
                 if (card.number === "D4") {
@@ -184,9 +188,6 @@ const GameRoom = () => {
                                 room.players.length
                             ),
                             allPlayerCards,
-                            
-
-
                         },
                     },
                     () => {
@@ -327,12 +328,7 @@ const GameRoom = () => {
                                             className={`border-slate-950 border-2 flex justify-center bg-slate-300 px-4 py-2 rounded ${
                                                 room.gameData.allPlayerCards.find(
                                                     (item) => item.userId === user?._id
-
                                                 )?.cards.length === 2
-
-                                               
-                        
-
                                                     ? "animate-bounce"
                                                     : ""
                                             }`}
