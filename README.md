@@ -5,7 +5,7 @@ game online with their friends or with other users around the world. The applica
 web-based front-end and a server-side back-end, allowing for real-time gameplay and communication.
 Users can create accounts, join or host game rooms, and play UNO . The application is built using
 the MERN stack and socket.io and aims to provide a smooth and enjoyable online UNO experience.
-## Live <a href="https://uno-5dzs.onrender.com/ > Version </>
+##  [Live Version](https://uno-5dzs.onrender.com/)
 ## Installation
 
 To run the application locally, clone the repository and run:
